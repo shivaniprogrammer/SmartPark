@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Login — SmartPark</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{--navy:#0A1628;--navy2:#1E3A5F;--blue:#2563EB;--gold:#F59E0B;--white:#fff;--light:#F8FAFC;--grey:#64748B;--border:#E2E8F0;}
+    body{font-family:'Inter',sans-serif;background:var(--white);color:var(--navy);min-height:100vh;display:flex;}
+
+    /* LEFT PANEL */
+    .left{flex:1;background:linear-gradient(135deg,#0A1628 0%,#1E3A5F 100%);display:flex;flex-direction:column;justify-content:center;padding:4rem;position:relative;overflow:hidden;min-height:100vh;}
+    .left::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
+    .left-content{position:relative;z-index:1;}
+    .logo{font-size:1.75rem;font-weight:800;color:var(--white);text-decoration:none;display:flex;align-items:center;gap:0.5rem;margin-bottom:3rem;}
+    .logo span{color:var(--gold);}
+    .left h1{font-size:2.5rem;font-weight:800;color:var(--white);line-height:1.2;letter-spacing:-1px;margin-bottom:1rem;}
+    .left h1 span{background:linear-gradient(135deg,#60A5FA,#F59E0B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .left p{color:rgba(255,255,255,0.6);font-size:1rem;line-height:1.7;margin-bottom:2.5rem;}
+    .feature-list{display:flex;flex-direction:column;gap:1rem;}
+    .feature-item{display:flex;align-items:center;gap:0.875rem;color:rgba(255,255,255,0.8);font-size:0.925rem;}
+    .feature-item .check{width:28px;height:28px;border-radius:50%;background:rgba(37,99,235,0.3);border:1px solid rgba(37,99,235,0.5);display:flex;align-items:center;justify-content:center;color:#60A5FA;font-size:0.75rem;flex-shrink:0;}
+
+    /* RIGHT PANEL */
+    .right{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem;background:var(--white);}
+    .form-box{width:100%;max-width:420px;}
+    .form-box h2{font-size:1.75rem;font-weight:800;color:var(--navy);letter-spacing:-0.5px;margin-bottom:0.5rem;}
+    .form-box .sub{font-size:0.9rem;color:var(--grey);margin-bottom:2rem;}
+
+    /* TABS */
+    .auth-tabs{display:flex;background:var(--light);border-radius:10px;padding:4px;margin-bottom:2rem;}
+    .auth-tab{flex:1;text-align:center;padding:0.6rem;border-radius:8px;font-size:0.875rem;font-weight:600;cursor:pointer;color:var(--grey);transition:all .3s;border:none;background:transparent;}
+    .auth-tab.active{background:var(--white);color:var(--navy);box-shadow:0 2px 8px rgba(10,22,40,0.1);}
+
+    /* FORM */
+    .form-group{margin-bottom:1.25rem;}
+    .form-group label{display:block;font-size:0.8rem;font-weight:600;color:var(--navy);margin-bottom:0.5rem;letter-spacing:0.3px;}
+    .input-wrap{position:relative;}
+    .input-wrap i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--grey);font-size:0.9rem;}
+    .form-group input{width:100%;padding:0.8rem 1rem 0.8rem 2.5rem;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;font-family:'Inter',sans-serif;color:var(--navy);background:var(--white);outline:none;transition:all .3s;}
+    .form-group input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,0.1);}
+    .form-row{display:flex;gap:1rem;}
+    .form-row .form-group{flex:1;}
+
+    /* OPTIONS */
+    .form-options{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
+    .checkbox-wrap{display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:var(--grey);cursor:pointer;}
+    .checkbox-wrap input{accent-color:var(--blue);}
+    .forgot{font-size:0.85rem;color:var(--blue);text-decoration:none;font-weight:500;}
+    .forgot:hover{text-decoration:underline;}
+
+    /* BUTTON */
+    .btn-submit{width:100%;padding:0.9rem;background:linear-gradient(135deg,var(--blue),#1d4ed8);color:var(--white);border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .3s;font-family:'Inter',sans-serif;}
+    .btn-submit:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,99,235,0.4);}
+    .btn-submit:active{transform:translateY(0);}
+
+    /* DIVIDER */
+    .divider{display:flex;align-items:center;gap:1rem;margin:1.5rem 0;color:var(--grey);font-size:0.85rem;}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+    /* GOOGLE */
+    .btn-google{width:100%;padding:0.875rem;border:1.5px solid var(--border);border-radius:10px;background:var(--white);color:var(--navy);font-size:0.9rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.75rem;transition:all .3s;font-family:'Inter',sans-serif;}
+    .btn-google:hover{background:var(--light);border-color:var(--blue);}
+
+    /* TERMS */
+    .terms{font-size:0.78rem;color:var(--grey);text-align:center;margin-top:1.25rem;line-height:1.6;}
+    .terms a{color:var(--blue);text-decoration:none;}
+
+    @media(max-width:768px){
+      .left{display:none;}
+      .right{padding:2rem 1.5rem;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- LEFT -->
+<div class="left">
+  <div class="left-content">
+    <a href="index.html" class="logo">🅿 Smart<span>Park</span></a>
+    <h1>Park Smarter,<br/><span>Live Better.</span></h1>
+    <p>Join over 1 million users across India who book, manage, and service their vehicles — all in one app.</p>
+    <div class="feature-list">
+      <div class="feature-item"><div class="check"><i class="fas fa-check"></i></div>Real-time slot booking in 50+ cities</div>
+      <div class="feature-item"><div class="check"><i class="fas fa-check"></i></div>Car wash & mechanic services while parked</div>
+      <div class="feature-item"><div class="check"><i class="fas fa-check"></i></div>Book Ola & Uber directly from the app</div>
+      <div class="feature-item"><div class="check"><i class="fas fa-check"></i></div>Smart wallet with loyalty rewards</div>
+      <div class="feature-item"><div class="check"><i class="fas fa-check"></i></div>Overstay alerts & easy extensions</div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT -->
+<div class="right">
+  <div class="form-box">
+    <h2>Welcome Back 👋</h2>
+    <p class="sub">Sign in to your SmartPark account</p>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('login',this)">Sign In</button>
+      <button class="auth-tab" onclick="switchTab('signup',this)">Create Account</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginForm">
+      <div class="form-group">
+        <label>Email Address</label>
+        <div class="input-wrap">
+          <i class="fas fa-envelope"></i>
+          <input type="email" placeholder="you@example.com"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrap">
+          <i class="fas fa-lock"></i>
+          <input type="password" placeholder="Enter your password"/>
+        </div>
+      </div>
+      <div class="form-options">
+        <label class="checkbox-wrap"><input type="checkbox"/> Remember me</label>
+        <a href="#" class="forgot">Forgot password?</a>
+      </div>
+      <button class="btn-submit" onclick="location.href='dashboard.html'">Sign In to SmartPark</button>
+      <div class="divider">or continue with</div>
+      <button class="btn-google">
+        <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.9z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34 6.5 29.3 4 24 4 16.3 4 9.7 8.5 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.1 35.5 26.6 36 24 36c-5.3 0-9.7-3.3-11.3-8H6.4C9.8 36.2 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.3 4.1-4.2 5.4l6.2 5.2C36.9 40.1 44 35 44 24c0-1.3-.1-2.7-.4-3.9z"/></svg>
+        Continue with Google
+      </button>
+      <p class="terms">By signing in, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div id="signupForm" style="display:none;">
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <div class="input-wrap">
+            <i class="fas fa-user"></i>
+            <input type="text" placeholder="Rahul"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <div class="input-wrap">
+            <i class="fas fa-user"></i>
+            <input type="text" placeholder="Sharma"/>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <div class="input-wrap">
+          <i class="fas fa-phone"></i>
+          <input type="tel" placeholder="+91 98765 43210"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <div class="input-wrap">
+          <i class="fas fa-envelope"></i>
+          <input type="email" placeholder="you@example.com"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrap">
+          <i class="fas fa-lock"></i>
+          <input type="password" placeholder="Create a strong password"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <div class="input-wrap">
+          <i class="fas fa-lock"></i>
+          <input type="password" placeholder="Repeat your password"/>
+        </div>
+      </div>
+      <button class="btn-submit" onclick="location.href='dashboard.html'">Create My Account</button>
+      <div class="divider">or sign up with</div>
+      <button class="btn-google">
+        <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.9z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34 6.5 29.3 4 24 4 16.3 4 9.7 8.5 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.1 35.5 26.6 36 24 36c-5.3 0-9.7-3.3-11.3-8H6.4C9.8 36.2 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.3 4.1-4.2 5.4l6.2 5.2C36.9 40.1 44 35 44 24c0-1.3-.1-2.7-.4-3.9z"/></svg>
+        Continue with Google
+      </button>
+      <p class="terms">By creating an account you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  function switchTab(tab,btn){
+    document.querySelectorAll('.auth-tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('loginForm').style.display=tab==='login'?'block':'none';
+    document.getElementById('signupForm').style.display=tab==='signup'?'block':'none';
+    document.querySelector('.form-box h2').textContent=tab==='login'?'Welcome Back 👋':'Create Account 🚀';
+    document.querySelector('.form-box .sub').textContent=tab==='login'?'Sign in to your SmartPark account':'Start parking smarter today — it\'s free.';
+  }
+</script>
+</body>
+</html>

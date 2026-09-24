@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Services — SmartPark</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{--navy:#0A1628;--navy2:#1E3A5F;--blue:#2563EB;--gold:#F59E0B;--white:#fff;--light:#F8FAFC;--grey:#64748B;--border:#E2E8F0;--green:#10B981;}
+    body{font-family:'Inter',sans-serif;background:var(--light);color:var(--navy);}
+
+    nav{background:var(--navy);padding:0 5%;height:68px;display:flex;align-items:center;justify-content:space-between;}
+    .logo{font-size:1.4rem;font-weight:800;color:var(--white);text-decoration:none;}
+    .logo span{color:var(--gold);}
+    .nav-right{display:flex;align-items:center;gap:1rem;}
+    .nav-right a{color:rgba(255,255,255,0.7);text-decoration:none;font-size:0.875rem;font-weight:500;transition:color .3s;}
+    .nav-right a:hover,.nav-right a.active{color:var(--white);}
+    .btn-dash{background:var(--blue);color:var(--white)!important;padding:0.45rem 1rem;border-radius:8px;font-weight:600!important;}
+
+    /* HERO */
+    .hero{background:linear-gradient(135deg,#0A1628,#1E3A5F);padding:5rem 5% 3.5rem;color:var(--white);text-align:center;}
+    .hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:900;letter-spacing:-1.5px;margin-bottom:1rem;}
+    .hero h1 span{background:linear-gradient(135deg,#60A5FA,#F59E0B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .hero p{color:rgba(255,255,255,0.6);font-size:1.05rem;max-width:560px;margin:0 auto;}
+
+    /* CATEGORIES */
+    .categories{background:var(--white);border-bottom:1px solid var(--border);padding:1rem 5%;overflow-x:auto;}
+    .cat-scroll{display:flex;gap:0.75rem;min-width:max-content;}
+    .cat-btn{display:flex;align-items:center;gap:0.5rem;padding:0.6rem 1.25rem;border-radius:100px;font-size:0.875rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--white);color:var(--grey);transition:all .3s;white-space:nowrap;}
+    .cat-btn:hover,.cat-btn.active{background:var(--blue);border-color:var(--blue);color:var(--white);}
+
+    /* CONTENT */
+    .content{padding:2.5rem 5%;max-width:1100px;margin:0 auto;}
+    .section-header{margin-bottom:1.75rem;}
+    .section-header h2{font-size:1.4rem;font-weight:800;color:var(--navy);margin-bottom:0.3rem;}
+    .section-header p{font-size:0.9rem;color:var(--grey);}
+
+    /* CAR WASH CARDS */
+    .wash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;margin-bottom:3rem;}
+    .wash-card{background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:1.75rem;position:relative;transition:all .3s;text-align:center;}
+    .wash-card:hover{transform:translateY(-5px);box-shadow:0 20px 50px rgba(10,22,40,0.1);}
+    .wash-card.featured{border-color:var(--blue);background:linear-gradient(180deg,#EFF6FF,#fff);}
+    .featured-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--blue);color:var(--white);font-size:0.7rem;font-weight:800;padding:0.25rem 0.875rem;border-radius:100px;letter-spacing:0.5px;white-space:nowrap;}
+    .wash-icon{font-size:2.5rem;margin-bottom:0.875rem;}
+    .wash-card h3{font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:0.25rem;}
+    .wash-price{font-size:2rem;font-weight:900;color:var(--blue);margin:0.5rem 0;}
+    .wash-price small{font-size:0.9rem;font-weight:600;}
+    .wash-features{list-style:none;text-align:left;margin:1rem 0;display:flex;flex-direction:column;gap:0.5rem;}
+    .wash-features li{display:flex;align-items:center;gap:0.5rem;font-size:0.825rem;color:var(--grey);}
+    .wash-features li::before{content:'✓';color:var(--green);font-weight:800;flex-shrink:0;}
+    .btn-book{width:100%;padding:0.75rem;background:var(--blue);color:var(--white);border:none;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .3s;margin-top:0.5rem;}
+    .btn-book:hover{background:#1d4ed8;transform:translateY(-1px);}
+    .btn-book.outline{background:transparent;border:1.5px solid var(--blue);color:var(--blue);}
+    .btn-book.outline:hover{background:var(--blue);color:var(--white);}
+
+    /* MECHANIC CARDS */
+    .mech-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;margin-bottom:3rem;}
+    .mech-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:1.5rem;display:flex;flex-direction:column;gap:0.75rem;transition:all .3s;cursor:pointer;}
+    .mech-card:hover{border-color:var(--blue);transform:translateY(-3px);box-shadow:0 12px 30px rgba(10,22,40,0.08);}
+    .mech-icon{font-size:2rem;}
+    .mech-card h3{font-size:1rem;font-weight:700;color:var(--navy);}
+    .mech-card p{font-size:0.825rem;color:var(--grey);line-height:1.5;}
+    .mech-meta{display:flex;justify-content:space-between;align-items:center;padding-top:0.5rem;border-top:1px solid var(--border);}
+    .mech-price{font-size:1.1rem;font-weight:800;color:var(--navy);}
+    .mech-time{font-size:0.75rem;color:var(--grey);}
+
+    /* CAB SECTION */
+    .cab-search{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;}
+    .cab-search h3{font-size:1rem;font-weight:700;margin-bottom:1rem;}
+    .cab-inputs{display:flex;flex-direction:column;gap:0.75rem;}
+    .cab-input{display:flex;align-items:center;gap:0.75rem;border:1.5px solid var(--border);border-radius:10px;padding:0.875rem 1rem;transition:all .3s;}
+    .cab-input:focus-within{border-color:var(--blue);}
+    .cab-input i{color:var(--grey);width:18px;text-align:center;}
+    .cab-input input{border:none;outline:none;font-size:0.9rem;font-family:'Inter',sans-serif;color:var(--navy);width:100%;}
+    .btn-find{background:var(--blue);color:var(--white);border:none;padding:0.875rem;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .3s;margin-top:0.25rem;}
+    .btn-find:hover{background:#1d4ed8;}
+    .cab-options{display:flex;flex-direction:column;gap:0.875rem;margin-bottom:3rem;}
+    .cab-opt{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:1.25rem;display:flex;align-items:center;gap:1rem;cursor:pointer;transition:all .3s;}
+    .cab-opt:hover{border-color:var(--blue);background:#EFF6FF;}
+    .cab-opt .cab-icon{font-size:2rem;width:44px;text-align:center;}
+    .cab-info{flex:1;}
+    .cab-info h4{font-size:0.95rem;font-weight:700;color:var(--navy);}
+    .cab-info p{font-size:0.8rem;color:var(--grey);margin-top:0.2rem;}
+    .cab-right{text-align:right;}
+    .cab-price{font-size:1.15rem;font-weight:800;color:var(--navy);}
+    .cab-eta{font-size:0.75rem;color:var(--green);font-weight:600;}
+    .btn-ride{background:var(--blue);color:var(--white);border:none;padding:0.55rem 1.1rem;border-radius:8px;font-size:0.8rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-top:0.35rem;}
+
+    /* LAUNDRY */
+    .laundry-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;margin-bottom:3rem;}
+    .laundry-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:1.5rem;transition:all .3s;}
+    .laundry-card:hover{border-color:var(--blue);transform:translateY(-3px);}
+    .laundry-card .icon{font-size:2rem;margin-bottom:0.75rem;}
+    .laundry-card h3{font-size:1rem;font-weight:700;margin-bottom:0.4rem;}
+    .laundry-card p{font-size:0.825rem;color:var(--grey);line-height:1.5;margin-bottom:0.75rem;}
+    .laundry-price{font-size:1.1rem;font-weight:800;color:var(--blue);}
+
+    /* MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,22,40,0.6);z-index:1000;align-items:center;justify-content:center;}
+    .modal-overlay.show{display:flex;}
+    .modal{background:var(--white);border-radius:20px;padding:2.5rem 2rem;text-align:center;max-width:380px;width:90%;animation:popIn .35s ease;}
+    @keyframes popIn{from{opacity:0;transform:scale(0.85);}to{opacity:1;transform:scale(1);}}
+    .modal .m-icon{font-size:3.5rem;margin-bottom:1rem;}
+    .modal h2{font-size:1.4rem;font-weight:800;color:var(--navy);margin-bottom:0.5rem;}
+    .modal p{font-size:0.875rem;color:var(--grey);margin-bottom:1.25rem;line-height:1.6;}
+    .modal .ref{background:var(--light);border-radius:8px;padding:0.75rem;font-weight:800;color:var(--blue);font-size:1rem;margin-bottom:1.25rem;}
+    .btn-ok{background:var(--blue);color:var(--white);border:none;padding:0.875rem 2rem;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;}
+
+    .fab{position:fixed;bottom:2rem;right:2rem;z-index:998;width:52px;height:52px;border-radius:50%;background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.35rem;box-shadow:0 8px 24px rgba(37,211,102,0.4);cursor:pointer;text-decoration:none;transition:all .3s;}
+    .fab:hover{transform:scale(1.1);}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">🅿 Smart<span>Park</span></a>
+  <div class="nav-right">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="booking.html">Book Parking</a>
+    <a href="services.html" class="active">Services</a>
+    <a href="wallet.html">Wallet</a>
+    <a href="dashboard.html" class="btn-dash">My Account</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>While You Park,<br/><span>We Take Care.</span></h1>
+  <p>Premium vehicle services, cab booking, and daily conveniences — all available at every SmartPark location.</p>
+</div>
+
+<div class="categories">
+  <div class="cat-scroll">
+    <button class="cat-btn active" onclick="showCat('wash',this)">🚿 Car Wash</button>
+    <button class="cat-btn" onclick="showCat('mech',this)">🔧 Mechanic</button>
+    <button class="cat-btn" onclick="showCat('cab',this)">🚕 Book Cab</button>
+    <button class="cat-btn" onclick="showCat('laundry',this)">🧺 Laundry</button>
+    <button class="cat-btn" onclick="showCat('fuel',this)">⛽ Fuel</button>
+    <button class="cat-btn" onclick="showCat('food',this)">☕ Food & Drinks</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- CAR WASH -->
+  <div id="cat-wash">
+    <div class="section-header">
+      <h2>🚿 Car Wash Packages</h2>
+      <p>Choose your wash package — professionally done while your car is parked.</p>
+    </div>
+    <div class="wash-grid">
+      <div class="wash-card">
+        <div class="wash-icon">🪣</div>
+        <h3>Basic Wash</h3>
+        <div class="wash-price">₹<span>99</span></div>
+        <ul class="wash-features">
+          <li>Exterior rinse & wipe</li>
+          <li>Glass cleaning</li>
+          <li>Ready in 20 mins</li>
+        </ul>
+        <button class="btn-book outline" onclick="bookService('Basic Car Wash','₹99')">Book Now</button>
+      </div>
+      <div class="wash-card featured">
+        <span class="featured-badge">⭐ MOST POPULAR</span>
+        <div class="wash-icon">✨</div>
+        <h3>Premium Foam Wash</h3>
+        <div class="wash-price">₹<span>199</span></div>
+        <ul class="wash-features">
+          <li>Full foam wash</li>
+          <li>Tyre & rim cleaning</li>
+          <li>Dashboard wipe</li>
+          <li>Interior vacuum</li>
+          <li>Ready in 40 mins</li>
+        </ul>
+        <button class="btn-book" onclick="bookService('Premium Foam Wash','₹199')">Book Now</button>
+      </div>
+      <div class="wash-card">
+        <div class="wash-icon">💎</div>
+        <h3>Full Detail</h3>
+        <div class="wash-price">₹<span>499</span></div>
+        <ul class="wash-features">
+          <li>Full interior + exterior</li>
+          <li>Deep carpet cleaning</li>
+          <li>Ceramic polish</li>
+          <li>Fragrance treatment</li>
+          <li>Showroom finish</li>
+        </ul>
+        <button class="btn-book outline" onclick="bookService('Full Detail','₹499')">Book Now</button>
+      </div>
+      <div class="wash-card">
+        <div class="wash-icon">🌿</div>
+        <h3>Waterless Wash</h3>
+        <div class="wash-price">₹<span>149</span></div>
+        <ul class="wash-features">
+          <li>Eco-friendly spray clean</li>
+          <li>No water used</li>
+          <li>Streak-free finish</li>
+          <li>Ready in 15 mins</li>
+        </ul>
+        <button class="btn-book outline" onclick="bookService('Waterless Wash','₹149')">Book Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MECHANIC -->
+  <div id="cat-mech" style="display:none;">
+    <div class="section-header">
+      <h2>🔧 Mechanic Services</h2>
+      <p>Verified mechanics available on-site. Get your car serviced while you shop or work.</p>
+    </div>
+    <div class="mech-grid">
+      <div class="mech-card" onclick="bookService('Oil Change','₹349')">
+        <div class="mech-icon">🛢️</div>
+        <h3>Oil Change</h3>
+        <p>Engine oil replacement with quality oil. Filter change included on request.</p>
+        <div class="mech-meta"><span class="mech-price">₹349</span><span class="mech-time">⏱ ~30 mins</span></div>
+      </div>
+      <div class="mech-card" onclick="bookService('Tyre Service','₹99')">
+        <div class="mech-icon">🛞</div>
+        <h3>Tyre Service</h3>
+        <p>Pressure check, balancing, rotation, or puncture fix — all done on-site.</p>
+        <div class="mech-meta"><span class="mech-price">₹99</span><span class="mech-time">⏱ ~20 mins</span></div>
+      </div>
+      <div class="mech-card" onclick="bookService('Battery Check','₹149')">
+        <div class="mech-icon">🔋</div>
+        <h3>Battery Check</h3>
+        <p>Full battery health test. Replacement service available if needed.</p>
+        <div class="mech-meta"><span class="mech-price">₹149</span><span class="mech-time">⏱ ~15 mins</span></div>
+      </div>
+      <div class="mech-card" onclick="bookService('Full Inspection','₹249')">
+        <div class="mech-icon">📋</div>
+        <h3>Full Inspection</h3>
+        <p>35-point digital vehicle health report delivered to your app instantly.</p>
+        <div class="mech-meta"><span class="mech-price">₹249</span><span class="mech-time">⏱ ~45 mins</span></div>
+      </div>
+      <div class="mech-card" onclick="bookService('Wiper Replacement','₹199')">
+        <div class="mech-icon">🪟</div>
+        <h3>Wiper Replacement</h3>
+        <p>Old wipers replaced with premium quality blades. Tested before delivery.</p>
+        <div class="mech-meta"><span class="mech-price">₹199</span><span class="mech-time">⏱ ~10 mins</span></div>
+      </div>
+      <div class="mech-card" onclick="bookService('AC Check','₹299')">
+        <div class="mech-icon">❄️</div>
+        <h3>AC Check & Regas</h3>
+        <p>AC performance test and refrigerant refill for optimal cooling.</p>
+        <div class="mech-meta"><span class="mech-price">₹299</span><span class="mech-time">⏱ ~40 mins</span></div>
+      </div>
+      <div class="mech-card" onclick="bookService('Headlight Fix','₹149')">
+        <div class="mech-icon">💡</div>
+        <h3>Headlight Fix</h3>
+        <p>Bulb replacement or headlight polishing for better night visibility.</p>
+        <div class="mech-meta"><span class="mech-price">₹149</span><span class="mech-time">⏱ ~20 mins</span></div>
+      </div>
+      <div class="mech-card" onclick="bookService('Jump Start','₹199')">
+        <div class="mech-icon">⚡</div>
+        <h3>Jump Start</h3>
+        <p>Car battery dead? We'll get you back on the road in minutes.</p>
+        <div class="mech-meta"><span class="mech-price">₹199</span><span class="mech-time">⏱ ~10 mins</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAB -->
+  <div id="cat-cab" style="display:none;">
+    <div class="section-header">
+      <h2>🚕 Book a Cab</h2>
+      <p>Compare Ola, Uber & Auto — pickup location auto-filled from your parking lot.</p>
+    </div>
+    <div class="cab-search">
+      <h3>Where do you want to go?</h3>
+      <div class="cab-inputs">
+        <div class="cab-input" style="background:#EFF6FF;">
+          <i class="fas fa-circle" style="color:var(--blue);font-size:0.6rem;"></i>
+          <input type="text" value="Forum Mall, Koramangala (Your Parking)" readonly/>
+        </div>
+        <div class="cab-input">
+          <i class="fas fa-map-marker-alt" style="color:var(--red);"></i>
+          <input type="text" placeholder="Enter destination..."/>
+        </div>
+        <button class="btn-find">🔍 Find Cabs</button>
+      </div>
+    </div>
+    <div class="cab-options">
+      <div class="cab-opt" onclick="bookService('Ola Mini Cab','₹89')">
+        <div class="cab-icon">🟡</div>
+        <div class="cab-info">
+          <h4>Ola Mini</h4>
+          <p>Hatchback · Up to 4 passengers · AC</p>
+        </div>
+        <div class="cab-right">
+          <div class="cab-price">₹89–120</div>
+          <div class="cab-eta">3 mins away</div>
+          <button class="btn-ride">Book</button>
+        </div>
+      </div>
+      <div class="cab-opt" onclick="bookService('Uber Go','₹99')">
+        <div class="cab-icon">⚫</div>
+        <div class="cab-info">
+          <h4>Uber Go</h4>
+          <p>Sedan · Up to 4 passengers · AC</p>
+        </div>
+        <div class="cab-right">
+          <div class="cab-price">₹99–130</div>
+          <div class="cab-eta">5 mins away</div>
+          <button class="btn-ride">Book</button>
+        </div>
+      </div>
+      <div class="cab-opt" onclick="bookService('Auto Rickshaw','₹45')">
+        <div class="cab-icon">🛺</div>
+        <div class="cab-info">
+          <h4>Auto Rickshaw</h4>
+          <p>3-wheeler · Up to 3 passengers</p>
+        </div>
+        <div class="cab-right">
+          <div class="cab-price">₹45–70</div>
+          <div class="cab-eta">2 mins away</div>
+          <button class="btn-ride">Book</button>
+        </div>
+      </div>
+      <div class="cab-opt" onclick="bookService('Ola Prime SUV','₹199')">
+        <div class="cab-icon">🚐</div>
+        <div class="cab-info">
+          <h4>Ola Prime SUV</h4>
+          <p>6-seater SUV · Luxury · AC</p>
+        </div>
+        <div class="cab-right">
+          <div class="cab-price">₹199–280</div>
+          <div class="cab-eta">8 mins away</div>
+          <button class="btn-ride">Book</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LAUNDRY -->
+  <div id="cat-laundry" style="display:none;">
+    <div class="section-header">
+      <h2>🧺 Laundry Services</h2>
+      <p>Drop your clothes at the parking counter — we'll handle the rest.</p>
+    </div>
+    <div class="laundry-grid">
+      <div class="laundry-card">
+        <div class="icon">👕</div>
+        <h3>Wash & Fold</h3>
+        <p>Drop clothes at the counter. Washed, dried and folded — returned within 24 hrs.</p>
+        <div class="laundry-price">₹79 / kg</div>
+        <button class="btn-book" style="margin-top:0.875rem;" onclick="bookService('Wash & Fold Laundry','₹79/kg')">Schedule Pickup</button>
+      </div>
+      <div class="laundry-card">
+        <div class="icon">👔</div>
+        <h3>Dry Cleaning</h3>
+        <p>Premium dry cleaning for suits, sarees, blazers, and formals. Delivered in 48 hrs.</p>
+        <div class="laundry-price">₹199 / item</div>
+        <button class="btn-book" style="margin-top:0.875rem;" onclick="bookService('Dry Cleaning','₹199/item')">Schedule Pickup</button>
+      </div>
+      <div class="laundry-card">
+        <div class="icon">⚡</div>
+        <h3>Express Laundry</h3>
+        <p>Same-day return in 4 hours. Ready before you leave the mall!</p>
+        <div class="laundry-price">₹149 / kg</div>
+        <button class="btn-book" style="margin-top:0.875rem;" onclick="bookService('Express Laundry','₹149/kg')">Schedule Pickup</button>
+      </div>
+      <div class="laundry-card">
+        <div class="icon">🎽</div>
+        <h3>Sports Gear</h3>
+        <p>Special wash for gym wear, sports kits, shoes, and equipment bags.</p>
+        <div class="laundry-price">₹99 / set</div>
+        <button class="btn-book" style="margin-top:0.875rem;" onclick="bookService('Sports Gear Wash','₹99/set')">Schedule Pickup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FUEL -->
+  <div id="cat-fuel" style="display:none;">
+    <div class="section-header">
+      <h2>⛽ Fuel Delivery</h2>
+      <p>Request fuel top-up delivered directly to your parked vehicle.</p>
+    </div>
+    <div class="mech-grid">
+      <div class="mech-card" onclick="bookService('Petrol Top-up (5L)','₹520')">
+        <div class="mech-icon">⛽</div>
+        <h3>Petrol Top-up (5L)</h3>
+        <p>Premium petrol delivered to your slot. Current rate: ₹104/L</p>
+        <div class="mech-meta"><span class="mech-price">₹520</span><span class="mech-time">⏱ ~15 mins</span></div>
+      </div>
+      <div class="mech-card" onclick="bookService('Petrol Top-up (10L)','₹1040')">
+        <div class="mech-icon">⛽</div>
+        <h3>Petrol Top-up (10L)</h3>
+        <p>10L premium petrol. Save ₹20 vs 2 separate 5L orders.</p>
+        <div class="mech-meta"><span class="mech-price">₹1,040</span><span class="mech-time">⏱ ~20 mins</span></div>
+      </div>
+      <div class="mech-card" onclick="bookService('Diesel Top-up (5L)','₹465')">
+        <div class="mech-icon">🛢️</div>
+        <h3>Diesel Top-up (5L)</h3>
+        <p>Premium diesel delivered to your slot. Current rate: ₹93/L</p>
+        <div class="mech-meta"><span class="mech-price">₹465</span><span class="mech-time">⏱ ~15 mins</span></div>
+      </div>
+      <div class="mech-card" onclick="bookService('Full Tank (Custom Litres)','Custom')">
+        <div class="mech-icon">🚗</div>
+        <h3>Full Tank</h3>
+        <p>Enter custom litres. We'll fill exactly what you need — petrol or diesel.</p>
+        <div class="mech-meta"><span class="mech-price">Custom</span><span class="mech-time">⏱ ~25 mins</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOD -->
+  <div id="cat-food" style="display:none;">
+    <div class="section-header">
+      <h2>☕ Food & Drinks</h2>
+      <p>Order chai, coffee, or snacks — delivered to your car or parking exit.</p>
+    </div>
+    <div class="mech-grid">
+      <div class="mech-card" onclick="bookService('Cutting Chai (2 cups)','₹30')">
+        <div class="mech-icon">☕</div>
+        <h3>Cutting Chai</h3>
+        <p>Hot cutting chai from nearby stall. Delivered to your car in 10 mins.</p>
+        <div class="mech-meta"><span class="mech-price">₹30 (2 cups)</span><span class="mech-time">⏱ ~10 mins</span></div>
+      </div>
+      <div class="mech-card" onclick="bookService('Cold Coffee','₹80')">
+        <div class="mech-icon">🧋</div>
+        <h3>Cold Coffee</h3>
+        <p>Creamy cold coffee from CCD or nearby cafe. Delivered chilled.</p>
+        <div class="mech-meta"><span class="mech-price">₹80</span><span class="mech-time">⏱ ~15 mins</span></div>
+      </div>
+      <div class="mech-card" onclick="bookService('Snack Combo','₹120')">
+        <div class="mech-icon">🍿</div>
+        <h3>Snack Combo</h3>
+        <p>Popcorn, chips, and soft drink combo. Perfect for the wait.</p>
+        <div class="mech-meta"><span class="mech-price">₹120</span><span class="mech-time">⏱ ~10 mins</span></div>
+      </div>
+      <div class="mech-card" onclick="bookService('Vending Machine Items','Custom')">
+        <div class="mech-icon">🏪</div>
+        <h3>Vending Machine</h3>
+        <p>Browse available items at the lot's vending machine — chocolates, chips, energy drinks.</p>
+        <div class="mech-meta"><span class="mech-price">₹20 – ₹150</span><span class="mech-time">Instant</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="bookModal">
+  <div class="modal">
+    <div class="m-icon">✅</div>
+    <h2>Service Booked!</h2>
+    <p id="modalMsg">Your service has been scheduled successfully. You'll be notified when it's done.</p>
+    <div class="ref" id="modalRef">Service Ref: #SVC-0042</div>
+    <button class="btn-ok" onclick="document.getElementById('bookModal').classList.remove('show')">Done</button>
+  </div>
+</div>
+
+<a href="#" class="fab"><i class="fab fa-whatsapp"></i></a>
+
+<script>
+  function showCat(cat,btn){
+    ['wash','mech','cab','laundry','fuel','food'].forEach(c=>{
+      document.getElementById('cat-'+c).style.display=c===cat?'block':'none';
+    });
+    document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function bookService(name,price){
+    const ref='#SVC-'+Math.floor(1000+Math.random()*9000);
+    document.getElementById('modalMsg').textContent=`${name} (${price}) has been booked. Our team will start shortly at your parking slot.`;
+    document.getElementById('modalRef').textContent='Service Ref: '+ref;
+    document.getElementById('bookModal').classList.add('show');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Wallet & Rewards — SmartPark</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{--navy:#0A1628;--navy2:#1E3A5F;--blue:#2563EB;--gold:#F59E0B;--white:#fff;--light:#F8FAFC;--grey:#64748B;--border:#E2E8F0;--green:#10B981;--red:#EF4444;}
+    body{font-family:'Inter',sans-serif;background:var(--light);color:var(--navy);}
+
+    nav{background:var(--navy);padding:0 5%;height:68px;display:flex;align-items:center;justify-content:space-between;}
+    .logo{font-size:1.4rem;font-weight:800;color:var(--white);text-decoration:none;}
+    .logo span{color:var(--gold);}
+    .nav-right{display:flex;align-items:center;gap:1rem;}
+    .nav-right a{color:rgba(255,255,255,0.7);text-decoration:none;font-size:0.875rem;font-weight:500;transition:color .3s;}
+    .nav-right a:hover,.nav-right a.active{color:var(--white);}
+    .btn-dash{background:var(--blue);color:var(--white)!important;padding:0.45rem 1rem;border-radius:8px;font-weight:600!important;}
+
+    /* PAGE HEADER */
+    .page-header{background:linear-gradient(135deg,#0A1628,#1E3A5F);padding:3rem 5%;color:var(--white);}
+    .page-header h1{font-size:2rem;font-weight:800;letter-spacing:-0.5px;margin-bottom:0.35rem;}
+    .page-header p{color:rgba(255,255,255,0.6);font-size:0.9rem;}
+
+    /* MAIN GRID */
+    .main-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;padding:2rem 5%;max-width:1100px;margin:0 auto;}
+    .full-row{grid-column:1/-1;}
+
+    /* WALLET CARD */
+    .wallet-card{background:linear-gradient(135deg,#1E3A5F,#0A1628);border-radius:20px;padding:2rem;color:var(--white);position:relative;overflow:hidden;min-height:200px;}
+    .wallet-card::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.04);}
+    .wallet-card::after{content:'';position:absolute;bottom:-60px;right:20px;width:160px;height:160px;border-radius:50%;background:rgba(37,99,235,0.15);}
+    .wc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2rem;position:relative;z-index:1;}
+    .wc-logo{font-size:1.1rem;font-weight:800;}
+    .wc-logo span{color:var(--gold);}
+    .wc-type{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:100px;padding:0.25rem 0.75rem;font-size:0.72rem;font-weight:700;letter-spacing:1px;}
+    .wc-balance{position:relative;z-index:1;}
+    .wc-label{font-size:0.75rem;color:rgba(255,255,255,0.5);letter-spacing:0.5px;margin-bottom:0.35rem;}
+    .wc-amount{font-size:2.75rem;font-weight:900;letter-spacing:-1px;}
+    .wc-footer{display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;position:relative;z-index:1;}
+    .wc-number{font-size:0.85rem;color:rgba(255,255,255,0.5);letter-spacing:2px;font-family:monospace;}
+    .wc-chips{display:flex;gap:0.5rem;}
+    .wc-chip{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:0.25rem 0.6rem;font-size:0.7rem;color:rgba(255,255,255,0.6);}
+
+    /* ADD MONEY */
+    .add-money{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.5rem;}
+    .add-money h3{font-size:1rem;font-weight:700;margin-bottom:1rem;}
+    .quick-amts{display:flex;gap:0.625rem;flex-wrap:wrap;margin-bottom:1rem;}
+    .amt-btn{padding:0.55rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.875rem;font-weight:700;cursor:pointer;background:var(--white);color:var(--navy);transition:all .3s;font-family:'Inter',sans-serif;}
+    .amt-btn:hover,.amt-btn.active{background:var(--blue);border-color:var(--blue);color:var(--white);}
+    .custom-input{display:flex;align-items:center;gap:0.75rem;border:1.5px solid var(--border);border-radius:10px;padding:0.75rem 1rem;margin-bottom:1rem;transition:all .3s;}
+    .custom-input:focus-within{border-color:var(--blue);}
+    .custom-input span{color:var(--grey);font-size:1rem;font-weight:700;}
+    .custom-input input{border:none;outline:none;font-size:1rem;font-weight:700;color:var(--navy);font-family:'Inter',sans-serif;width:100%;}
+    .btn-add{width:100%;padding:0.875rem;background:linear-gradient(135deg,var(--blue),#1d4ed8);color:var(--white);border:none;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .3s;}
+    .btn-add:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,99,235,0.35);}
+
+    /* LOYALTY CARD */
+    .loyalty-card{background:linear-gradient(135deg,#78350F,#92400E,#B45309);border-radius:20px;padding:2rem;color:var(--white);position:relative;overflow:hidden;}
+    .loyalty-card::before{content:'';position:absolute;top:-30px;right:-30px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,0.06);}
+    .lc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
+    .lc-tier{background:var(--gold);color:#78350F;font-size:0.75rem;font-weight:800;padding:0.3rem 0.875rem;border-radius:100px;letter-spacing:0.5px;}
+    .lc-points{font-size:3rem;font-weight:900;letter-spacing:-2px;}
+    .lc-sub{font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:0.25rem;}
+    .progress-bar{background:rgba(255,255,255,0.15);border-radius:100px;height:8px;margin:1.25rem 0 0.5rem;overflow:hidden;}
+    .progress-fill{height:100%;background:var(--gold);border-radius:100px;transition:width 1s ease;}
+    .progress-label{display:flex;justify-content:space-between;font-size:0.75rem;color:rgba(255,255,255,0.6);}
+
+    /* REWARDS */
+    .rewards-section{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.5rem;}
+    .rewards-section h3{font-size:1rem;font-weight:700;margin-bottom:1rem;}
+    .rewards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;}
+    .reward-card{border:1.5px solid var(--border);border-radius:12px;padding:1.25rem;text-align:center;transition:all .3s;cursor:pointer;}
+    .reward-card:hover{border-color:var(--gold);background:#FFFBEB;}
+    .reward-icon{font-size:2rem;margin-bottom:0.625rem;}
+    .reward-card h4{font-size:0.9rem;font-weight:700;color:var(--navy);margin-bottom:0.3rem;}
+    .reward-card p{font-size:0.78rem;color:var(--grey);}
+    .pts-needed{display:inline-block;background:#FEF3C7;color:#92400E;font-size:0.72rem;font-weight:800;padding:0.2rem 0.6rem;border-radius:100px;margin-top:0.5rem;}
+    .btn-redeem{display:block;width:100%;margin-top:0.75rem;padding:0.5rem;background:var(--gold);color:#78350F;border:none;border-radius:8px;font-size:0.8rem;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;transition:all .3s;}
+    .btn-redeem:hover{background:#D97706;}
+
+    /* TRANSACTIONS */
+    .txn-section{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.5rem;}
+    .txn-section h3{font-size:1rem;font-weight:700;margin-bottom:1rem;}
+    .txn-filters{display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap;}
+    .txn-filter{padding:0.35rem 0.875rem;border-radius:100px;font-size:0.78rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--white);color:var(--grey);transition:all .3s;}
+    .txn-filter:hover,.txn-filter.active{background:var(--blue);border-color:var(--blue);color:var(--white);}
+    .txn-list{display:flex;flex-direction:column;gap:0;}
+    .txn-item{display:flex;align-items:center;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--border);}
+    .txn-item:last-child{border:none;}
+    .txn-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+    .txn-icon.credit{background:#DCFCE7;}
+    .txn-icon.debit{background:#FEE2E2;}
+    .txn-info{flex:1;}
+    .txn-info h4{font-size:0.875rem;font-weight:700;color:var(--navy);}
+    .txn-info p{font-size:0.775rem;color:var(--grey);margin-top:0.15rem;}
+    .txn-amt{font-size:1rem;font-weight:800;text-align:right;}
+    .txn-amt.credit{color:var(--green);}
+    .txn-amt.debit{color:var(--red);}
+    .txn-date{font-size:0.72rem;color:var(--grey);text-align:right;margin-top:0.15rem;}
+
+    /* REFERRAL */
+    .referral-card{background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1.5px solid #BFDBFE;border-radius:14px;padding:1.5rem;}
+    .referral-card h3{font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:0.35rem;}
+    .referral-card p{font-size:0.85rem;color:var(--grey);margin-bottom:1rem;}
+    .ref-code{background:var(--white);border:1.5px dashed var(--blue);border-radius:10px;padding:0.875rem 1.25rem;display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
+    .ref-code span{font-size:1.25rem;font-weight:900;color:var(--blue);letter-spacing:2px;}
+    .btn-copy{background:var(--blue);color:var(--white);border:none;padding:0.45rem 1rem;border-radius:8px;font-size:0.8rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;}
+    .share-btns{display:flex;gap:0.625rem;flex-wrap:wrap;}
+    .share-btn{display:flex;align-items:center;gap:0.5rem;padding:0.55rem 1rem;border-radius:8px;font-size:0.8rem;font-weight:700;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:all .3s;}
+    .share-btn:hover{opacity:0.85;}
+
+    /* MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,22,40,0.6);z-index:1000;align-items:center;justify-content:center;}
+    .modal-overlay.show{display:flex;}
+    .modal{background:var(--white);border-radius:20px;padding:2.5rem 2rem;text-align:center;max-width:360px;width:90%;animation:popIn .35s ease;}
+    @keyframes popIn{from{opacity:0;transform:scale(0.85);}to{opacity:1;transform:scale(1);}}
+    .modal .m-icon{font-size:3.5rem;margin-bottom:0.875rem;}
+    .modal h2{font-size:1.35rem;font-weight:800;color:var(--navy);margin-bottom:0.5rem;}
+    .modal p{font-size:0.875rem;color:var(--grey);margin-bottom:1.25rem;}
+    .btn-ok{background:var(--blue);color:var(--white);border:none;padding:0.875rem 2rem;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;}
+
+    .fab{position:fixed;bottom:2rem;right:2rem;z-index:998;width:52px;height:52px;border-radius:50%;background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.35rem;box-shadow:0 8px 24px rgba(37,211,102,0.4);cursor:pointer;text-decoration:none;transition:all .3s;}
+    .fab:hover{transform:scale(1.1);}
+
+    @media(max-width:768px){.main-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">🅿 Smart<span>Park</span></a>
+  <div class="nav-right">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="booking.html">Book Parking</a>
+    <a href="services.html">Services</a>
+    <a href="wallet.html" class="active">Wallet</a>
+    <a href="dashboard.html" class="btn-dash">My Account</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <h1>💳 Wallet & Rewards</h1>
+  <p>Manage your balance, redeem points, and track your transactions</p>
+</div>
+
+<div class="main-grid">
+
+  <!-- WALLET CARD -->
+  <div>
+    <div class="wallet-card">
+      <div class="wc-header">
+        <div class="wc-logo">🅿 Smart<span>Park</span></div>
+        <div class="wc-type">GOLD MEMBER</div>
+      </div>
+      <div class="wc-balance">
+        <div class="wc-label">AVAILABLE BALANCE</div>
+        <div class="wc-amount" id="walletBal">₹850.00</div>
+      </div>
+      <div class="wc-footer">
+        <div class="wc-number">SPWL •••• •••• 4821</div>
+        <div class="wc-chips">
+          <div class="wc-chip">UPI</div>
+          <div class="wc-chip">CARD</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD MONEY -->
+  <div class="add-money">
+    <h3>➕ Add Money to Wallet</h3>
+    <div class="quick-amts">
+      <button class="amt-btn" onclick="setAmt(100,this)">₹100</button>
+      <button class="amt-btn active" onclick="setAmt(500,this)">₹500</button>
+      <button class="amt-btn" onclick="setAmt(1000,this)">₹1,000</button>
+      <button class="amt-btn" onclick="setAmt(2000,this)">₹2,000</button>
+    </div>
+    <div class="custom-input">
+      <span>₹</span>
+      <input type="number" id="customAmt" placeholder="Enter custom amount" value="500"/>
+    </div>
+    <div style="font-size:0.8rem;color:var(--grey);margin-bottom:1rem;">
+      <i class="fas fa-gift" style="color:var(--gold);"></i> Add ₹1,000+ and get <strong>50 bonus loyalty points!</strong>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem;">
+      <label style="display:flex;align-items:center;gap:0.75rem;padding:0.7rem;border:1.5px solid var(--blue);border-radius:10px;cursor:pointer;background:#EFF6FF;font-size:0.85rem;font-weight:600;">
+        <input type="radio" name="paymt" checked style="accent-color:var(--blue);"/> 📱 UPI (GPay / PhonePe / Paytm)
+      </label>
+      <label style="display:flex;align-items:center;gap:0.75rem;padding:0.7rem;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:0.85rem;font-weight:600;">
+        <input type="radio" name="paymt" style="accent-color:var(--blue);"/> 💳 Debit / Credit Card
+      </label>
+      <label style="display:flex;align-items:center;gap:0.75rem;padding:0.7rem;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:0.85rem;font-weight:600;">
+        <input type="radio" name="paymt" style="accent-color:var(--blue);"/> 🏦 Net Banking
+      </label>
+    </div>
+    <button class="btn-add" onclick="addMoney()">Add Money to Wallet</button>
+  </div>
+
+  <!-- LOYALTY -->
+  <div>
+    <div class="loyalty-card">
+      <div class="lc-header">
+        <div>
+          <div style="font-size:0.75rem;color:rgba(255,255,255,0.6);margin-bottom:0.25rem;">LOYALTY POINTS</div>
+          <div class="lc-points">2,450</div>
+          <div class="lc-sub">≈ ₹245 value · Earned this month: 350 pts</div>
+        </div>
+        <div class="lc-tier">🏆 GOLD</div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:49%;"></div></div>
+      <div class="progress-label">
+        <span>2,450 pts (Gold)</span>
+        <span>5,000 pts (Platinum)</span>
+      </div>
+      <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-top:0.75rem;">
+        2,550 more points to reach <strong style="color:var(--gold);">Platinum</strong> status 🚀
+      </div>
+    </div>
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.25rem;margin-top:1.25rem;">
+      <h3 style="font-size:0.95rem;font-weight:700;margin-bottom:0.875rem;">📊 How You Earn Points</h3>
+      <div style="display:flex;flex-direction:column;gap:0.625rem;">
+        <div style="display:flex;justify-content:space-between;font-size:0.825rem;"><span style="color:var(--grey);">🅿️ Every ₹1 spent on parking</span><strong>1 point</strong></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.825rem;"><span style="color:var(--grey);">🚿 Car wash booking</span><strong>50 points</strong></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.825em;"><span style="color:var(--grey);">🔌 EV charging slot used</span><strong>2x points</strong></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.825rem;"><span style="color:var(--grey);">👥 Referral (per friend)</span><strong>200 points</strong></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.825rem;"><span style="color:var(--grey);">🎂 Birthday bonus</span><strong>500 points</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REWARDS -->
+  <div class="rewards-section">
+    <h3>🎁 Redeem Your Points</h3>
+    <div class="rewards-grid">
+      <div class="reward-card">
+        <div class="reward-icon">🅿️</div>
+        <h4>Free Parking Hour</h4>
+        <p>1 free hour at any SmartPark lot</p>
+        <div class="pts-needed">500 pts</div>
+        <button class="btn-redeem" onclick="redeem('Free Parking Hour','500')">Redeem</button>
+      </div>
+      <div class="reward-card">
+        <div class="reward-icon">🚿</div>
+        <h4>Free Car Wash</h4>
+        <p>Basic wash at any participating lot</p>
+        <div class="pts-needed">800 pts</div>
+        <button class="btn-redeem" onclick="redeem('Free Car Wash','800')">Redeem</button>
+      </div>
+      <div class="reward-card">
+        <div class="reward-icon">💸</div>
+        <h4>₹50 Cashback</h4>
+        <p>Direct cashback to your SmartPark wallet</p>
+        <div class="pts-needed">1,000 pts</div>
+        <button class="btn-redeem" onclick="redeem('₹50 Cashback','1000')">Redeem</button>
+      </div>
+      <div class="reward-card">
+        <div class="reward-icon">🔧</div>
+        <h4>Free Tyre Check</h4>
+        <p>Complimentary tyre pressure service</p>
+        <div class="pts-needed">300 pts</div>
+        <button class="btn-redeem" onclick="redeem('Free Tyre Check','300')">Redeem</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFERRAL -->
+  <div class="referral-card">
+    <h3>👥 Refer & Earn</h3>
+    <p>Invite friends to SmartPark. Both of you get <strong>₹100 wallet credit</strong> + 200 loyalty points when they complete their first booking!</p>
+    <div class="ref-code">
+      <span>RAHUL200</span>
+      <button class="btn-copy" onclick="copyCode()">📋 Copy</button>
+    </div>
+    <div class="share-btns">
+      <button class="share-btn" style="background:#25D366;color:#fff;"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+      <button class="share-btn" style="background:#0088CC;color:#fff;"><i class="fab fa-telegram"></i> Telegram</button>
+      <button class="share-btn" style="background:var(--light);color:var(--navy);border:1.5px solid var(--border);"><i class="fas fa-share-alt"></i> Share</button>
+    </div>
+  </div>
+
+  <!-- TRANSACTIONS -->
+  <div class="txn-section full-row">
+    <h3>📋 Transaction History</h3>
+    <div class="txn-filters">
+      <button class="txn-filter active">All</button>
+      <button class="txn-filter">Added</button>
+      <button class="txn-filter">Parking</button>
+      <button class="txn-filter">Services</button>
+      <button class="txn-filter">Rewards</button>
+    </div>
+    <div class="txn-list">
+      <div class="txn-item">
+        <div class="txn-icon debit">🅿️</div>
+        <div class="txn-info"><h4>Parking — Forum Mall (Slot B-204)</h4><p>3 hours · KA-01-MH-1234</p></div>
+        <div><div class="txn-amt debit">−₹180</div><div class="txn-date">Today, 6:00 PM</div></div>
+      </div>
+      <div class="txn-item">
+        <div class="txn-icon debit">🚿</div>
+        <div class="txn-info"><h4>Premium Car Wash</h4><p>Forum Mall Parking · Service #SVC-0041</p></div>
+        <div><div class="txn-amt debit">−₹199</div><div class="txn-date">Today, 6:05 PM</div></div>
+      </div>
+      <div class="txn-item">
+        <div class="txn-icon credit">💰</div>
+        <div class="txn-info"><h4>Wallet Top-up</h4><p>Via UPI — Google Pay</p></div>
+        <div><div class="txn-amt credit">+₹1,000</div><div class="txn-date">22 Sep, 9:30 AM</div></div>
+      </div>
+      <div class="txn-item">
+        <div class="txn-icon debit">🅿️</div>
+        <div class="txn-info"><h4>Parking — Orion Mall (Slot A-108)</h4><p>5 hours · KA-01-MH-1234</p></div>
+        <div><div class="txn-amt debit">−₹350</div><div class="txn-date">22 Sep, 10:00 AM</div></div>
+      </div>
+      <div class="txn-item">
+        <div class="txn-icon credit">⭐</div>
+        <div class="txn-info"><h4>Loyalty Points Cashback</h4><p>500 pts redeemed → ₹50 wallet credit</p></div>
+        <div><div class="txn-amt credit">+₹50</div><div class="txn-date">20 Sep, 4:00 PM</div></div>
+      </div>
+      <div class="txn-item">
+        <div class="txn-icon debit">🔧</div>
+        <div class="txn-info"><h4>Oil Change Service</h4><p>UB City Parking · Mechanic: Suresh K.</p></div>
+        <div><div class="txn-amt debit">−₹349</div><div class="txn-date">20 Sep, 2:15 PM</div></div>
+      </div>
+      <div class="txn-item">
+        <div class="txn-icon credit">👥</div>
+        <div class="txn-info"><h4>Referral Bonus</h4><p>Priya Menon joined using your code RAHUL200</p></div>
+        <div><div class="txn-amt credit">+₹100</div><div class="txn-date">18 Sep, 3:00 PM</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="m-icon" id="mIcon">✅</div>
+    <h2 id="mTitle">Success!</h2>
+    <p id="mMsg">Operation completed successfully.</p>
+    <button class="btn-ok" onclick="document.getElementById('modal').classList.remove('show')">Done</button>
+  </div>
+</div>
+
+<a href="#" class="fab"><i class="fab fa-whatsapp"></i></a>
+
+<script>
+  function setAmt(amt,btn){
+    document.querySelectorAll('.amt-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('customAmt').value=amt;
+  }
+
+  function addMoney(){
+    const amt=parseInt(document.getElementById('customAmt').value)||0;
+    if(amt<10){showModal('❌','Invalid Amount','Please enter at least ₹10 to add to your wallet.');return;}
+    const cur=parseInt(document.getElementById('walletBal').textContent.replace('₹','').replace('.00','').replace(',',''))||0;
+    document.getElementById('walletBal').textContent='₹'+(cur+amt).toLocaleString('en-IN')+'.00';
+    showModal('💰','Money Added!',`₹${amt.toLocaleString('en-IN')} has been added to your SmartPark Wallet successfully.`);
+  }
+
+  function redeem(name,pts){
+    showModal('🎁','Reward Redeemed!',`"${name}" has been redeemed for ${pts} points. It will be applied to your next eligible booking.`);
+  }
+
+  function copyCode(){
+    navigator.clipboard?.writeText('RAHUL200').catch(()=>{});
+    showModal('📋','Code Copied!','Your referral code RAHUL200 has been copied to clipboard. Share it with friends!');
+  }
+
+  function showModal(icon,title,msg){
+    document.getElementById('mIcon').textContent=icon;
+    document.getElementById('mTitle').textContent=title;
+    document.getElementById('mMsg').textContent=msg;
+    document.getElementById('modal').classList.add('show');
+  }
+
+  // Filter buttons
+  document.querySelectorAll('.txn-filter').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.txn-filter').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

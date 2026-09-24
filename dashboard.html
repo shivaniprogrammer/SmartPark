@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Dashboard — SmartPark</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{--navy:#0A1628;--navy2:#1E3A5F;--blue:#2563EB;--gold:#F59E0B;--white:#fff;--light:#F8FAFC;--grey:#64748B;--border:#E2E8F0;--green:#10B981;--red:#EF4444;}
+    body{font-family:'Inter',sans-serif;background:var(--light);color:var(--navy);display:flex;min-height:100vh;}
+
+    /* SIDEBAR */
+    .sidebar{width:240px;background:var(--navy);display:flex;flex-direction:column;padding:1.5rem 0;position:fixed;top:0;left:0;height:100vh;z-index:100;}
+    .sidebar-logo{padding:0 1.5rem 2rem;font-size:1.35rem;font-weight:800;color:var(--white);text-decoration:none;display:flex;align-items:center;gap:0.5rem;border-bottom:1px solid rgba(255,255,255,0.08);}
+    .sidebar-logo span{color:var(--gold);}
+    .sidebar-nav{flex:1;padding:1.5rem 0.75rem;display:flex;flex-direction:column;gap:0.25rem;}
+    .nav-item{display:flex;align-items:center;gap:0.875rem;padding:0.75rem 0.875rem;border-radius:10px;color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.875rem;font-weight:500;transition:all .3s;cursor:pointer;}
+    .nav-item:hover,.nav-item.active{background:rgba(37,99,235,0.15);color:var(--white);}
+    .nav-item.active{background:rgba(37,99,235,0.25);color:#60A5FA;}
+    .nav-item i{width:18px;text-align:center;font-size:1rem;}
+    .sidebar-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,0.08);}
+    .sidebar-user{display:flex;align-items:center;gap:0.75rem;}
+    .user-avatar{width:36px;height:36px;border-radius:50%;background:var(--blue);color:var(--white);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;}
+    .user-info h4{font-size:0.825rem;font-weight:700;color:var(--white);}
+    .user-info span{font-size:0.75rem;color:rgba(255,255,255,0.5);}
+
+    /* TOPBAR */
+    .main{margin-left:240px;flex:1;display:flex;flex-direction:column;}
+    .topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+    .search-bar{display:flex;align-items:center;gap:0.75rem;background:var(--light);border:1px solid var(--border);border-radius:10px;padding:0.5rem 1rem;width:320px;}
+    .search-bar i{color:var(--grey);}
+    .search-bar input{border:none;background:transparent;outline:none;font-size:0.875rem;font-family:'Inter',sans-serif;color:var(--navy);width:100%;}
+    .topbar-right{display:flex;align-items:center;gap:1.25rem;}
+    .notif-btn{position:relative;width:40px;height:40px;border-radius:10px;background:var(--light);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--grey);transition:all .3s;}
+    .notif-btn:hover{background:var(--border);}
+    .badge{position:absolute;top:-4px;right:-4px;width:18px;height:18px;border-radius:50%;background:var(--red);color:var(--white);font-size:0.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
+    .profile-chip{display:flex;align-items:center;gap:0.625rem;padding:0.4rem 0.875rem 0.4rem 0.4rem;background:var(--light);border:1px solid var(--border);border-radius:100px;cursor:pointer;transition:all .3s;}
+    .profile-chip:hover{border-color:var(--blue);}
+    .profile-chip .av{width:30px;height:30px;border-radius:50%;background:var(--blue);color:var(--white);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;}
+    .profile-chip span{font-size:0.825rem;font-weight:600;color:var(--navy);}
+
+    /* CONTENT */
+    .content{padding:2rem;flex:1;}
+
+    /* WELCOME */
+    .welcome-banner{background:linear-gradient(135deg,#0A1628,#1E3A5F);border-radius:16px;padding:2rem 2.5rem;color:var(--white);display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;position:relative;overflow:hidden;}
+    .welcome-banner::after{content:'🅿';position:absolute;right:2rem;top:50%;transform:translateY(-50%);font-size:6rem;opacity:0.08;}
+    .welcome-banner h2{font-size:1.6rem;font-weight:800;letter-spacing:-0.5px;margin-bottom:0.35rem;}
+    .welcome-banner p{color:rgba(255,255,255,0.6);font-size:0.9rem;}
+    .welcome-stats{display:flex;gap:2rem;}
+    .ws{text-align:center;}
+    .ws-num{font-size:1.75rem;font-weight:800;color:var(--white);}
+    .ws-num.gold{color:var(--gold);}
+    .ws-label{font-size:0.72rem;color:rgba(255,255,255,0.5);font-weight:500;margin-top:0.2rem;}
+
+    /* STATS GRID */
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin-bottom:2rem;}
+    .stat-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.5rem;transition:all .3s;}
+    .stat-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(10,22,40,0.08);}
+    .stat-card .icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;margin-bottom:1rem;}
+    .stat-card h3{font-size:1.75rem;font-weight:800;color:var(--navy);margin-bottom:0.25rem;}
+    .stat-card p{font-size:0.8rem;color:var(--grey);font-weight:500;}
+    .trend{font-size:0.75rem;font-weight:600;margin-top:0.5rem;}
+    .trend.up{color:var(--green);}
+    .trend.down{color:var(--red);}
+
+    /* TWO COL */
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;}
+    .card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.5rem;}
+    .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;}
+    .card-header h3{font-size:1rem;font-weight:700;color:var(--navy);}
+    .card-header a{font-size:0.8rem;color:var(--blue);text-decoration:none;font-weight:600;}
+
+    /* ACTIVE BOOKING */
+    .booking-card{background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1px solid #BFDBFE;border-radius:12px;padding:1.25rem;position:relative;overflow:hidden;}
+    .booking-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--blue);}
+    .booking-slot{font-size:2rem;font-weight:900;color:var(--navy);letter-spacing:-1px;}
+    .booking-meta{display:flex;gap:1rem;margin:0.5rem 0 0.75rem;flex-wrap:wrap;}
+    .meta-chip{display:flex;align-items:center;gap:0.4rem;font-size:0.775rem;color:var(--grey);font-weight:500;}
+    .meta-chip i{color:var(--blue);font-size:0.8rem;}
+    .timer{background:var(--blue);color:var(--white);border-radius:8px;padding:0.5rem 1rem;display:inline-flex;align-items:center;gap:0.5rem;font-size:0.875rem;font-weight:700;margin-bottom:0.875rem;}
+    .booking-actions{display:flex;gap:0.75rem;}
+    .btn-extend{background:var(--blue);color:var(--white);border:none;padding:0.55rem 1.1rem;border-radius:8px;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all .3s;font-family:'Inter',sans-serif;}
+    .btn-extend:hover{background:#1d4ed8;}
+    .btn-end{background:transparent;color:var(--red);border:1.5px solid var(--red);padding:0.55rem 1.1rem;border-radius:8px;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all .3s;font-family:'Inter',sans-serif;}
+    .btn-end:hover{background:#FEF2F2;}
+    .services-ordered{margin-top:0.875rem;padding-top:0.875rem;border-top:1px solid #BFDBFE;}
+    .services-ordered p{font-size:0.775rem;color:var(--grey);font-weight:600;margin-bottom:0.5rem;}
+    .service-pills{display:flex;gap:0.5rem;flex-wrap:wrap;}
+    .pill{background:var(--white);border:1px solid var(--border);border-radius:100px;padding:0.3rem 0.7rem;font-size:0.72rem;font-weight:600;color:var(--navy);}
+
+    /* QUICK ACTIONS */
+    .quick-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.875rem;}
+    .quick-btn{background:var(--light);border:1px solid var(--border);border-radius:12px;padding:1.1rem;text-align:center;cursor:pointer;transition:all .3s;text-decoration:none;color:var(--navy);}
+    .quick-btn:hover{border-color:var(--blue);background:#EFF6FF;transform:translateY(-2px);}
+    .quick-btn .qi{font-size:1.75rem;margin-bottom:0.5rem;}
+    .quick-btn p{font-size:0.8rem;font-weight:600;}
+
+    /* SLOT MAP */
+    .slot-map{margin-bottom:2rem;}
+    .slot-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin-top:1rem;}
+    .sl{height:28px;border-radius:5px;cursor:pointer;transition:all .3s;position:relative;}
+    .sl.free{background:#DCFCE7;border:1px solid #86EFAC;}
+    .sl.taken{background:#FEE2E2;border:1px solid #FCA5A5;}
+    .sl.yours{background:var(--blue);border:1px solid var(--blue);box-shadow:0 0 8px rgba(37,99,235,0.5);}
+    .sl.ev{background:#FEF3C7;border:1px solid #FCD34D;}
+    .sl:hover{transform:scale(1.1);}
+    .map-legend{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:0.75rem;}
+    .leg{display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;color:var(--grey);}
+    .leg-dot{width:12px;height:12px;border-radius:3px;}
+
+    /* TABLE */
+    .bookings-table{width:100%;border-collapse:collapse;margin-bottom:2rem;}
+    .bookings-table th{text-align:left;font-size:0.75rem;font-weight:700;color:var(--grey);padding:0 1rem 0.75rem;letter-spacing:0.5px;text-transform:uppercase;}
+    .bookings-table td{padding:1rem;font-size:0.875rem;border-top:1px solid var(--border);}
+    .bookings-table tr:hover td{background:var(--light);}
+    .status{display:inline-flex;align-items:center;gap:0.35rem;padding:0.3rem 0.7rem;border-radius:100px;font-size:0.75rem;font-weight:700;}
+    .status.active{background:#DCFCE7;color:#15803D;}
+    .status.completed{background:#F1F5F9;color:var(--grey);}
+    .status.cancelled{background:#FEE2E2;color:#B91C1C;}
+
+    .fab{position:fixed;bottom:2rem;right:2rem;z-index:998;width:52px;height:52px;border-radius:50%;background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.35rem;box-shadow:0 8px 24px rgba(37,211,102,0.4);cursor:pointer;text-decoration:none;transition:all .3s;}
+    .fab:hover{transform:scale(1.1);}
+
+    @media(max-width:1024px){.stats-grid{grid-template-columns:repeat(2,1fr);}.two-col{grid-template-columns:1fr;}}
+    @media(max-width:768px){.sidebar{display:none;}.main{margin-left:0;}}
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="index.html" class="sidebar-logo">🅿 Smart<span>Park</span></a>
+  <nav class="sidebar-nav">
+    <a class="nav-item active" href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+    <a class="nav-item" href="booking.html"><i class="fas fa-parking"></i> Book Parking</a>
+    <a class="nav-item" href="services.html"><i class="fas fa-concierge-bell"></i> Services</a>
+    <a class="nav-item" href="services.html"><i class="fas fa-taxi"></i> Book Cab</a>
+    <a class="nav-item" href="wallet.html"><i class="fas fa-wallet"></i> Wallet</a>
+    <a class="nav-item" href="#"><i class="fas fa-history"></i> History</a>
+    <a class="nav-item" href="#"><i class="fas fa-user"></i> Profile</a>
+    <a class="nav-item" href="#"><i class="fas fa-cog"></i> Settings</a>
+    <a class="nav-item" href="login.html" style="margin-top:auto;color:rgba(239,68,68,0.8);"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="user-avatar">R</div>
+      <div class="user-info"><h4>Rahul Sharma</h4><span>Gold Member ⭐</span></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="search-bar">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Search parking lots, services..."/>
+    </div>
+    <div class="topbar-right">
+      <div class="notif-btn"><i class="fas fa-bell"></i><span class="badge">3</span></div>
+      <div class="notif-btn"><i class="fas fa-envelope"></i><span class="badge">1</span></div>
+      <div class="profile-chip">
+        <div class="av">R</div>
+        <span>Rahul Sharma</span>
+        <i class="fas fa-chevron-down" style="font-size:0.7rem;color:var(--grey);"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- WELCOME -->
+    <div class="welcome-banner">
+      <div>
+        <h2>Good Evening, Rahul 👋</h2>
+        <p>You have 1 active booking and 3 pending notifications.</p>
+      </div>
+      <div class="welcome-stats">
+        <div class="ws"><div class="ws-num">1</div><div class="ws-label">Active Bookings</div></div>
+        <div class="ws"><div class="ws-num gold">2,450</div><div class="ws-label">Loyalty Points</div></div>
+        <div class="ws"><div class="ws-num">₹850</div><div class="ws-label">Wallet Balance</div></div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="icon" style="background:#EFF6FF;">🅿️</div>
+        <h3>24</h3>
+        <p>Total Bookings</p>
+        <div class="trend up"><i class="fas fa-arrow-up"></i> 12% this month</div>
+      </div>
+      <div class="stat-card">
+        <div class="icon" style="background:#F0FDF4;">💰</div>
+        <h3>₹3,240</h3>
+        <p>Total Spent</p>
+        <div class="trend up"><i class="fas fa-arrow-up"></i> 8% this month</div>
+      </div>
+      <div class="stat-card">
+        <div class="icon" style="background:#FFF7ED;">⏱️</div>
+        <h3>48 hrs</h3>
+        <p>Hours Parked</p>
+        <div class="trend down"><i class="fas fa-arrow-down"></i> 3% this month</div>
+      </div>
+      <div class="stat-card">
+        <div class="icon" style="background:#FEF3C7;">⭐</div>
+        <h3>2,450</h3>
+        <p>Loyalty Points</p>
+        <div class="trend up"><i class="fas fa-arrow-up"></i> 350 this week</div>
+      </div>
+    </div>
+
+    <!-- TWO COL -->
+    <div class="two-col">
+      <!-- ACTIVE BOOKING -->
+      <div class="card">
+        <div class="card-header">
+          <h3>🟢 Active Booking</h3>
+          <a href="booking.html">+ New Booking</a>
+        </div>
+        <div class="booking-card">
+          <div class="booking-slot">Slot B-204</div>
+          <div class="booking-meta">
+            <span class="meta-chip"><i class="fas fa-map-marker-alt"></i> Koramangala Forum Mall</span>
+            <span class="meta-chip"><i class="fas fa-car"></i> KA-01-MH-1234</span>
+          </div>
+          <div class="timer"><i class="fas fa-clock"></i> <span id="countdown">01:47:23</span> remaining</div>
+          <div class="booking-actions">
+            <button class="btn-extend">Extend +1hr (₹60)</button>
+            <button class="btn-end">End Booking</button>
+          </div>
+          <div class="services-ordered">
+            <p>Services in Progress</p>
+            <div class="service-pills">
+              <span class="pill">🚿 Car Wash (In Progress)</span>
+              <span class="pill">🛞 Tyre Check (Done ✓)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK ACTIONS -->
+      <div class="card">
+        <div class="card-header"><h3>⚡ Quick Actions</h3></div>
+        <div class="quick-grid">
+          <a href="booking.html" class="quick-btn"><div class="qi">🅿️</div><p>Book Parking</p></a>
+          <a href="services.html" class="quick-btn"><div class="qi">🚿</div><p>Car Wash</p></a>
+          <a href="services.html" class="quick-btn"><div class="qi">🚕</div><p>Book Cab</p></a>
+          <a href="services.html" class="quick-btn"><div class="qi">🔧</div><p>Mechanic</p></a>
+          <a href="wallet.html" class="quick-btn"><div class="qi">💳</div><p>Add Money</p></a>
+          <a href="#" class="quick-btn"><div class="qi">📋</div><p>My Receipts</p></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLOT MAP -->
+    <div class="card slot-map">
+      <div class="card-header">
+        <h3>🗺️ Live Slot View — Koramangala Forum Mall</h3>
+        <span style="font-size:0.8rem;color:var(--green);font-weight:600;"><i class="fas fa-circle" style="font-size:0.5rem;"></i> Live</span>
+      </div>
+      <div style="display:flex;gap:1rem;margin-bottom:0.5rem;font-size:0.8rem;color:var(--grey);">
+        <span>Zone A</span><span>Zone B</span><span>Zone C</span>
+      </div>
+      <div class="slot-grid" id="slotGrid"></div>
+      <div class="map-legend">
+        <div class="leg"><div class="leg-dot" style="background:#DCFCE7;border:1px solid #86EFAC;"></div>Available (18)</div>
+        <div class="leg"><div class="leg-dot" style="background:#FEE2E2;border:1px solid #FCA5A5;"></div>Occupied (9)</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--blue);"></div>Your Slot (B-204)</div>
+        <div class="leg"><div class="leg-dot" style="background:#FEF3C7;border:1px solid #FCD34D;"></div>EV Slot (3)</div>
+      </div>
+    </div>
+
+    <!-- RECENT BOOKINGS -->
+    <div class="card">
+      <div class="card-header">
+        <h3>📋 Recent Bookings</h3>
+        <a href="#">View All</a>
+      </div>
+      <table class="bookings-table">
+        <thead>
+          <tr>
+            <th>Booking ID</th>
+            <th>Location</th>
+            <th>Slot</th>
+            <th>Date & Time</th>
+            <th>Duration</th>
+            <th>Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><b>#SP2024001</b></td><td>Forum Mall, Koramangala</td><td>B-204</td><td>24 Sep, 6:00 PM</td><td>3 hrs</td><td>₹180</td><td><span class="status active"><i class="fas fa-circle" style="font-size:0.5rem;"></i> Active</span></td></tr>
+          <tr><td><b>#SP2024000</b></td><td>Orion Mall, Rajajinagar</td><td>A-108</td><td>22 Sep, 10:00 AM</td><td>5 hrs</td><td>₹350</td><td><span class="status completed">Completed</span></td></tr>
+          <tr><td><b>#SP2023999</b></td><td>UB City, Vittal Mallya</td><td>C-312</td><td>20 Sep, 2:00 PM</td><td>2 hrs</td><td>₹160</td><td><span class="status completed">Completed</span></td></tr>
+          <tr><td><b>#SP2023998</b></td><td>Mantri Mall, Malleswaram</td><td>B-051</td><td>18 Sep, 9:00 AM</td><td>4 hrs</td><td>₹0</td><td><span class="status cancelled">Cancelled</span></td></tr>
+          <tr><td><b>#SP2023997</b></td><td>Phoenix Mall, Whitefield</td><td>D-220</td><td>15 Sep, 5:00 PM</td><td>6 hrs</td><td>₹420</td><td><span class="status completed">Completed</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<a href="#" class="fab"><i class="fab fa-whatsapp"></i></a>
+
+<script>
+  // Slot grid
+  const g = document.getElementById('slotGrid');
+  const types = ['free','taken','free','free','free','taken','ev','free','taken','free','free','free','taken','free','taken','free','free','taken','free','free','yours','free','taken','free','free','ev','taken','free','free','free'];
+  types.forEach((t,i)=>{
+    const d=document.createElement('div');
+    d.className='sl '+t;
+    d.title=t==='yours'?'Your Slot: B-204':t==='ev'?'EV Slot':t;
+    g.appendChild(d);
+  });
+
+  // Countdown
+  let secs = 6443;
+  setInterval(()=>{
+    secs--;
+    if(secs<0)secs=0;
+    const h=Math.floor(secs/3600);
+    const m=Math.floor((secs%3600)/60);
+    const s=secs%60;
+    document.getElementById('countdown').textContent=
+      String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  },1000);
+</script>
+</body>
+</html>
