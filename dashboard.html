@@ -261,7 +261,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
               <span class="svc-pill">🛞 Tyre Check</span>
             </div>
             <div class="booking-actions">
-              <button class="btn-sm outline" onclick="alert('Stay extended by 1 hour!')">⏱ Extend Stay</button>
+              <button class="btn-sm outline" onclick="openExtendModal()">⏱ Extend Stay</button>
               <button class="btn-sm solid" onclick="location.href='booking.html'">Book Again</button>
             </div>
           </div>
@@ -306,8 +306,100 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
 <a href="#" class="fab"><i class="fab fa-whatsapp"></i></a>
 
+<!-- EXTEND STAY / OVERSTAY CHARGES MODAL -->
+<div id="extendModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);z-index:999;align-items:center;justify-content:center;">
+  <div style="background:#111;border:1px solid rgba(255,255,255,0.15);border-radius:18px;padding:24px;width:90%;max-width:420px;color:#fff;box-shadow:0 20px 50px rgba(0,0,0,0.8);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:12px;">
+      <h3 style="font-size:1.1rem;font-weight:800;color:var(--gold);display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-clock"></i> Overstay &amp; Extension</h3>
+      <button onclick="closeExtendModal()" style="background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;">✕</button>
+    </div>
+    <p style="font-size:0.875rem;color:var(--muted);margin-bottom:16px;" id="extendModalNotice">Select additional hours to extend your stay at this location.</p>
+    
+    <div style="display:flex;gap:10px;margin-bottom:16px;">
+      <button class="ext-opt active" data-hours="1" onclick="selectExtendHours(1, this)" style="flex:1;padding:12px;border-radius:10px;background:rgba(245,158,11,0.15);border:1px solid var(--gold);color:#fff;font-weight:700;cursor:pointer;">+1 Hour<br/><small style="font-size:0.75rem;color:var(--gold);" id="opt1Rate">₹60</small></button>
+      <button class="ext-opt" data-hours="2" onclick="selectExtendHours(2, this)" style="flex:1;padding:12px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#fff;font-weight:700;cursor:pointer;">+2 Hours<br/><small style="font-size:0.75rem;color:var(--muted);" id="opt2Rate">₹120</small></button>
+      <button class="ext-opt" data-hours="3" onclick="selectExtendHours(3, this)" style="flex:1;padding:12px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#fff;font-weight:700;cursor:pointer;">+3 Hours<br/><small style="font-size:0.75rem;color:var(--muted);" id="opt3Rate">₹180</small></button>
+    </div>
+
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px;margin-bottom:20px;">
+      <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:6px;color:var(--muted);"><span>Extension Charge:</span><strong id="extChargeAmt" style="color:#fff;">₹60</strong></div>
+      <div style="display:flex;justify-content:space-between;font-size:0.85rem;color:var(--muted);"><span>Payment Method:</span><strong style="color:var(--gold);">SmartPark Wallet</strong></div>
+    </div>
+
+    <button onclick="confirmExtendStay()" style="width:100%;padding:14px;background:linear-gradient(135deg,#F59E0B,#D97706);color:#000;border:none;border-radius:10px;font-size:0.95rem;font-weight:800;cursor:pointer;">💳 Pay Charges &amp; Extend Stay</button>
+  </div>
+</div>
+
 <script src="api-config.js"></script>
 <script>
+let selectedExtHours = 1;
+let currentLotRate = 60;
+
+function openExtendModal() {
+  const modal = document.getElementById('extendModal');
+  if (modal) {
+    let activeBooking = null;
+    try {
+      const stored = localStorage.getItem('smartpark_active_booking');
+      if (stored) activeBooking = JSON.parse(stored);
+    } catch(e){}
+    
+    currentLotRate = activeBooking ? (activeBooking.ratePerHour || 60) : 60;
+    document.getElementById('opt1Rate').textContent = `₹${currentLotRate}`;
+    document.getElementById('opt2Rate').textContent = `₹${currentLotRate * 2}`;
+    document.getElementById('opt3Rate').textContent = `₹${currentLotRate * 3}`;
+    selectExtendHours(1, document.querySelector('.ext-opt'));
+
+    modal.style.display = 'flex';
+  }
+}
+
+function closeExtendModal() {
+  const modal = document.getElementById('extendModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function selectExtendHours(hours, btn) {
+  selectedExtHours = hours;
+  document.querySelectorAll('.ext-opt').forEach(b => {
+    b.style.background = 'rgba(255,255,255,0.04)';
+    b.style.borderColor = 'rgba(255,255,255,0.1)';
+  });
+  if (btn) {
+    btn.style.background = 'rgba(245,158,11,0.15)';
+    btn.style.borderColor = 'var(--gold)';
+  }
+  const totalCost = currentLotRate * selectedExtHours;
+  const chargeEl = document.getElementById('extChargeAmt');
+  if (chargeEl) chargeEl.textContent = `₹${totalCost}`;
+}
+
+async function confirmExtendStay() {
+  const totalCost = currentLotRate * selectedExtHours;
+  
+  // Deduct extension charges from wallet via API
+  await apiRequest('/wallet/add-funds', 'POST', { amount: -totalCost });
+
+  // Update active booking payload in localStorage
+  let activeBooking = null;
+  try {
+    const stored = localStorage.getItem('smartpark_active_booking');
+    if (stored) activeBooking = JSON.parse(stored);
+  } catch(e){}
+
+  if (activeBooking) {
+    const currentEnd = activeBooking.endTime ? new Date(activeBooking.endTime).getTime() : Date.now();
+    activeBooking.endTime = new Date(currentEnd + selectedExtHours * 3600 * 1000).toISOString();
+    activeBooking.durationHours = (activeBooking.durationHours || 2) + selectedExtHours;
+    localStorage.setItem('smartpark_active_booking', JSON.stringify(activeBooking));
+  }
+
+  // Update countdown timer
+  secs += selectedExtHours * 3600;
+  closeExtendModal();
+  alert(`✅ Stay Extended by ${selectedExtHours} Hour(s)!\n₹${totalCost} deducted from SmartPark Wallet.`);
+}
+
 (function(){
   // User profile dynamic update
   const user = getCurrentUser();
@@ -341,6 +433,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
       if (wStatPts) wStatPts.textContent = `${w.loyaltyPoints}`;
     }
   }
+  
   // Dynamic Active Booking Loader
   let secs = 6442;
   function loadActiveBooking() {
@@ -364,11 +457,14 @@ tr:hover td{background:rgba(255,255,255,.02);}
         const remainingMs = new Date(activeBooking.endTime).getTime() - Date.now();
         if (remainingMs > 0) {
           secs = Math.floor(remainingMs / 1000);
+        } else {
+          secs = 0;
         }
       }
     }
   }
   loadActiveBooking();
+  loadDashboardData();
 
   // Slot map
   var types=['free','taken','free','mine','taken','free','ev','free','taken','free','free','taken','free','free','free','taken','free','free','taken','free','free','free','taken','free','free','ev','free','taken','free','free'];
@@ -383,7 +479,15 @@ tr:hover td{background:rgba(255,255,255,.02);}
     var h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60),s=secs%60;
     const cdEl = document.getElementById('countdown');
     if (cdEl) cdEl.textContent=(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
-    if(secs>0)secs--;
+    if(secs>0) {
+      secs--;
+    } else if (secs === 0) {
+      // Overstay alert prompt
+      const cdLabel = document.querySelector('.countdown-label');
+      if (cdLabel) {
+        cdLabel.innerHTML = '<span style="color:#EF4444;font-weight:700;">⚠️ OVERSTAY DETECTED - Extend Stay Required</span>';
+      }
+    }
   }
   tick();setInterval(tick,1000);
 
