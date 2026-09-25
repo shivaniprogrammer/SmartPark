@@ -4,106 +4,186 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Booking History — SmartPark</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900&display=swap" rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    :root{--navy:#0A1628;--navy2:#1E3A5F;--blue:#2563EB;--gold:#F59E0B;--white:#fff;--light:#F8FAFC;--grey:#64748B;--border:#E2E8F0;--green:#10B981;--red:#EF4444;}
-    body{font-family:'Inter',sans-serif;background:var(--light);color:var(--navy);display:flex;min-height:100vh;}
+    :root {
+      --bg: #000;
+      --surface: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.1);
+      --muted: #9a9a9a;
+      --gold: #F59E0B;
+      --blue: #2563EB;
+      --green: #10B981;
+      --red: #EF4444;
+      --spring: cubic-bezier(0.16,1,0.3,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: #fff;
+      display: flex;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
 
     /* SIDEBAR */
-    .sidebar{width:240px;background:var(--navy);display:flex;flex-direction:column;padding:1.5rem 0;position:fixed;top:0;left:0;height:100vh;z-index:100;}
-    .sidebar-logo{padding:0 1.5rem 2rem;font-size:1.35rem;font-weight:800;color:var(--white);text-decoration:none;display:flex;align-items:center;gap:0.5rem;border-bottom:1px solid rgba(255,255,255,0.08);}
-    .sidebar-logo span{color:var(--gold);}
-    .sidebar-nav{flex:1;padding:1.5rem 0.75rem;display:flex;flex-direction:column;gap:0.25rem;}
-    .nav-item{display:flex;align-items:center;gap:0.875rem;padding:0.75rem 0.875rem;border-radius:10px;color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.875rem;font-weight:500;transition:all .3s;}
-    .nav-item:hover,.nav-item.active{background:rgba(37,99,235,0.15);color:var(--white);}
-    .nav-item.active{background:rgba(37,99,235,0.25);color:#60A5FA;}
-    .nav-item i{width:18px;text-align:center;font-size:1rem;}
-    .sidebar-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,0.08);}
-    .user-avatar{width:36px;height:36px;border-radius:50%;background:var(--blue);color:var(--white);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;}
-    .user-info h4{font-size:0.825rem;font-weight:700;color:var(--white);}
-    .user-info span{font-size:0.75rem;color:rgba(255,255,255,0.5);}
-    .sidebar-user{display:flex;align-items:center;gap:0.75rem;}
+    .sidebar {
+      width: 240px;
+      background: #000;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 0;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+    }
+    .sidebar-logo {
+      padding: 0 20px 24px;
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-logo span { color: var(--gold); }
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .nav-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 8px 12px 4px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all .2s;
+    }
+    .nav-item:hover, .nav-item.active {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+    .nav-item.active {
+      border-left: 2px solid var(--gold);
+      padding-left: 12px;
+    }
+    .nav-item i { width: 18px; text-align: center; }
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .user-avatar-sm {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: #fff;
+    }
 
     /* MAIN */
-    .main{margin-left:240px;flex:1;display:flex;flex-direction:column;}
-    .topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
-    .topbar h1{font-size:1.1rem;font-weight:800;color:var(--navy);}
-    .content{padding:2rem;flex:1;}
+    .main { margin-left: 240px; flex: 1; display: flex; flex-direction: column; }
+    .topbar {
+      position: sticky; top: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      z-index: 50;
+    }
+    .topbar h1 { font-size: 16px; font-weight: 800; color: #fff; }
+    .content { padding: 32px; flex: 1; max-width: 1100px; }
 
     /* FILTERS */
-    .filter-bar{display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:1.5rem;align-items:center;}
-    .filter-chip{padding:0.45rem 1rem;border-radius:100px;font-size:0.8rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--white);color:var(--grey);transition:all .3s;}
-    .filter-chip:hover,.filter-chip.active{background:var(--blue);border-color:var(--blue);color:var(--white);}
-    .search-filter{display:flex;align-items:center;gap:0.6rem;background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:0.45rem 1rem;margin-left:auto;}
-    .search-filter input{border:none;outline:none;font-size:0.85rem;font-family:'Inter',sans-serif;color:var(--navy);width:180px;}
-    .search-filter i{color:var(--grey);}
+    .filter-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+    .chip {
+      padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 600; cursor: pointer;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); transition: all .2s;
+    }
+    .chip:hover, .chip.active { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.3); color: #fff; }
+    .search-filter {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 8px;
+      padding: 6px 12px; margin-left: auto;
+    }
+    .search-filter input { border: none; outline: none; background: transparent; color: #fff; font-size: 13px; font-family: 'Inter', sans-serif; width: 160px; }
 
-    /* STATS ROW */
-    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
-    .stat-mini{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem;display:flex;align-items:center;gap:1rem;}
-    .stat-mini .icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
-    .stat-mini h3{font-size:1.4rem;font-weight:800;color:var(--navy);}
-    .stat-mini p{font-size:0.75rem;color:var(--grey);font-weight:500;}
+    /* TABLE CARD */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .table-header { padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .table-header h3 { font-size: 15px; font-weight: 700; color: #fff; }
+    .btn-export {
+      background: rgba(255,255,255,0.08); border: 1px solid var(--border); color: #fff;
+      padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;
+      font-family: 'Inter', sans-serif; transition: all .2s;
+    }
+    .btn-export:hover { background: rgba(255,255,255,0.15); }
 
-    /* TABLE */
-    .table-card{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
-    .table-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
-    .table-header h3{font-size:1rem;font-weight:700;}
-    .btn-export{display:flex;align-items:center;gap:0.5rem;background:var(--light);border:1px solid var(--border);border-radius:8px;padding:0.45rem 0.875rem;font-size:0.8rem;font-weight:600;cursor:pointer;color:var(--grey);font-family:'Inter',sans-serif;transition:all .3s;}
-    .btn-export:hover{background:var(--border);}
-    table{width:100%;border-collapse:collapse;}
-    th{text-align:left;font-size:0.72rem;font-weight:700;color:var(--grey);padding:0.875rem 1.5rem;letter-spacing:0.5px;text-transform:uppercase;background:var(--light);border-bottom:1px solid var(--border);}
-    td{padding:1rem 1.5rem;font-size:0.875rem;border-bottom:1px solid var(--border);}
-    tr:last-child td{border-bottom:none;}
-    tr:hover td{background:#FAFBFC;}
-    .badge{display:inline-flex;align-items:center;gap:0.3rem;padding:0.3rem 0.7rem;border-radius:100px;font-size:0.72rem;font-weight:700;}
-    .badge.active{background:#DCFCE7;color:#15803D;}
-    .badge.completed{background:#F1F5F9;color:var(--grey);}
-    .badge.cancelled{background:#FEE2E2;color:#B91C1C;}
-    .badge.overstayed{background:#FFF7ED;color:#C2410C;}
-    .action-btns{display:flex;gap:0.5rem;}
-    .btn-sm{padding:0.3rem 0.7rem;border-radius:6px;font-size:0.75rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--white);font-family:'Inter',sans-serif;transition:all .3s;color:var(--navy);}
-    .btn-sm:hover{background:var(--light);border-color:var(--blue);color:var(--blue);}
-    .btn-sm.danger:hover{border-color:var(--red);color:var(--red);}
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; font-size: 11px; font-weight: 700; color: var(--muted); padding: 12px 24px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); }
+    td { padding: 14px 24px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    tr:hover td { background: rgba(255,255,255,0.02); }
 
-    /* EMPTY STATE */
-    .empty-state{text-align:center;padding:4rem 2rem;}
-    .empty-state .icon{font-size:4rem;margin-bottom:1rem;}
-    .empty-state h3{font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;}
-    .empty-state p{color:var(--grey);font-size:0.875rem;}
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; }
+    .badge.active { background: rgba(16,185,129,0.15); color: #34D399; }
+    .badge.completed { background: rgba(255,255,255,0.08); color: var(--muted); }
+    .badge.cancelled { background: rgba(239,68,68,0.15); color: #F87171; }
+    .badge.overstayed { background: rgba(245,158,11,0.15); color: var(--gold); }
 
-    /* PAGINATION */
-    .pagination{display:flex;justify-content:center;align-items:center;gap:0.5rem;padding:1.25rem;}
-    .page-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:var(--white);cursor:pointer;font-size:0.85rem;font-weight:600;display:flex;align-items:center;justify-content:center;transition:all .3s;font-family:'Inter',sans-serif;color:var(--navy);}
-    .page-btn:hover,.page-btn.active{background:var(--blue);border-color:var(--blue);color:var(--white);}
-
-    .fab{position:fixed;bottom:2rem;right:2rem;z-index:998;width:52px;height:52px;border-radius:50%;background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.35rem;box-shadow:0 8px 24px rgba(37,211,102,0.4);cursor:pointer;text-decoration:none;transition:all .3s;}
-    .fab:hover{transform:scale(1.1);}
-    @media(max-width:768px){.sidebar{display:none;}.main{margin-left:0;}.stats-row{grid-template-columns:repeat(2,1fr);}}
+    .btn-sm {
+      padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;
+      border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff; font-family: 'Inter', sans-serif; transition: all .2s;
+    }
+    .btn-sm:hover { background: rgba(255,255,255,0.12); }
+    @media(max-width:850px){.sidebar{display:none;}.main{margin-left:0;}}
   </style>
 </head>
 <body>
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
-  <a href="index.html" class="sidebar-logo">🅿 Smart<span>Park</span></a>
+  <a href="index.html" class="sidebar-logo">Smart<span>Park</span></a>
   <nav class="sidebar-nav">
-    <a class="nav-item" href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
-    <a class="nav-item" href="booking.html"><i class="fas fa-parking"></i> Book Parking</a>
-    <a class="nav-item" href="services.html"><i class="fas fa-concierge-bell"></i> Services</a>
-    <a class="nav-item" href="wallet.html"><i class="fas fa-wallet"></i> Wallet</a>
-    <a class="nav-item active" href="history.html"><i class="fas fa-history"></i> History</a>
-    <a class="nav-item" href="profile.html"><i class="fas fa-user"></i> Profile</a>
-    <a class="nav-item" href="settings.html"><i class="fas fa-cog"></i> Settings</a>
-    <a class="nav-item" href="login.html" style="margin-top:auto;color:rgba(239,68,68,0.8);"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    <span class="nav-label">Main Menu</span>
+    <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+    <a class="nav-item" href="booking.html"><i class="fa-solid fa-ticket"></i> Book Parking</a>
+    <a class="nav-item" href="map-test.html"><i class="fa-solid fa-map-location-dot"></i> Parking Map</a>
+    <a class="nav-item" href="services.html"><i class="fa-solid fa-wrench"></i> Services</a>
+    <a class="nav-item" href="wallet.html"><i class="fa-solid fa-wallet"></i> Wallet</a>
+    <a class="nav-item active" href="history.html"><i class="fa-solid fa-clock-rotate-left"></i> History</a>
+
+    <span class="nav-label" style="margin-top:8px;">Account</span>
+    <a class="nav-item" href="profile.html"><i class="fa-solid fa-user"></i> Profile</a>
+    <a class="nav-item" href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a>
   </nav>
+
   <div class="sidebar-footer">
-    <div class="sidebar-user">
-      <div class="user-avatar">R</div>
-      <div class="user-info"><h4>Rahul Sharma</h4><span>Gold Member ⭐</span></div>
-    </div>
+    <div class="user-avatar-sm">RS</div>
+    <div><div style="font-size:13px;font-weight:600;">Rahul Sharma</div><div style="font-size:11px;color:var(--muted);">Gold Member ⭐</div></div>
   </div>
 </aside>
 
@@ -111,49 +191,26 @@
 <div class="main">
   <div class="topbar">
     <h1>📋 Booking History</h1>
-    <a href="booking.html" style="background:var(--blue);color:var(--white);padding:0.5rem 1rem;border-radius:8px;font-size:0.85rem;font-weight:700;text-decoration:none;">+ New Booking</a>
+    <a href="booking.html" style="background:var(--gold);color:#000;padding:6px 14px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;">+ New Booking</a>
   </div>
 
   <div class="content">
 
-    <!-- STATS -->
-    <div class="stats-row">
-      <div class="stat-mini">
-        <div class="icon" style="background:#EFF6FF;">🅿️</div>
-        <div><h3 id="totalCount">24</h3><p>Total Bookings</p></div>
-      </div>
-      <div class="stat-mini">
-        <div class="icon" style="background:#F0FDF4;">✅</div>
-        <div><h3 id="completedCount">19</h3><p>Completed</p></div>
-      </div>
-      <div class="stat-mini">
-        <div class="icon" style="background:#FEE2E2;">❌</div>
-        <div><h3 id="cancelledCount">3</h3><p>Cancelled</p></div>
-      </div>
-      <div class="stat-mini">
-        <div class="icon" style="background:#FEF3C7;">💰</div>
-        <div><h3 id="totalSpent">₹3,240</h3><p>Total Spent</p></div>
-      </div>
-    </div>
-
-    <!-- FILTERS -->
     <div class="filter-bar">
-      <span class="filter-chip active" onclick="filterBookings('all',this)">All</span>
-      <span class="filter-chip" onclick="filterBookings('active',this)">🟢 Active</span>
-      <span class="filter-chip" onclick="filterBookings('completed',this)">✅ Completed</span>
-      <span class="filter-chip" onclick="filterBookings('cancelled',this)">❌ Cancelled</span>
-      <span class="filter-chip" onclick="filterBookings('overstayed',this)">⚠️ Overstayed</span>
+      <span class="chip active" onclick="filterData('all',this)">All</span>
+      <span class="chip" onclick="filterData('active',this)">🟢 Active</span>
+      <span class="chip" onclick="filterData('completed',this)">✅ Completed</span>
+      <span class="chip" onclick="filterData('cancelled',this)">❌ Cancelled</span>
       <div class="search-filter">
-        <i class="fas fa-search"></i>
-        <input type="text" placeholder="Search by location, ID..." oninput="searchBookings(this.value)"/>
+        <i class="fa-solid fa-magnifying-glass" style="color:var(--muted);font-size:12px;"></i>
+        <input type="text" placeholder="Search booking ID..." oninput="searchData(this.value)"/>
       </div>
     </div>
 
-    <!-- TABLE -->
-    <div class="table-card">
+    <div class="card">
       <div class="table-header">
-        <h3>All Bookings</h3>
-        <button class="btn-export" onclick="exportCSV()"><i class="fas fa-download"></i> Export CSV</button>
+        <h3>All Reservations</h3>
+        <button class="btn-export" onclick="exportCSV()"><i class="fa-solid fa-download"></i> Export CSV</button>
       </div>
       <table>
         <thead>
@@ -165,157 +222,58 @@
             <th>Duration</th>
             <th>Amount</th>
             <th>Status</th>
-            <th>Actions</th>
+            <th>Receipt</th>
           </tr>
         </thead>
-        <tbody id="historyBody"></tbody>
+        <tbody id="histBody"></tbody>
       </table>
-      <div id="emptyState" class="empty-state" style="display:none;">
-        <div class="icon">📭</div>
-        <h3>No bookings found</h3>
-        <p>Try adjusting your filters or search query.</p>
-      </div>
-      <div class="pagination" id="pagination"></div>
     </div>
 
   </div>
 </div>
 
-<a href="#" class="fab"><i class="fab fa-whatsapp"></i></a>
-
 <script>
-  const allBookings = [
-    { id:'#SP2024001', location:'Forum Mall, Koramangala', slot:'B-204', datetime:'24 Sep 2026, 6:00 PM', duration:'3 hrs', amount:'₹180', status:'active' },
-    { id:'#SP2024000', location:'Orion Mall, Rajajinagar', slot:'A-108', datetime:'22 Sep 2026, 10:00 AM', duration:'5 hrs', amount:'₹350', status:'completed' },
-    { id:'#SP2023999', location:'UB City, Vittal Mallya', slot:'C-312', datetime:'20 Sep 2026, 2:00 PM', duration:'2 hrs', amount:'₹160', status:'completed' },
-    { id:'#SP2023998', location:'Mantri Mall, Malleswaram', slot:'B-051', datetime:'18 Sep 2026, 9:00 AM', duration:'4 hrs', amount:'₹0', status:'cancelled' },
-    { id:'#SP2023997', location:'Phoenix Mall, Whitefield', slot:'D-220', datetime:'15 Sep 2026, 5:00 PM', duration:'6 hrs', amount:'₹420', status:'completed' },
-    { id:'#SP2023996', location:'Forum Mall, Koramangala', slot:'A-110', datetime:'12 Sep 2026, 11:00 AM', duration:'3 hrs', amount:'₹180', status:'completed' },
-    { id:'#SP2023995', location:'Nexus Mall, Whitefield', slot:'C-205', datetime:'10 Sep 2026, 3:00 PM', duration:'2 hrs', amount:'₹100', status:'overstayed' },
-    { id:'#SP2023994', location:'Garuda Mall, MG Road', slot:'B-088', datetime:'07 Sep 2026, 7:00 PM', duration:'4 hrs', amount:'₹240', status:'completed' },
-    { id:'#SP2023993', location:'VR Mall, Whitefield', slot:'A-015', datetime:'04 Sep 2026, 1:00 PM', duration:'5 hrs', amount:'₹300', status:'cancelled' },
-    { id:'#SP2023992', location:'Orion Mall, Rajajinagar', slot:'D-110', datetime:'01 Sep 2026, 9:00 AM', duration:'8 hrs', amount:'₹480', status:'completed' },
-    { id:'#SP2023991', location:'Forum Mall, Koramangala', slot:'B-302', datetime:'28 Aug 2026, 4:00 PM', duration:'2 hrs', amount:'₹120', status:'completed' },
-    { id:'#SP2023990', location:'Phoenix Mall, Whitefield', slot:'C-101', datetime:'25 Aug 2026, 6:00 PM', duration:'3 hrs', amount:'₹180', status:'cancelled' },
+  const bookings = [
+    { id:'#SP2024001', location:'Forum Mall, Koramangala', slot:'B-204', datetime:'24 Sep, 6:00 PM', duration:'3 hrs', amount:'₹180', status:'active' },
+    { id:'#SP2024000', location:'Orion Mall, Rajajinagar', slot:'A-108', datetime:'22 Sep, 10:00 AM', duration:'5 hrs', amount:'₹350', status:'completed' },
+    { id:'#SP2023999', location:'UB City, Vittal Mallya', slot:'C-312', datetime:'20 Sep, 2:00 PM', duration:'2 hrs', amount:'₹160', status:'completed' },
+    { id:'#SP2023998', location:'Mantri Mall, Malleswaram', slot:'B-051', datetime:'18 Sep, 9:00 AM', duration:'4 hrs', amount:'₹0', status:'cancelled' },
+    { id:'#SP2023997', location:'Phoenix Mall, Whitefield', slot:'D-220', datetime:'15 Sep, 5:00 PM', duration:'6 hrs', amount:'₹420', status:'completed' },
   ];
+  let current = [...bookings];
 
-  const ROWS_PER_PAGE = 8;
-  let currentPage = 1;
-  let filteredBookings = [...allBookings];
-
-  const statusColors = {
-    active: 'active', completed: 'completed', cancelled: 'cancelled', overstayed: 'overstayed'
-  };
-  const statusIcons = {
-    active: '<i class="fas fa-circle" style="font-size:0.5rem;"></i>',
-    completed: '✓', cancelled: '✗', overstayed: '⚠'
-  };
-
-  function renderTable() {
-    const tbody = document.getElementById('historyBody');
-    const empty = document.getElementById('emptyState');
-    const start = (currentPage - 1) * ROWS_PER_PAGE;
-    const pageData = filteredBookings.slice(start, start + ROWS_PER_PAGE);
-
-    if (filteredBookings.length === 0) {
-      tbody.innerHTML = '';
-      empty.style.display = 'block';
-    } else {
-      empty.style.display = 'none';
-      tbody.innerHTML = pageData.map(b => `
-        <tr data-status="${b.status}">
-          <td><b>${b.id}</b></td>
-          <td>${b.location}</td>
-          <td><b>${b.slot}</b></td>
-          <td>${b.datetime}</td>
-          <td>${b.duration}</td>
-          <td><b>${b.amount}</b></td>
-          <td><span class="badge ${statusColors[b.status]}">${statusIcons[b.status]} ${capitalize(b.status)}</span></td>
-          <td>
-            <div class="action-btns">
-              <button class="btn-sm" onclick="viewReceipt('${b.id}')"><i class="fas fa-receipt"></i> Receipt</button>
-              ${b.status === 'active' ? `<button class="btn-sm danger" onclick="cancelBooking('${b.id}')">Cancel</button>` : ''}
-            </div>
-          </td>
-        </tr>
-      `).join('');
-    }
-    renderPagination();
+  function render() {
+    document.getElementById('histBody').innerHTML = current.map(b => `
+      <tr>
+        <td><b>${b.id}</b></td>
+        <td>${b.location}</td>
+        <td><b style="color:var(--gold);">${b.slot}</b></td>
+        <td>${b.datetime}</td>
+        <td>${b.duration}</td>
+        <td><b>${b.amount}</b></td>
+        <td><span class="badge ${b.status}">${b.status.toUpperCase()}</span></td>
+        <td><button class="btn-sm" onclick="alert('PDF Receipt generated for ${b.id}')"><i class="fa-solid fa-receipt"></i> Receipt</button></td>
+      </tr>
+    `).join('');
   }
 
-  function renderPagination() {
-    const total = Math.ceil(filteredBookings.length / ROWS_PER_PAGE);
-    const pg = document.getElementById('pagination');
-    if (total <= 1) { pg.innerHTML = ''; return; }
-    let html = `<button class="page-btn" onclick="changePage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
-    for (let i = 1; i <= total; i++) {
-      html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="changePage(${i})">${i}</button>`;
-    }
-    html += `<button class="page-btn" onclick="changePage(${currentPage+1})" ${currentPage===total?'disabled':''}>›</button>`;
-    pg.innerHTML = html;
-  }
-
-  function changePage(n) {
-    const total = Math.ceil(filteredBookings.length / ROWS_PER_PAGE);
-    if (n < 1 || n > total) return;
-    currentPage = n;
-    renderTable();
-  }
-
-  function filterBookings(status, el) {
-    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  function filterData(s, el) {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
-    filteredBookings = status === 'all' ? [...allBookings] : allBookings.filter(b => b.status === status);
-    currentPage = 1;
-    renderTable();
+    current = s === 'all' ? [...bookings] : bookings.filter(b => b.status === s);
+    render();
   }
 
-  function searchBookings(query) {
-    const q = query.toLowerCase();
-    filteredBookings = allBookings.filter(b =>
-      b.id.toLowerCase().includes(q) ||
-      b.location.toLowerCase().includes(q) ||
-      b.slot.toLowerCase().includes(q)
-    );
-    currentPage = 1;
-    renderTable();
-  }
-
-  function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
-
-  function viewReceipt(id) {
-    alert(`📄 Receipt for booking ${id}\nThis will show a detailed receipt in the full version.`);
-  }
-
-  function cancelBooking(id) {
-    if (confirm(`Are you sure you want to cancel booking ${id}?`)) {
-      const booking = allBookings.find(b => b.id === id);
-      if (booking) {
-        booking.status = 'cancelled';
-        booking.amount = '₹0';
-      }
-      filteredBookings = [...allBookings];
-      renderTable();
-    }
+  function searchData(q) {
+    current = bookings.filter(b => b.id.toLowerCase().includes(q.toLowerCase()) || b.location.toLowerCase().includes(q.toLowerCase()));
+    render();
   }
 
   function exportCSV() {
-    const headers = ['Booking ID','Location','Slot','Date & Time','Duration','Amount','Status'];
-    const rows = allBookings.map(b => [b.id, b.location, b.slot, b.datetime, b.duration, b.amount, b.status]);
-    const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'smartpark_booking_history.csv';
-    a.click();
-    URL.revokeObjectURL(url);
+    alert('📥 Exporting booking history CSV...');
   }
 
-  // Init
-  renderTable();
+  render();
 </script>
 </body>
 </html>

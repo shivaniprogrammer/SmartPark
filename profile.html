@@ -3,97 +3,250 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>My Profile — SmartPark</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <title>Customer Profile — SmartPark</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900&display=swap" rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    :root{--navy:#0A1628;--navy2:#1E3A5F;--blue:#2563EB;--gold:#F59E0B;--white:#fff;--light:#F8FAFC;--grey:#64748B;--border:#E2E8F0;--green:#10B981;--red:#EF4444;}
-    body{font-family:'Inter',sans-serif;background:var(--light);color:var(--navy);display:flex;min-height:100vh;}
+    :root {
+      --bg: #000;
+      --surface: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.1);
+      --muted: #9a9a9a;
+      --gold: #F59E0B;
+      --blue: #2563EB;
+      --green: #10B981;
+      --red: #EF4444;
+      --spring: cubic-bezier(0.16,1,0.3,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: #fff;
+      display: flex;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
 
     /* SIDEBAR */
-    .sidebar{width:240px;background:var(--navy);display:flex;flex-direction:column;padding:1.5rem 0;position:fixed;top:0;left:0;height:100vh;z-index:100;}
-    .sidebar-logo{padding:0 1.5rem 2rem;font-size:1.35rem;font-weight:800;color:var(--white);text-decoration:none;display:flex;align-items:center;gap:0.5rem;border-bottom:1px solid rgba(255,255,255,0.08);}
-    .sidebar-logo span{color:var(--gold);}
-    .sidebar-nav{flex:1;padding:1.5rem 0.75rem;display:flex;flex-direction:column;gap:0.25rem;}
-    .nav-item{display:flex;align-items:center;gap:0.875rem;padding:0.75rem 0.875rem;border-radius:10px;color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.875rem;font-weight:500;transition:all .3s;}
-    .nav-item:hover,.nav-item.active{background:rgba(37,99,235,0.15);color:var(--white);}
-    .nav-item.active{background:rgba(37,99,235,0.25);color:#60A5FA;}
-    .nav-item i{width:18px;text-align:center;font-size:1rem;}
-    .sidebar-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,0.08);}
-    .user-avatar{width:36px;height:36px;border-radius:50%;background:var(--blue);color:var(--white);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;}
-    .user-info h4{font-size:0.825rem;font-weight:700;color:var(--white);}
-    .user-info span{font-size:0.75rem;color:rgba(255,255,255,0.5);}
-    .sidebar-user{display:flex;align-items:center;gap:0.75rem;}
+    .sidebar {
+      width: 240px;
+      background: #000;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 0;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+    }
+    .sidebar-logo {
+      padding: 0 20px 24px;
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-logo span { color: var(--gold); }
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .nav-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 8px 12px 4px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all .2s;
+    }
+    .nav-item:hover, .nav-item.active {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+    .nav-item.active {
+      border-left: 2px solid var(--gold);
+      padding-left: 12px;
+    }
+    .nav-item i { width: 18px; text-align: center; }
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .user-avatar-sm {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: #fff;
+    }
 
     /* MAIN */
-    .main{margin-left:240px;flex:1;display:flex;flex-direction:column;}
-    .topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
-    .topbar h1{font-size:1.1rem;font-weight:800;color:var(--navy);}
-    .content{padding:2rem;flex:1;}
+    .main { margin-left: 240px; flex: 1; display: flex; flex-direction: column; }
+    .topbar {
+      position: sticky; top: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      z-index: 50;
+    }
+    .topbar h1 { font-size: 16px; font-weight: 800; color: #fff; }
+    .content { padding: 32px; flex: 1; max-width: 1100px; }
 
-    /* PROFILE HEADER CARD */
-    .profile-header-card{background:linear-gradient(135deg,#0A1628,#1E3A5F);border-radius:16px;padding:2rem 2.5rem;color:var(--white);display:flex;align-items:center;gap:2rem;margin-bottom:2rem;position:relative;overflow:hidden;}
-    .profile-header-card::after{content:'👤';position:absolute;right:2rem;top:50%;transform:translateY(-50%);font-size:6rem;opacity:0.08;}
-    .big-avatar{width:90px;height:90px;border-radius:50%;background:var(--blue);color:var(--white);font-size:2.5rem;font-weight:800;display:flex;align-items:center;justify-content:center;border:4px solid rgba(255,255,255,0.2);flex-shrink:0;}
-    .profile-header-info h2{font-size:1.6rem;font-weight:800;margin-bottom:0.25rem;}
-    .profile-header-info p{color:rgba(255,255,255,0.6);font-size:0.9rem;margin-bottom:0.75rem;}
-    .badges-row{display:flex;gap:0.5rem;}
-    .badge-chip{background:rgba(245,158,11,0.2);color:var(--gold);border:1px solid rgba(245,158,11,0.4);padding:0.25rem 0.75rem;border-radius:100px;font-size:0.75rem;font-weight:700;display:inline-flex;align-items:center;gap:0.3rem;}
+    /* HEADER CARD */
+    .profile-header {
+      background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      display: flex; align-items: center; gap: 24px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .big-av {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), #d97706);
+      color: #000;
+      font-size: 2rem; font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+    .profile-hdr-info h2 { font-size: 22px; font-weight: 800; margin-bottom: 4px; color: #fff; }
+    .profile-hdr-info p { font-size: 14px; color: var(--muted); margin-bottom: 12px; }
+    .chips { display: flex; gap: 8px; }
+    .chip {
+      background: rgba(245,158,11,0.15);
+      color: var(--gold);
+      border: 1px solid rgba(245,158,11,0.3);
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 12px; font-weight: 700;
+    }
 
-    /* TWO COL LAYOUT */
-    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;}
-    .card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.5rem;}
-    .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;border-bottom:1px solid var(--border);padding-bottom:0.75rem;}
-    .card-header h3{font-size:1rem;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:0.5rem;}
-    .card-header h3 i{color:var(--blue);}
+    /* GRID */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+    }
+    .card-title {
+      font-size: 16px; font-weight: 700; color: #fff;
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .card-title i { color: var(--gold); }
 
-    /* FORM STYLES */
-    .form-group{margin-bottom:1.25rem;}
-    .form-group label{display:block;font-size:0.8rem;font-weight:600;color:var(--grey);margin-bottom:0.4rem;}
-    .form-control{width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:10px;font-size:0.875rem;font-family:'Inter',sans-serif;color:var(--navy);background:var(--white);transition:all .3s;}
-    .form-control:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,0.1);}
-    .form-control[disabled]{background:var(--light);color:var(--grey);cursor:not-allowed;}
-    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
-    
-    .btn-save{background:var(--blue);color:var(--white);border:none;padding:0.75rem 1.5rem;border-radius:10px;font-size:0.875rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .3s;}
-    .btn-save:hover{background:#1d4ed8;transform:translateY(-1px);}
+    /* FORM CONTROL DARK */
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px; font-family: 'Inter', sans-serif;
+      color: #fff;
+      outline: none;
+      transition: all .2s;
+    }
+    .form-input:focus { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.09); }
+    .form-input[disabled] { opacity: 0.5; cursor: not-allowed; }
 
-    /* VEHICLE CARD */
-    .vehicle-card{display:flex;align-items:center;justify-content:space-between;padding:1rem;border:1.5px solid var(--border);border-radius:12px;margin-bottom:0.75rem;background:var(--light);}
-    .vehicle-info{display:flex;align-items:center;gap:0.875rem;}
-    .vehicle-icon{width:40px;height:40px;border-radius:10px;background:#EFF6FF;color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
-    .vehicle-details h4{font-size:0.9rem;font-weight:700;color:var(--navy);}
-    .vehicle-details p{font-size:0.78rem;color:var(--grey);}
-    .tag-default{background:#DCFCE7;color:#15803D;font-size:0.7rem;font-weight:700;padding:0.2rem 0.5rem;border-radius:100px;}
+    .btn-action {
+      background: linear-gradient(140deg, #e4e4e4, #fff, #ccc);
+      color: #000;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: opacity .2s, transform .15s;
+    }
+    .btn-action:hover { opacity: 0.88; transform: translateY(-1px); }
 
-    /* SUCCESS NOTIFICATION */
-    .alert-toast{display:none;position:fixed;bottom:2rem;right:2rem;background:#10B981;color:var(--white);padding:1rem 1.5rem;border-radius:12px;font-size:0.875rem;font-weight:600;box-shadow:0 8px 24px rgba(16,185,129,0.3);z-index:1000;animation:slideUp .3s ease;}
-    @keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+    /* VEHICLE ITEM */
+    .item-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .item-left { display: flex; align-items: center; gap: 12px; }
+    .item-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: rgba(37,99,235,0.15);
+      color: #60A5FA;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .item-text h4 { font-size: 14px; font-weight: 700; color: #fff; }
+    .item-text p { font-size: 12px; color: var(--muted); }
 
-    @media(max-width:900px){.two-col{grid-template-columns:1fr;}.sidebar{display:none;}.main{margin-left:0;}}
+    .toast {
+      display: none; position: fixed; bottom: 28px; right: 28px;
+      background: rgba(16,185,129,0.95); color: #fff;
+      padding: 12px 20px; border-radius: 10px; font-size: 13px; font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 1000;
+    }
+    @media(max-width:850px){.grid{grid-template-columns:1fr;}.sidebar{display:none;}.main{margin-left:0;}}
   </style>
 </head>
 <body>
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
-  <a href="index.html" class="sidebar-logo">🅿 Smart<span>Park</span></a>
+  <a href="index.html" class="sidebar-logo">Smart<span>Park</span></a>
   <nav class="sidebar-nav">
-    <a class="nav-item" href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
-    <a class="nav-item" href="booking.html"><i class="fas fa-parking"></i> Book Parking</a>
-    <a class="nav-item" href="services.html"><i class="fas fa-concierge-bell"></i> Services</a>
-    <a class="nav-item" href="wallet.html"><i class="fas fa-wallet"></i> Wallet</a>
-    <a class="nav-item" href="history.html"><i class="fas fa-history"></i> History</a>
-    <a class="nav-item active" href="profile.html"><i class="fas fa-user"></i> Profile</a>
-    <a class="nav-item" href="settings.html"><i class="fas fa-cog"></i> Settings</a>
-    <a class="nav-item" href="login.html" style="margin-top:auto;color:rgba(239,68,68,0.8);"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    <span class="nav-label">Main Menu</span>
+    <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+    <a class="nav-item" href="booking.html"><i class="fa-solid fa-ticket"></i> Book Parking</a>
+    <a class="nav-item" href="map-test.html"><i class="fa-solid fa-map-location-dot"></i> Parking Map</a>
+    <a class="nav-item" href="services.html"><i class="fa-solid fa-wrench"></i> Services</a>
+    <a class="nav-item" href="wallet.html"><i class="fa-solid fa-wallet"></i> Wallet</a>
+    <a class="nav-item" href="history.html"><i class="fa-solid fa-clock-rotate-left"></i> History</a>
+
+    <span class="nav-label" style="margin-top:8px;">Account</span>
+    <a class="nav-item active" href="profile.html"><i class="fa-solid fa-user"></i> Profile</a>
+    <a class="nav-item" href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a>
   </nav>
+
   <div class="sidebar-footer">
-    <div class="sidebar-user">
-      <div class="user-avatar">R</div>
-      <div class="user-info"><h4>Rahul Sharma</h4><span>Gold Member ⭐</span></div>
-    </div>
+    <div class="user-avatar-sm">RS</div>
+    <div><div style="font-size:13px;font-weight:600;">Rahul Sharma</div><div style="font-size:11px;color:var(--muted);">Gold Member ⭐</div></div>
   </div>
 </aside>
 
@@ -101,130 +254,102 @@
 <div class="main">
   <div class="topbar">
     <h1>👤 Customer Profile & Account Details</h1>
-    <a href="dashboard.html" style="background:var(--light);border:1px solid var(--border);color:var(--navy);padding:0.45rem 1rem;border-radius:8px;font-size:0.85rem;font-weight:600;text-decoration:none;">← Back to Dashboard</a>
+    <a href="dashboard.html" style="color:var(--muted);text-decoration:none;font-size:13px;">← Back to Dashboard</a>
   </div>
 
   <div class="content">
 
-    <!-- HEADER PROFILE CARD -->
-    <div class="profile-header-card">
-      <div class="big-avatar">R</div>
-      <div class="profile-header-info">
-        <h2 id="dispName">Rahul Sharma</h2>
-        <p id="dispEmail">rahul.sharma@example.com</p>
-        <div class="badges-row">
-          <span class="badge-chip"><i class="fas fa-star"></i> Gold Member</span>
-          <span class="badge-chip" style="background:rgba(37,99,235,0.2);color:#60A5FA;border-color:rgba(37,99,235,0.4);"><i class="fas fa-shield-alt"></i> Verified Account</span>
-          <span class="badge-chip" style="background:rgba(16,185,129,0.2);color:#34D399;border-color:rgba(16,185,129,0.4);"><i class="fas fa-calendar-alt"></i> Member since Jun 2024</span>
+    <!-- HEADER PROFILE -->
+    <div class="profile-header">
+      <div class="big-av">RS</div>
+      <div class="profile-hdr-info">
+        <h2 id="nameHeading">Rahul Sharma</h2>
+        <p id="emailHeading">rahul.sharma@example.com</p>
+        <div class="chips">
+          <span class="chip">⭐ Gold Member</span>
+          <span class="chip" style="background:rgba(16,185,129,0.15);color:#34D399;border-color:rgba(16,185,129,0.3);">Verified Account</span>
         </div>
       </div>
     </div>
 
-    <div class="two-col">
-      <!-- PERSONAL INFORMATION -->
+    <div class="grid">
+      <!-- PERSONAL INFO -->
       <div class="card">
-        <div class="card-header">
-          <h3><i class="fas fa-user-edit"></i> Personal Information</h3>
-        </div>
-        <form onsubmit="saveProfile(event)">
+        <div class="card-title"><i class="fa-solid fa-user-pen"></i> Personal Information</div>
+        <form onsubmit="updateProfile(event)">
           <div class="form-group">
             <label>Full Name</label>
-            <input type="text" class="form-control" id="fullName" value="Rahul Sharma" required/>
+            <input type="text" class="form-input" id="inpName" value="Rahul Sharma" required/>
           </div>
           <div class="form-group">
-            <label>Registered Email Address</label>
-            <input type="email" class="form-control" id="email" value="rahul.sharma@example.com" disabled/>
-            <small style="font-size:0.75rem;color:var(--grey);margin-top:0.2rem;display:block;">Email address cannot be changed directly for security reasons.</small>
+            <label>Registered Email</label>
+            <input type="email" class="form-input" value="rahul.sharma@example.com" disabled/>
           </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Phone Number</label>
-              <input type="tel" class="form-control" id="phone" value="+91 98765 43210" required/>
-            </div>
-            <div class="form-group">
-              <label>City</label>
-              <input type="text" class="form-control" id="city" value="Bangalore, Karnataka"/>
-            </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" class="form-input" value="+91 98765 43210" required/>
           </div>
-          <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Profile Details</button>
+          <button type="submit" class="btn-action">Save Profile Details</button>
         </form>
       </div>
 
       <!-- CHANGE PASSWORD -->
       <div class="card">
-        <div class="card-header">
-          <h3><i class="fas fa-lock"></i> Change Password</h3>
-        </div>
-        <form onsubmit="changePassword(event)">
+        <div class="card-title"><i class="fa-solid fa-lock"></i> Change Password</div>
+        <form onsubmit="updatePassword(event)">
           <div class="form-group">
             <label>Current Password</label>
-            <input type="password" class="form-control" placeholder="Enter current password" required/>
+            <input type="password" class="form-input" placeholder="Enter current password" required/>
           </div>
           <div class="form-group">
             <label>New Password</label>
-            <input type="password" class="form-control" placeholder="Enter new password (min. 8 characters)" minlength="8" required/>
+            <input type="password" class="form-input" placeholder="New password (min. 8 chars)" minlength="8" required/>
           </div>
           <div class="form-group">
-            <label>Confirm New Password</label>
-            <input type="password" class="form-control" placeholder="Re-enter new password" minlength="8" required/>
+            <label>Confirm Password</label>
+            <input type="password" class="form-input" placeholder="Repeat new password" minlength="8" required/>
           </div>
-          <button type="submit" class="btn-save" style="background:var(--navy);"><i class="fas fa-key"></i> Update Password</button>
+          <button type="submit" class="btn-action">Update Password</button>
         </form>
       </div>
     </div>
 
-    <!-- SAVED VEHICLES & PAYMENT METHODS -->
-    <div class="two-col">
-      <!-- REGISTERED VEHICLES -->
+    <!-- SAVED VEHICLES & PAYMENTS -->
+    <div class="grid">
       <div class="card">
-        <div class="card-header">
-          <h3><i class="fas fa-car"></i> Registered Vehicles</h3>
-          <button class="btn-save" style="padding:0.4rem 0.8rem;font-size:0.78rem;" onclick="addVehicle()">+ Add Vehicle</button>
-        </div>
-        <div class="vehicle-card">
-          <div class="vehicle-info">
-            <div class="vehicle-icon"><i class="fas fa-car-side"></i></div>
-            <div class="vehicle-details">
+        <div class="card-title"><i class="fa-solid fa-car"></i> Saved Vehicles</div>
+        <div class="item-row">
+          <div class="item-left">
+            <div class="item-icon"><i class="fa-solid fa-car-side"></i></div>
+            <div class="item-text">
               <h4>Hyundai Creta (SUV)</h4>
-              <p>License Plate: <b>KA-01-MH-1234</b></p>
+              <p>Plate: <b>KA-01-MH-1234</b></p>
             </div>
           </div>
-          <span class="tag-default">Primary</span>
+          <span style="font-size:11px;color:var(--green);font-weight:700;">Primary</span>
         </div>
-        <div class="vehicle-card">
-          <div class="vehicle-info">
-            <div class="vehicle-icon" style="background:#FFF7ED;color:var(--gold);"><i class="fas fa-motorcycle"></i></div>
-            <div class="vehicle-details">
-              <h4>Ather 450X (EV Scooter)</h4>
-              <p>License Plate: <b>KA-05-EV-5678</b></p>
+        <div class="item-row">
+          <div class="item-left">
+            <div class="item-icon" style="background:rgba(245,158,11,0.15);color:var(--gold);"><i class="fa-solid fa-motorcycle"></i></div>
+            <div class="item-text">
+              <h4>Ather 450X (EV)</h4>
+              <p>Plate: <b>KA-05-EV-5678</b></p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- SAVED PAYMENT METHODS -->
       <div class="card">
-        <div class="card-header">
-          <h3><i class="fas fa-credit-card"></i> Saved Payment Options</h3>
-        </div>
-        <div class="vehicle-card">
-          <div class="vehicle-info">
-            <div class="vehicle-icon" style="background:#F0FDF4;color:var(--green);"><i class="fas fa-wallet"></i></div>
-            <div class="vehicle-details">
-              <h4>SmartPark Wallet Balance</h4>
-              <p>Current Balance: <b style="color:var(--green);">₹850.00</b></p>
+        <div class="card-title"><i class="fa-solid fa-credit-card"></i> Saved Payment Options</div>
+        <div class="item-row">
+          <div class="item-left">
+            <div class="item-icon" style="background:rgba(16,185,129,0.15);color:var(--green);"><i class="fa-solid fa-wallet"></i></div>
+            <div class="item-text">
+              <h4>SmartPark Wallet</h4>
+              <p>Balance: <b style="color:var(--green);">₹850.00</b></p>
             </div>
           </div>
-          <a href="wallet.html" style="font-size:0.78rem;font-weight:700;color:var(--blue);text-decoration:none;">Add Funds →</a>
-        </div>
-        <div class="vehicle-card">
-          <div class="vehicle-info">
-            <div class="vehicle-icon" style="background:#EFF6FF;color:var(--blue);"><i class="fas fa-mobile-alt"></i></div>
-            <div class="vehicle-details">
-              <h4>GPay / PhonePe UPI</h4>
-              <p>Linked VPA: <b>rahul@okicici</b></p>
-            </div>
-          </div>
+          <a href="wallet.html" style="font-size:12px;color:var(--gold);text-decoration:none;font-weight:700;">Add Funds →</a>
         </div>
       </div>
     </div>
@@ -232,34 +357,25 @@
   </div>
 </div>
 
-<div class="alert-toast" id="alertToast">✓ Changes updated successfully!</div>
+<div class="toast" id="toast">✓ Saved successfully!</div>
 
 <script>
-  function saveProfile(e) {
+  function updateProfile(e) {
     e.preventDefault();
-    const name = document.getElementById('fullName').value;
-    document.getElementById('dispName').textContent = name;
-    showToast('✓ Profile information updated successfully!');
+    const val = document.getElementById('inpName').value;
+    document.getElementById('nameHeading').textContent = val;
+    showToast('✓ Profile updated!');
   }
-
-  function changePassword(e) {
+  function updatePassword(e) {
     e.preventDefault();
-    showToast('✓ Password updated successfully!');
+    showToast('✓ Password updated!');
     e.target.reset();
   }
-
-  function addVehicle() {
-    const plate = prompt('Enter Vehicle License Plate Number (e.g., KA-03-AB-9999):');
-    if (plate) {
-      showToast(`✓ Vehicle ${plate} added successfully!`);
-    }
-  }
-
-  function showToast(msg) {
-    const t = document.getElementById('alertToast');
-    t.textContent = msg;
+  function showToast(m) {
+    const t = document.getElementById('toast');
+    t.textContent = m;
     t.style.display = 'block';
-    setTimeout(() => { t.style.display = 'none'; }, 3000);
+    setTimeout(() => { t.style.display = 'none'; }, 2500);
   }
 </script>
 </body>
