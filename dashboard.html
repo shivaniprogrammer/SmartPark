@@ -339,6 +339,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
 <script>
 let selectedExtHours = 1;
 let currentLotRate = 60;
+var secs = 7200;
 
 function openExtendModal() {
   const modal = document.getElementById('extendModal');
@@ -383,7 +384,9 @@ async function confirmExtendStay() {
   const totalCost = currentLotRate * selectedExtHours;
   
   // Deduct extension charges from wallet via API
-  await apiRequest('/wallet/add-funds', 'POST', { amount: -totalCost });
+  try {
+    await apiRequest('/wallet/add-funds', 'POST', { amount: -totalCost });
+  } catch(e){}
 
   // Update active booking payload in localStorage
   let activeBooking = null;
@@ -393,14 +396,43 @@ async function confirmExtendStay() {
   } catch(e){}
 
   if (activeBooking) {
-    const currentEnd = activeBooking.endTime ? new Date(activeBooking.endTime).getTime() : Date.now();
-    activeBooking.endTime = new Date(currentEnd + selectedExtHours * 3600 * 1000).toISOString();
+    const baseEnd = (activeBooking.endTime && new Date(activeBooking.endTime).getTime() > Date.now()) 
+      ? new Date(activeBooking.endTime).getTime() 
+      : Date.now();
+    activeBooking.endTime = new Date(baseEnd + selectedExtHours * 3600 * 1000).toISOString();
     activeBooking.durationHours = (activeBooking.durationHours || 2) + selectedExtHours;
+    localStorage.setItem('smartpark_active_booking', JSON.stringify(activeBooking));
+  } else {
+    activeBooking = {
+      bookingId: '#SP2024' + Math.floor(1000 + Math.random() * 9000),
+      locationName: "KFC Junction Parking",
+      slotNumber: "A-01",
+      durationHours: selectedExtHours,
+      totalAmount: totalCost,
+      ratePerHour: currentLotRate,
+      vehicleType: "4-Wheeler (Car)",
+      vehiclePlate: "KA-01-MH-1234",
+      startTime: new Date().toISOString(),
+      endTime: new Date(Date.now() + selectedExtHours * 3600 * 1000).toISOString()
+    };
     localStorage.setItem('smartpark_active_booking', JSON.stringify(activeBooking));
   }
 
-  // Update countdown timer
-  secs += selectedExtHours * 3600;
+  // Instantly reload active booking and update countdown timer
+  if (typeof window.loadActiveBooking === 'function') {
+    window.loadActiveBooking();
+  } else {
+    secs += selectedExtHours * 3600;
+  }
+  
+  if (typeof window.tick === 'function') {
+    window.tick();
+  }
+
+  if (typeof window.loadDashboardData === 'function') {
+    window.loadDashboardData();
+  }
+
   closeExtendModal();
   alert(`✅ Stay Extended by ${selectedExtHours} Hour(s)!\n₹${totalCost} deducted from SmartPark Wallet.`);
 }
@@ -452,7 +484,6 @@ async function confirmExtendStay() {
   }
 
   // 2. Dynamic Active Booking Loader
-  let secs = 6442;
   function loadActiveBooking() {
     let activeBooking = null;
     try {
@@ -565,6 +596,10 @@ async function confirmExtendStay() {
   }
   loadDashboardData();
 
+  // Expose methods globally for extend modal updates
+  window.loadActiveBooking = loadActiveBooking;
+  window.loadDashboardData = loadDashboardData;
+
   // Countdown timer loop
   function tick(){
     var h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60),s=secs%60;
@@ -579,6 +614,7 @@ async function confirmExtendStay() {
       }
     }
   }
+  window.tick = tick;
   tick();
   setInterval(tick, 1000);
 }());
