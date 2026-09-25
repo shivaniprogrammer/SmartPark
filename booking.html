@@ -8,6 +8,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+
+<link rel="stylesheet" href="theme.css">
 <style>
   :root {
     --bg: #000000;
@@ -389,6 +392,11 @@
     color: var(--gold);
   }
 
+  .no-results {
+    text-align: center; padding: 30px 10px;
+    color: var(--muted); font-size: 13px;
+  }
+
   .lot-cards { display: flex; flex-direction: column; gap: 12px; }
   .lot-card {
     background: rgba(255,255,255,.03);
@@ -435,6 +443,7 @@
     background: rgba(255,255,255,.05); color: rgba(255,255,255,.7);
   }
   .tag-ev { background: rgba(245,158,11,.15); color: var(--gold); border: 1px solid rgba(245,158,11,.25); }
+  .tag-cat { background: rgba(37,99,235,.15); color: #60a5fa; border: 1px solid rgba(37,99,235,.25); }
 
   /* ── STEP 2: SLOT SELECTION ── */
   .slot-legend {
@@ -787,15 +796,12 @@
 
             <div class="location-search-wrap">
               <i class="fa-solid fa-magnifying-glass"></i>
-              <input class="location-search" type="text" placeholder="Search mall, metro, airport, or landmark..." id="locSearch"/>
+              <input class="location-search" type="text" placeholder="Search mall or metro station..." id="locSearch" oninput="renderLots()"/>
             </div>
 
-            <div class="filter-chips">
-              <div class="chip chip-active">All Lots</div>
-              <div class="chip">⚡ EV Charging</div>
-              <div class="chip">🏠 Covered</div>
-              <div class="chip">🕐 24/7 Open</div>
-              <div class="chip">🚪 Near Entry/Exit</div>
+            <div class="filter-chips" id="categoryChips">
+              <div class="chip chip-active" id="chipMall" onclick="selectCategory('mall')">🏬 Malls</div>
+              <div class="chip" id="chipMetro" onclick="selectCategory('metro')">🚇 Metro Stations</div>
             </div>
 
             <div class="lot-cards" id="lotCardsContainer">
@@ -1007,49 +1013,57 @@
 </a>
 
 <script>
+// ── REAL LOCATION DATA: Tamil Nadu malls + Chennai Metro stations ──
+const MALLS = [
+  {name:'Phoenix Marketcity', landmark:'Velachery, Chennai'},
+  {name:'Express Avenue Mall', landmark:'Royapettah, Chennai'},
+  {name:'VR Chennai', landmark:'Anna Nagar, Chennai'},
+  {name:'Forum Vijaya Mall', landmark:'Vadapalani, Chennai'},
+  {name:'Ampa Skywalk', landmark:'Aminjikarai, Chennai'},
+  {name:'Chennai Citi Centre', landmark:'Mylapore, Chennai'},
+  {name:'Marina Mall', landmark:'Anna Salai, Chennai'},
+  {name:'Brookefields Mall', landmark:'Coimbatore'},
+  {name:'Fun Republic Mall', landmark:'Coimbatore'},
+  {name:'Prozone Mall', landmark:'Coimbatore'},
+  {name:'Vishaal De Mall', landmark:'Madurai'}
+];
+const METRO_NAMES = [
+  'Chennai Airport','Meenambakkam','Nanganallur Road','Alandur','Guindy','Little Mount','Saidapet','Nandanam','Teynampet','AG-DMS','Thousand Lights','LIC','Government Estate','Chennai Central','High Court','Mannadi','Washermanpet',
+  'Sir Thiyagaraya College','Tondiarpet','New Washermenpet','Tollgate','Kaladipet','Thiruvottriyur Theradi','Thiruvottriyur','Wimco Nagar',
+  'St. Thomas Mount','Ekkattuthangal','Ashok Nagar','Vadapalani','Arumbakkam','CMBT','Koyambedu','Thirumangalam','Anna Nagar Tower','Anna Nagar East','Shenoy Nagar',"Pachaiyappa's College",'Kilpauk Medical College','Nehru Park','Egmore'
+];
+const METROS = METRO_NAMES.map(n => ({name: n + ' Metro Station', landmark: n + ', Chennai Metro'}));
+
+function buildLots(list, category) {
+  return list.map((item, i) => {
+    const rate4W = category === 'mall' ? 30 + (i % 5) * 10 : 10 + (i % 6) * 4;
+    const rate2W = Math.max(8, Math.round(rate4W / 2.5 / 5) * 5);
+    return {
+      id: category + '-' + i,
+      name: item.name,
+      landmark: item.landmark,
+      category: category,
+      distance: (0.2 + (i % 9) * 0.3).toFixed(1) + ' km',
+      rating: (3.9 + (i % 6) * 0.18).toFixed(1),
+      rates: { '2W': rate2W, '4W': rate4W },
+      freeSlots: { '2W': 10 + (i * 3) % 40, '4W': 4 + (i * 5) % 30 },
+      hasEV: i % 3 !== 0,
+      indoor: category === 'mall'
+    };
+  });
+}
+
 // ── STATE ──
 const state = {
   currentStep: 1,
   vehicleType: '4W', // '2W' or '4W'
-  selectedLotId: 1,
+  category: 'mall',  // 'mall' or 'metro'
+  selectedLotId: null,
+  selectedLot: null,
   selectedSlot: null,
   duration: 2,
 
-  lots: [
-    {
-      id: 1,
-      name: 'Forum Mall Parking',
-      landmark: 'Koramangala, Bangalore',
-      distance: '0.3 km',
-      rating: '4.8',
-      rates: { '2W': 20, '4W': 60 },
-      freeSlots: { '2W': 36, '4W': 18 },
-      hasEV: true,
-      indoor: true
-    },
-    {
-      id: 2,
-      name: 'KFC Junction Parking',
-      landmark: '100ft Road, Indiranagar',
-      distance: '0.7 km',
-      rating: '4.5',
-      rates: { '2W': 15, '4W': 40 },
-      freeSlots: { '2W': 48, '4W': 32 },
-      hasEV: false,
-      indoor: false
-    },
-    {
-      id: 3,
-      name: 'Oasis Centre Parking',
-      landmark: 'Sony World Signal, Koramangala',
-      distance: '1.2 km',
-      rating: '4.3',
-      rates: { '2W': 10, '4W': 30 },
-      freeSlots: { '2W': 24, '4W': 7 },
-      hasEV: true,
-      indoor: true
-    }
-  ],
+  allLots: [...buildLots(MALLS, 'mall'), ...buildLots(METROS, 'metro')],
 
   // 4-Wheeler Slots (Bays A1..D6)
   slots4W: [
@@ -1113,7 +1127,7 @@ function selectVehicle(type) {
   state.vehicleType = type;
   document.getElementById('card2W').classList.toggle('active', type === '2W');
   document.getElementById('card4W').classList.toggle('active', type === '4W');
-  
+
   // Reset selected slot when vehicle changes
   state.selectedSlot = null;
 
@@ -1122,16 +1136,40 @@ function selectVehicle(type) {
   updateSummary();
 }
 
-// ── RENDER LOTS ──
+// ── CATEGORY SWITCHER (Mall vs Metro) ──
+function selectCategory(cat) {
+  state.category = cat;
+  document.getElementById('chipMall').classList.toggle('chip-active', cat === 'mall');
+  document.getElementById('chipMetro').classList.toggle('chip-active', cat === 'metro');
+  state.selectedLotId = null;
+  state.selectedLot = null;
+  state.selectedSlot = null;
+  renderLots();
+}
+
+// ── RENDER LOTS (filtered by category + live search) ──
 function renderLots() {
   const container = document.getElementById('lotCardsContainer');
   container.innerHTML = '';
 
-  state.lots.forEach(lot => {
+  const query = (document.getElementById('locSearch').value || '').trim().toLowerCase();
+  const filtered = state.allLots.filter(l => {
+    if (l.category !== state.category) return false;
+    if (!query) return true;
+    return l.name.toLowerCase().includes(query) || l.landmark.toLowerCase().includes(query);
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="no-results"><i class="fa-solid fa-magnifying-glass" style="margin-right:6px;"></i>No matching locations found. Try a different search.</div>';
+    return;
+  }
+
+  filtered.forEach(lot => {
     const rate = lot.rates[state.vehicleType];
     const freeCount = lot.freeSlots[state.vehicleType];
     const isSelected = lot.id === state.selectedLotId;
     const vName = state.vehicleType === '2W' ? '2-Wheeler' : '4-Wheeler';
+    const catLabel = lot.category === 'mall' ? '🏬 Mall' : '🚇 Metro Station';
 
     const card = document.createElement('div');
     card.className = 'lot-card' + (isSelected ? ' active-lot' : '');
@@ -1161,12 +1199,13 @@ function renderLots() {
           <i class="fa-solid fa-circle-check" style="font-size:11px;"></i>
           ${freeCount} ${vName} slots available
         </div>
+        <span class="tag tag-cat">${catLabel}</span>
         <span class="tag">${lot.indoor ? '🏛️ Covered Indoor' : '🌤️ Open Parking'}</span>
         ${lot.hasEV ? '<span class="tag tag-ev">⚡ EV Charging</span>' : ''}
       </div>
 
       <div style="display:flex;justify-content:flex-end;">
-        <button class="btn-primary" onclick="selectLot(${lot.id});event.stopPropagation();">
+        <button class="btn-primary" onclick="selectLot('${lot.id}');event.stopPropagation();">
           Select &amp; Pick Slot <i class="fa-solid fa-arrow-right" style="margin-left:6px;"></i>
         </button>
       </div>
@@ -1178,6 +1217,7 @@ function renderLots() {
 
 function selectLot(lotId) {
   state.selectedLotId = lotId;
+  state.selectedLot = state.allLots.find(l => l.id === lotId);
   state.selectedSlot = null;
   renderLots();
   buildSlotGrid();
@@ -1187,7 +1227,7 @@ function selectLot(lotId) {
 
 // ── BUILD SLOT GRID ──
 function buildSlotGrid() {
-  const lot = state.lots.find(l => l.id === state.selectedLotId);
+  const lot = state.selectedLot || state.allLots[0];
   const vName = state.vehicleType === '2W' ? '2-Wheeler (Bike)' : '4-Wheeler (Car)';
   const vIcon = state.vehicleType === '2W' ? '🛵' : '🚗';
 
@@ -1239,7 +1279,7 @@ function updateDuration(val) {
   const hrs = state.duration;
   document.getElementById('durationDisplay').textContent = hrs + ' hour' + (hrs > 1 ? 's' : '');
 
-  const lot = state.lots.find(l => l.id === state.selectedLotId);
+  const lot = state.selectedLot || state.allLots[0];
   const rate = lot.rates[state.vehicleType];
   const cost = rate * hrs;
 
@@ -1249,7 +1289,7 @@ function updateDuration(val) {
 
 // ── UPDATE SUMMARY ──
 function updateSummary() {
-  const lot = state.lots.find(l => l.id === state.selectedLotId);
+  const lot = state.selectedLot || state.allLots[0];
   const rate = lot.rates[state.vehicleType];
   const cost = rate * state.duration;
   const reg = document.getElementById('regNumber').value.trim() || '—';
@@ -1321,23 +1361,27 @@ function selectPayment(el, method) {
 
 // ── CONFIRMATION MODAL ──
 async function confirmBooking() {
-  const lot = state.lots.find(l => l.id === state.selectedLotId);
+  const lot = state.selectedLot || state.allLots[0];
   const rate = lot ? lot.rates[state.vehicleType] : 60;
   const cost = rate * state.duration;
   const bookingId = '#SP-2024-' + Math.floor(1000 + Math.random() * 9000);
-  const lotName = lot ? lot.name : "KFC Junction Parking";
+  const lotName = lot ? lot.name : "Phoenix Marketcity";
 
-  // Post to backend API
-  await apiRequest('/bookings', 'POST', {
-    locationId: state.selectedLotId,
-    locationName: lotName,
-    slotNumber: state.selectedSlot || 'A-01',
-    durationHours: state.duration,
-    ratePerHour: rate,
-    totalAmount: cost,
-    vehicleType: state.vehicleType,
-    paymentMethod: 'wallet'
-  });
+  // Post to backend API (only if the api-config.js helper is present)
+  if (typeof apiRequest === 'function') {
+    try {
+      await apiRequest('/bookings', 'POST', {
+        locationId: state.selectedLotId,
+        locationName: lotName,
+        slotNumber: state.selectedSlot || 'A-01',
+        durationHours: state.duration,
+        ratePerHour: rate,
+        totalAmount: cost,
+        vehicleType: state.vehicleType,
+        paymentMethod: 'wallet'
+      });
+    } catch (e) {}
+  }
 
   // Save active booking to localStorage for live Dashboard display
   const activeBookingPayload = {
@@ -1360,9 +1404,9 @@ async function confirmBooking() {
     let recent = JSON.parse(localStorage.getItem('smartpark_recent_bookings') || '[]');
     if (recent.length === 0) {
       recent = [
-        { id: '#SP2024002', locationName: 'Orion Mall, Rajajinagar', slotNumber: 'A-108', dateTime: '22 Sep, 10:00 AM', duration: '5 hrs', amount: '₹350', status: 'completed' },
-        { id: '#SP2024003', locationName: 'UB City, Cubbon Park', slotNumber: 'C-312', dateTime: '20 Sep, 2:00 PM', duration: '2 hrs', amount: '₹120', status: 'completed' },
-        { id: '#SP2024004', locationName: 'Phoenix Mall, Whitefield', slotNumber: 'D-056', dateTime: '18 Sep, 6:00 PM', duration: '1 hr', amount: '₹60', status: 'cancelled' }
+        { id: '#SP2024002', locationName: 'Express Avenue Mall, Chennai', slotNumber: 'A-108', dateTime: '22 Sep, 10:00 AM', duration: '5 hrs', amount: '₹350', status: 'completed' },
+        { id: '#SP2024003', locationName: 'Egmore Metro Station', slotNumber: 'C-312', dateTime: '20 Sep, 2:00 PM', duration: '2 hrs', amount: '₹120', status: 'completed' },
+        { id: '#SP2024004', locationName: 'VR Chennai, Anna Nagar', slotNumber: 'D-056', dateTime: '18 Sep, 6:00 PM', duration: '1 hr', amount: '₹60', status: 'cancelled' }
       ];
     }
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -1404,12 +1448,16 @@ function closeModal() {
   const urlParams = new URLSearchParams(window.location.search);
   const lotParam = urlParams.get('lot') || urlParams.get('location');
   if (lotParam) {
-    const found = state.lots.find(l => 
-      l.id.toString() === lotParam || 
+    const found = state.allLots.find(l =>
+      l.id === lotParam ||
       l.name.toLowerCase().includes(lotParam.toLowerCase())
     );
     if (found) {
+      state.category = found.category;
       state.selectedLotId = found.id;
+      state.selectedLot = found;
+      document.getElementById('chipMall')?.classList.toggle('chip-active', found.category === 'mall');
+      document.getElementById('chipMetro')?.classList.toggle('chip-active', found.category === 'metro');
     }
   }
 })();
@@ -1419,5 +1467,8 @@ buildSlotGrid();
 updateSummary();
 </script>
 <script src="api-config.js"></script>
+
+
+<script src="theme.js"></script>
 </body>
 </html>

@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Booking History — SmartPark</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900&display=swap" rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  
+  
+  <link rel="stylesheet" href="theme.css">
   <style>
     :root {
       --bg: #000;
@@ -198,13 +203,9 @@
   </div>
 
   <div class="content">
-
-    <div class="filter-bar">
-      <span class="chip active" onclick="filterData('all',this)">All</span>
-      <span class="chip" onclick="filterData('active',this)">🟢 Active</span>
-      <span class="chip" onclick="filterData('completed',this)">✅ Completed</span>
-      <span class="chip" onclick="filterData('cancelled',this)">❌ Cancelled</span>
-      <div class="search-filter">
+<div class="filter-bar">
+  <span class="chip active">🟢 Active Bookings</span>
+  <div class="search-filter">
         <i class="fa-solid fa-magnifying-glass" style="color:var(--muted);font-size:12px;"></i>
         <input type="text" placeholder="Search booking ID..." oninput="searchData(this.value)"/>
       </div>
@@ -237,6 +238,41 @@
 
 <script src="api-config.js"></script>
 <script>
+
+  function downloadReceipt(b) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  doc.setFontSize(18);
+  doc.text('SmartPark - Booking Receipt', 20, 20);
+  doc.setFontSize(11);
+  doc.line(20, 25, 190, 25);
+
+  const rows = [
+    ['Booking ID', b.id],
+    ['Location', b.location],
+    ['Slot', b.slot],
+    ['Date & Time', b.datetime],
+    ['Duration', b.duration],
+    ['Amount', b.amount],
+    ['Status', b.status.toUpperCase()]
+  ];
+
+  let y = 40;
+  rows.forEach(([label, value]) => {
+    doc.setFont(undefined, 'bold');
+    doc.text(label + ':', 20, y);
+    doc.setFont(undefined, 'normal');
+    doc.text(String(value), 80, y);
+    y += 10;
+  });
+
+  doc.setFontSize(9);
+  doc.text('Thank you for using SmartPark.', 20, y + 10);
+
+  doc.save(`Receipt_${b.id.replace('#','')}.pdf`);
+}
+
   let bookings = [
     { id:'#SP2024001', location:'Forum Mall, Koramangala', slot:'B-204', datetime:'24 Sep, 6:00 PM', duration:'3 hrs', amount:'₹180', status:'active' },
     { id:'#SP2024000', location:'Orion Mall, Rajajinagar', slot:'A-108', datetime:'22 Sep, 10:00 AM', duration:'5 hrs', amount:'₹350', status:'completed' },
@@ -244,7 +280,7 @@
     { id:'#SP2023998', location:'Mantri Mall, Malleswaram', slot:'B-051', datetime:'18 Sep, 9:00 AM', duration:'4 hrs', amount:'₹0', status:'cancelled' },
     { id:'#SP2023997', location:'Phoenix Mall, Whitefield', slot:'D-220', datetime:'15 Sep, 5:00 PM', duration:'6 hrs', amount:'₹420', status:'completed' },
   ];
-  let current = [...bookings];
+ let current = bookings.filter(b => b.status === 'active');
 
   const user = getCurrentUser();
   if (user && user.name) {
@@ -284,7 +320,9 @@
         status: b.status || 'active'
       }));
     }
-    current = [...bookings];
+ current = bookings.filter(b => b.status === 'active');
+
+
     render();
   }
 
@@ -298,8 +336,7 @@
         <td>${b.duration}</td>
         <td><b>${b.amount}</b></td>
         <td><span class="badge ${b.status}">${b.status.toUpperCase()}</span></td>
-        <td><button class="btn-sm" onclick="alert('PDF Receipt generated for ${b.id}')"><i class="fa-solid fa-receipt"></i> Receipt</button></td>
-      </tr>
+       <td><button class="btn-sm" onclick='downloadReceipt(${JSON.stringify(b)})'><i class="fa-solid fa-receipt"></i> Receipt</button></td>
     `).join('');
   }
 
@@ -322,5 +359,8 @@
   render();
   loadUserBookings();
 </script>
+
+
+<script src="theme.js"></script>
 </body>
 </html>

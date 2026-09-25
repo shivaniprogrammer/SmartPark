@@ -269,16 +269,16 @@
   /* ─── PAGE CONTENT ─────────────────────────────────────────── */
   .page-content {
     padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .top-cards-row {
     display: grid;
     grid-template-columns: 60% 1fr;
     gap: 24px;
     align-items: start;
-  }
-
-  .left-col, .right-col {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
   }
 
   /* ─── CARDS ────────────────────────────────────────────────── */
@@ -1001,8 +1001,8 @@
   <!-- PAGE CONTENT -->
   <main class="page-content">
 
-    <!-- ════ LEFT COLUMN ════ -->
-    <div class="left-col">
+    <!-- ════ TOP ROW: BLUE CARD + GOLDEN LOYALTY CARD ════ -->
+    <div class="top-cards-row">
 
       <!-- WALLET CREDIT CARD -->
       <div class="wallet-card anim-el" style="transition-delay:.05s">
@@ -1041,146 +1041,6 @@
         </div>
       </div>
 
-      <!-- ADD MONEY -->
-      <div class="card anim-el" style="transition-delay:.12s">
-        <div class="section-title">Add Money</div>
-        <div class="quick-amounts">
-          <button class="quick-amt-btn" data-amt="100">₹100</button>
-          <button class="quick-amt-btn" data-amt="500">₹500</button>
-          <button class="quick-amt-btn" data-amt="1000">₹1000</button>
-          <button class="quick-amt-btn" data-amt="2000">₹2000</button>
-        </div>
-        <input class="amount-input" id="amountInput" type="number" placeholder="Enter custom amount" min="1" />
-
-        <div class="pay-methods-label">Payment Method</div>
-        <div class="pay-methods">
-          <label class="pay-method-card selected" id="pm-upi">
-            <input type="radio" name="payMethod" value="upi" checked />
-            <div class="pay-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
-            <div class="pay-info">
-              <div class="pay-name">UPI</div>
-              <div class="pay-sub">BHIM, GPay, PhonePe</div>
-            </div>
-          </label>
-          <label class="pay-method-card" id="pm-card">
-            <input type="radio" name="payMethod" value="card" />
-            <div class="pay-icon"><i class="fa-solid fa-credit-card"></i></div>
-            <div class="pay-info">
-              <div class="pay-name">Debit / Credit Card</div>
-              <div class="pay-sub">Visa, Mastercard, RuPay</div>
-            </div>
-          </label>
-          <label class="pay-method-card" id="pm-net">
-            <input type="radio" name="payMethod" value="netbanking" />
-            <div class="pay-icon"><i class="fa-solid fa-building-columns"></i></div>
-            <div class="pay-info">
-              <div class="pay-name">Net Banking</div>
-              <div class="pay-sub">All major banks supported</div>
-            </div>
-          </label>
-        </div>
-
-        <button class="btn-primary" id="addMoneyBtn">
-          <i class="fa-solid fa-plus"></i> Add Money
-        </button>
-      </div>
-
-      <!-- TRANSACTION HISTORY -->
-      <div class="card anim-el" style="transition-delay:.19s">
-        <div class="section-title">Transaction History</div>
-        <div class="filter-chips">
-          <button class="filter-chip active" data-filter="all">All</button>
-          <button class="filter-chip" data-filter="added">Added</button>
-          <button class="filter-chip" data-filter="parking">Parking</button>
-          <button class="filter-chip" data-filter="services">Services</button>
-          <button class="filter-chip" data-filter="rewards">Rewards</button>
-        </div>
-        <div class="txn-list" id="txnList">
-
-          <div class="txn-row" data-category="parking">
-            <div class="txn-left">
-              <div class="txn-icon-wrap debit"><i class="fa-solid fa-square-parking"></i></div>
-              <div>
-                <div class="txn-desc">Forum Mall Parking</div>
-                <div class="txn-date">Sep 22, 2024</div>
-              </div>
-            </div>
-            <div class="txn-amount debit">−₹120</div>
-          </div>
-
-          <div class="txn-row" data-category="added">
-            <div class="txn-left">
-              <div class="txn-icon-wrap credit"><i class="fa-solid fa-arrow-down-to-line"></i></div>
-              <div>
-                <div class="txn-desc">Money Added via UPI</div>
-                <div class="txn-date">Sep 21, 2024</div>
-              </div>
-            </div>
-            <div class="txn-amount credit">+₹500</div>
-          </div>
-
-          <div class="txn-row" data-category="services">
-            <div class="txn-left">
-              <div class="txn-icon-wrap debit"><i class="fa-solid fa-car-burst"></i></div>
-              <div>
-                <div class="txn-desc">Premium Car Wash</div>
-                <div class="txn-date">Sep 20, 2024</div>
-              </div>
-            </div>
-            <div class="txn-amount debit">−₹199</div>
-          </div>
-
-          <div class="txn-row" data-category="rewards">
-            <div class="txn-left">
-              <div class="txn-icon-wrap reward"><i class="fa-solid fa-gift"></i></div>
-              <div>
-                <div class="txn-desc">Referral Bonus</div>
-                <div class="txn-date">Sep 19, 2024</div>
-              </div>
-            </div>
-            <div class="txn-amount credit">+₹200</div>
-          </div>
-
-          <div class="txn-row" data-category="parking">
-            <div class="txn-left">
-              <div class="txn-icon-wrap debit"><i class="fa-solid fa-square-parking"></i></div>
-              <div>
-                <div class="txn-desc">KFC Junction Parking</div>
-                <div class="txn-date">Sep 18, 2024</div>
-              </div>
-            </div>
-            <div class="txn-amount debit">−₹80</div>
-          </div>
-
-          <div class="txn-row" data-category="added">
-            <div class="txn-left">
-              <div class="txn-icon-wrap credit"><i class="fa-solid fa-arrow-down-to-line"></i></div>
-              <div>
-                <div class="txn-desc">Money Added via Card</div>
-                <div class="txn-date">Sep 17, 2024</div>
-              </div>
-            </div>
-            <div class="txn-amount credit">+₹1,000</div>
-          </div>
-
-          <div class="txn-row" data-category="services">
-            <div class="txn-left">
-              <div class="txn-icon-wrap debit"><i class="fa-solid fa-wrench"></i></div>
-              <div>
-                <div class="txn-desc">Tyre Service</div>
-                <div class="txn-date">Sep 16, 2024</div>
-              </div>
-            </div>
-            <div class="txn-amount debit">−₹99</div>
-          </div>
-
-        </div>
-      </div>
-    </div><!-- /left-col -->
-
-    <!-- ════ RIGHT COLUMN ════ -->
-    <div class="right-col">
-
       <!-- LOYALTY CARD -->
       <div class="loyalty-card anim-el" style="transition-delay:.08s">
         <div class="loyalty-header">
@@ -1200,94 +1060,115 @@
         </div>
       </div>
 
-      <!-- HOW YOU EARN -->
-      <div class="card anim-el" style="transition-delay:.15s">
-        <div class="section-title">How You Earn</div>
-        <div class="earn-list">
-          <div class="earn-item">
-            <div class="earn-icon"><i class="fa-solid fa-square-parking"></i></div>
-            <span>Parking</span>
-            <span class="earn-pts">1 pt / ₹10</span>
+    </div><!-- /top-cards-row -->
+
+    <!-- ADD MONEY (now full width) -->
+    <div class="card anim-el" style="transition-delay:.12s">
+      <div class="section-title">Add Money</div>
+      <div class="quick-amounts">
+        <button class="quick-amt-btn" data-amt="100">₹100</button>
+        <button class="quick-amt-btn" data-amt="500">₹500</button>
+        <button class="quick-amt-btn" data-amt="1000">₹1000</button>
+        <button class="quick-amt-btn" data-amt="2000">₹2000</button>
+      </div>
+      <input class="amount-input" id="amountInput" type="number" placeholder="Enter custom amount" min="1" />
+
+      <div class="pay-methods-label">Payment Method</div>
+      <div class="pay-methods">
+        <label class="pay-method-card selected" id="pm-upi">
+          <input type="radio" name="payMethod" value="upi" checked />
+          <div class="pay-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+          <div class="pay-info">
+            <div class="pay-name">UPI</div>
+            <div class="pay-sub">BHIM, GPay, PhonePe</div>
           </div>
-          <div class="earn-item">
-            <div class="earn-icon"><i class="fa-solid fa-wrench"></i></div>
-            <span>Services</span>
-            <span class="earn-pts">2 pts / ₹10</span>
+        </label>
+        <label class="pay-method-card" id="pm-card">
+          <input type="radio" name="payMethod" value="card" />
+          <div class="pay-icon"><i class="fa-solid fa-credit-card"></i></div>
+          <div class="pay-info">
+            <div class="pay-name">Debit / Credit Card</div>
+            <div class="pay-sub">Visa, Mastercard, RuPay</div>
           </div>
-          <div class="earn-item">
-            <div class="earn-icon"><i class="fa-solid fa-user-group"></i></div>
-            <span>Referrals</span>
-            <span class="earn-pts">200 pts each</span>
+        </label>
+        <label class="pay-method-card" id="pm-net">
+          <input type="radio" name="payMethod" value="netbanking" />
+          <div class="pay-icon"><i class="fa-solid fa-building-columns"></i></div>
+          <div class="pay-info">
+            <div class="pay-name">Net Banking</div>
+            <div class="pay-sub">All major banks supported</div>
           </div>
-          <div class="earn-item">
-            <div class="earn-icon"><i class="fa-solid fa-wallet"></i></div>
-            <span>Add Money</span>
-            <span class="earn-pts">10 pts / ₹1000</span>
-          </div>
-        </div>
+        </label>
       </div>
 
-      <!-- REWARDS -->
-      <div class="card anim-el" style="transition-delay:.21s">
-        <div class="section-title">Redeem Rewards</div>
-        <div class="rewards-grid">
+      <button class="btn-primary" id="addMoneyBtn">
+        <i class="fa-solid fa-plus"></i> Add Money
+      </button>
+    </div>
 
-          <div class="reward-card">
-            <div class="reward-icon"><i class="fa-solid fa-ticket"></i></div>
-            <div class="reward-name">Free Parking Hour</div>
-            <div class="reward-pts">500 pts</div>
-            <button class="btn-redeem active" data-reward="Free Parking Hour">Redeem</button>
+    <!-- TRANSACTION HISTORY (now full width) -->
+    <div class="card anim-el" style="transition-delay:.19s">
+      <div class="section-title">Transaction History</div>
+      <div class="txn-list" id="txnList">
+
+        <div class="txn-row" data-category="parking">
+          <div class="txn-left">
+            <div class="txn-icon-wrap debit"><i class="fa-solid fa-square-parking"></i></div>
+            <div>
+              <div class="txn-desc">Forum Mall Parking</div>
+              <div class="txn-date">Sep 22, 2024</div>
+            </div>
           </div>
-
-          <div class="reward-card">
-            <div class="reward-icon"><i class="fa-solid fa-car-side"></i></div>
-            <div class="reward-name">Free Car Wash</div>
-            <div class="reward-pts">800 pts</div>
-            <button class="btn-redeem active" data-reward="Free Car Wash">Redeem</button>
-          </div>
-
-          <div class="reward-card">
-            <div class="reward-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
-            <div class="reward-name">₹50 Cashback</div>
-            <div class="reward-pts">1,000 pts</div>
-            <button class="btn-redeem active" data-reward="₹50 Cashback">Redeem</button>
-          </div>
-
-          <div class="reward-card">
-            <div class="reward-icon"><i class="fa-solid fa-circle-dot"></i></div>
-            <div class="reward-name">Free Tyre Check</div>
-            <div class="reward-pts">300 pts</div>
-            <button class="btn-redeem active" data-reward="Free Tyre Check">Redeem</button>
-          </div>
-
+          <div class="txn-amount debit">−₹120</div>
         </div>
+
+        <div class="txn-row" data-category="services">
+          <div class="txn-left">
+            <div class="txn-icon-wrap debit"><i class="fa-solid fa-car-burst"></i></div>
+            <div>
+              <div class="txn-desc">Premium Car Wash</div>
+              <div class="txn-date">Sep 20, 2024</div>
+            </div>
+          </div>
+          <div class="txn-amount debit">−₹199</div>
+        </div>
+
+        <div class="txn-row" data-category="parking">
+          <div class="txn-left">
+            <div class="txn-icon-wrap debit"><i class="fa-solid fa-square-parking"></i></div>
+            <div>
+              <div class="txn-desc">KFC Junction Parking</div>
+              <div class="txn-date">Sep 18, 2024</div>
+            </div>
+          </div>
+          <div class="txn-amount debit">−₹80</div>
+        </div>
+
+        <div class="txn-row" data-category="added">
+          <div class="txn-left">
+            <div class="txn-icon-wrap credit"><i class="fa-solid fa-arrow-down-to-line"></i></div>
+            <div>
+              <div class="txn-desc">Money Added via Card</div>
+              <div class="txn-date">Sep 17, 2024</div>
+            </div>
+          </div>
+          <div class="txn-amount credit">+₹1,000</div>
+        </div>
+
+        <div class="txn-row" data-category="services">
+          <div class="txn-left">
+            <div class="txn-icon-wrap debit"><i class="fa-solid fa-wrench"></i></div>
+            <div>
+              <div class="txn-desc">Tyre Service</div>
+              <div class="txn-date">Sep 16, 2024</div>
+            </div>
+          </div>
+          <div class="txn-amount debit">−₹99</div>
+        </div>
+
       </div>
+    </div>
 
-      <!-- REFERRAL CARD -->
-      <div class="card referral-card anim-el" style="transition-delay:.27s">
-        <div class="section-title">Refer &amp; Earn</div>
-        <div class="ref-subtitle">Share your code &amp; earn ₹200 per referral</div>
-        <div class="ref-code-box">
-          <span class="ref-code-text">RAHUL200</span>
-          <button class="copy-btn" id="copyBtn">
-            <i class="fa-solid fa-copy"></i>
-            <span id="copyBtnText">Copy</span>
-          </button>
-        </div>
-        <div class="share-buttons">
-          <button class="share-btn whatsapp" onclick="window.open('https://wa.me/?text=Use%20my%20SmartPark%20referral%20code%20RAHUL200%20and%20get%20₹200%20off!','_blank')">
-            <i class="fab fa-whatsapp"></i> WhatsApp
-          </button>
-          <button class="share-btn telegram" onclick="window.open('https://t.me/share/url?url=SmartPark&text=Use%20my%20code%20RAHUL200','_blank')">
-            <i class="fab fa-telegram"></i> Telegram
-          </button>
-          <button class="share-btn generic" onclick="if(navigator.share){navigator.share({title:'SmartPark',text:'Use code RAHUL200'})}">
-            <i class="fa-solid fa-share-nodes"></i> Share
-          </button>
-        </div>
-      </div>
-
-    </div><!-- /right-col -->
   </main>
 </div><!-- /main-wrapper -->
 
@@ -1304,10 +1185,7 @@
 <!-- ══════════════════════ TOAST ══════════════════════ -->
 <div class="toast" id="toast">✅ Copied to clipboard!</div>
 
-<!-- ══════════════════════ WhatsApp FAB ══════════════════════ -->
-<a href="https://wa.me/919999999999" target="_blank" style="position:fixed;bottom:28px;right:28px;width:56px;height:56px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.4);z-index:1000;text-decoration:none;">
-  <i class="fab fa-whatsapp" style="font-size:26px;color:#fff;"></i>
-</a>
+
 
 <script src="api-config.js"></script>
 <script>
@@ -1411,57 +1289,7 @@
     });
   }
 
-  // ── Filter chips ──
-  const txnRows = document.querySelectorAll('#txnList .txn-row');
-  document.querySelectorAll('.filter-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      const filter = chip.dataset.filter;
-      txnRows.forEach(row => {
-        if (filter === 'all' || row.dataset.category === filter) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
-        }
-      });
-    });
-  });
 
-  // ── Redeem buttons ──
-  document.querySelectorAll('.btn-redeem.active').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const reward = btn.dataset.reward;
-      showModal(
-        'Reward Redeemed! 🎉',
-        `You've successfully redeemed "${reward}". It will be applied to your next eligible transaction.`
-      );
-    });
-  });
-
-  // ── Copy referral code ──
-  const toast = document.getElementById('toast');
-  function showToast(msg) {
-    if (toast) {
-      toast.textContent = msg;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2200);
-    }
-  }
-
-  const copyBtn = document.getElementById('copyBtn');
-  if (copyBtn) {
-    copyBtn.addEventListener('click', () => {
-      navigator.clipboard.writeText('RAHUL200').then(() => {
-        const btnText = document.getElementById('copyBtnText');
-        if (btnText) btnText.textContent = 'Copied!';
-        setTimeout(() => { if (btnText) btnText.textContent = 'Copy'; }, 2000);
-        showToast('✅ Referral code copied to clipboard!');
-      }).catch(() => {
-        showToast('✅ Code: RAHUL200');
-      });
-    });
-  }
 })();
 </script>
 </body>

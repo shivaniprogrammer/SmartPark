@@ -5,6 +5,8 @@
 <title>Dashboard — SmartPark</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='12' width='24' height='14' rx='3' fill='none' stroke='%23fff' stroke-width='2'/%3E%3Ccircle cx='10' cy='26' r='3' fill='%23fff'/%3E%3Ccircle cx='22' cy='26' r='3' fill='%23fff'/%3E%3C/svg%3E"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900&display=swap" rel="stylesheet"/>
+
+<link rel="stylesheet" href="theme.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
 <style>
 
@@ -14,7 +16,29 @@ html,body{background:#000!important;color:#fff;}
 a{text-decoration:none;color:inherit;}
 body{font-family:"Inter",system-ui,sans-serif;background:#000;display:flex;-webkit-font-smoothing:antialiased;}
 
+body.light-theme{background:#f5f5f7!important;color:#111!important;}
+body.light-theme .sidebar{background:rgba(255,255,255,.95);border-right-color:#e5e5e5;}
+body.light-theme .topbar{background:rgba(255,255,255,.9);border-bottom-color:#e5e5e5;}
+body.light-theme .search{background:#fff;border-color:#ddd;}
+body.light-theme .search input{color:#111;}
+body.light-theme .card,body.light-theme .stat-card,body.light-theme .welcome-banner,body.light-theme .quick-btn,body.light-theme .booking-card{background:#fff;border-color:#e5e5e5;}
+body.light-theme .nav-item{color:rgba(0,0,0,.55);}
+body.light-theme .nav-item:hover{color:rgba(0,0,0,.85);background:rgba(0,0,0,.04);}
+body.light-theme .nav-item.active{background:rgba(0,0,0,.06);color:#111;}
+body.light-theme .stat-card h3,body.light-theme .welcome-text h2,body.light-theme .user-info h4,body.light-theme .countdown,body.light-theme .card-title,body.light-theme td,body.light-theme th,body.light-theme .bm strong,body.light-theme .slot-badge{color:#111!important;}
+body.light-theme .stat-card p,body.light-theme .welcome-text p,body.light-theme .user-info p,body.light-theme .bm,body.light-theme .countdown-label,body.light-theme .wstat-label{color:#555!important;}
+body.light-theme .quick-btn span{color:#333;}
+body.light-theme .notif-btn,body.light-theme .profile-btn{background:#fff;border-color:#ddd;}
+body.light-theme .profile-btn span{color:#111;}
 
+
+body.light-theme .btn-sm.outline{color:#333;border-color:#ccc;}
+body.light-theme .btn-sm.outline:hover{background:rgba(0,0,0,.05);border-color:#999;}
+body.light-theme .leg{color:#555;}
+body.light-theme .slot-box.free{background:#f0f0f0;border-color:#ddd;color:#999;}
+body.light-theme .slot-box.taken{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.25);color:#c0392b;}
+body.light-theme .slot-box.ev{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.35);color:#b45309;}
+body.light-theme .svc-pill{background:#f0f0f0;border-color:#ddd;color:#555;}
 .notification-panel {
     display: none;
     position: absolute;
@@ -607,6 +631,10 @@ async function confirmExtendStay() {
   const mainContentEl = document.getElementById('mainContent');
   if (mainContentEl) mainContentEl.classList.add('is-in');
 
+  // Apply saved theme (must match settings.html's localStorage key/values)
+const savedTheme = localStorage.getItem('theme') || 'dark';
+document.body.classList.toggle('light-theme', savedTheme === 'light');
+
   // User profile dynamic update
   const user = getCurrentUser();
   if (user && user.name) {
@@ -806,7 +834,24 @@ async function confirmExtendStay() {
   window.tick = tick;
   tick();
   setInterval(tick, 1000);
+
+  // Auto-detect default location if not already set this session
+if (!localStorage.getItem('defaultLocation') && navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const { latitude, longitude } = pos.coords;
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+      const data = await res.json();
+      const area = data.address.suburb || data.address.neighbourhood || data.address.city_district || data.address.city;
+      const city = data.address.city || data.address.town;
+      localStorage.setItem('defaultLocation', `${area}, ${city}`);
+    } catch(e) {}
+  }, () => {});
+}
 }());
 </script>
+
+
+<script src="theme.js"></script>
 </body>
 </html>

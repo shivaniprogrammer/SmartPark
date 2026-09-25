@@ -1,0 +1,70 @@
+body.light-theme{background:#f5f5f7!important;color:#111!important;}
+
+/* Structural */
+body.light-theme .sidebar{background:#000;}
+body.light-theme .topbar{background:rgba(255,255,255,.9);border-bottom-color:#e5e5e5;}
+body.light-theme .card,
+body.light-theme .stat-card,
+body.light-theme .welcome-banner,
+body.light-theme .quick-btn,
+body.light-theme .booking-card,
+body.light-theme .select-input,
+body.light-theme .notif-btn,
+body.light-theme .profile-btn,
+body.light-theme .search{background:#fff;border-color:#e5e5e5;}
+
+/* Text */
+body.light-theme .card-title,
+body.light-theme .stat-card h3,
+body.light-theme .welcome-text h2,
+body.light-theme .user-info h4,
+body.light-theme .countdown,
+body.light-theme td,
+body.light-theme th,
+body.light-theme .bm strong,
+body.light-theme .slot-badge,
+body.light-theme .setting-info h4,
+body.light-theme .topbar h1,
+body.light-theme .profile-btn span,
+body.light-theme h1, body.light-theme h2, body.light-theme h3, body.light-theme h4{color:#111!important;}
+
+body.light-theme p,
+body.light-theme .stat-card p,
+body.light-theme .welcome-text p,
+body.light-theme .user-info p,
+body.light-theme .bm,
+body.light-theme .countdown-label,
+body.light-theme .wstat-label,
+body.light-theme .leg,
+body.light-theme .setting-info p,
+body.light-theme .select-input option{color:#555!important;}
+
+
+/* Buttons */
+body.light-theme .btn-sm.outline{color:#333;border-color:#ccc;}
+body.light-theme .btn-sm.outline:hover{background:rgba(0,0,0,.05);border-color:#999;}
+body.light-theme .btn-danger{background:rgba(239,68,68,.08);}
+
+/* Slots / pills */
+body.light-theme .slot-box.free{background:#f0f0f0;border-color:#ddd;color:#999;}
+body.light-theme .slot-box.taken{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.25);color:#c0392b;}
+body.light-theme .slot-box.ev{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.35);color:#b45309;}
+body.light-theme .svc-pill{background:#f0f0f0;border-color:#ddd;color:#555;}
+body.light-theme .setting-row{border-bottom-color:#eee;}
+body.light-theme .slider{background-color:#ccc;}
+body.light-theme .search input{color:#111;}
+
+
+body.light-theme .search input{color:#111;}
+
+/* Catch-all for pages with different classnames (e.g. index.html) */
+body.light-theme nav, body.light-theme header,
+body.light-theme [class*="badge"], body.light-theme [class*="pill"],
+body.light-theme [class*="btn"] {
+  background: #fff !important;
+  border-color: #ddd !important;
+  color: #111 !important;
+}
+body.light-theme [class*="card"], body.light-theme section {
+  background: #fff !important;
+}
