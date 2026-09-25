@@ -1294,69 +1294,9 @@
   <i class="fab fa-whatsapp" style="font-size:26px;color:#fff;"></i>
 </a>
 
-<script>
-(function () {
-  // ── Entrance animation ──────────────────────────────────────
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (!prefersReduced) {
-    const els = document.querySelectorAll('.anim-el');
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        els.forEach(el => el.classList.add('is-in'));
-      });
-    });
-  } else {
-    document.querySelectorAll('.anim-el').forEach(el => el.classList.add('is-in'));
-  }
-
-  // ── Loyalty bar animate ─────────────────────────────────────
-  setTimeout(() => {
-    document.getElementById('loyaltyBar').style.width = '49%';
-  }, 400);
-
-  // ── Quick amount buttons ────────────────────────────────────
-  const amountInput = document.getElementById('amountInput');
-  document.querySelectorAll('.quick-amt-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.quick-amt-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      amountInput.value = btn.dataset.amt;
-    });
-  });
-
-  amountInput.addEventListener('input', () => {
-    document.querySelectorAll('.quick-amt-btn').forEach(b => b.classList.remove('selected'));
-  });
-
-  // ── Payment method selection ────────────────────────────────
-  document.querySelectorAll('.pay-method-card').forEach(card => {
-    card.addEventListener('click', () => {
-      document.querySelectorAll('.pay-method-card').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-    });
-  });
-
-  // ── Modal helpers ───────────────────────────────────────────
-  const modal = document.getElementById('successModal');
-  const modalTitle = document.getElementById('modalTitle');
-  const modalDesc = document.getElementById('modalDesc');
-
-  function showModal(title, desc) {
-    modalTitle.textContent = title;
-    modalDesc.textContent = desc;
-    modal.classList.add('open');
-  }
-
-  function closeModal() {
-    modal.classList.remove('open');
-  }
-
-  document.getElementById('modalOkBtn').addEventListener('click', closeModal);
-  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-
 <script src="api-config.js"></script>
 <script>
-(function() {
+(function () {
   // ── User initials & session update ──
   const user = getCurrentUser();
   if (user && user.name) {
@@ -1372,9 +1312,9 @@
     if (res.success && res.data) {
       const w = res.data;
       const balNum = document.querySelector('.balance-number');
-      if (balNum) balNum.textContent = `₹${w.balance.toLocaleString('en-IN')}`;
+      if (balNum) balNum.textContent = `₹${(w.balance || 850).toLocaleString('en-IN')}`;
       const ptsVal = document.querySelector('.pts-value');
-      if (ptsVal) ptsVal.textContent = w.loyaltyPoints.toLocaleString('en-IN');
+      if (ptsVal) ptsVal.textContent = (w.loyaltyPoints || 2450).toLocaleString('en-IN');
     }
   }
   loadWalletData();
