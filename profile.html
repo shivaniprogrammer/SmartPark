@@ -362,11 +362,50 @@
 
 <div class="toast" id="toast">✓ Saved successfully!</div>
 
+<script src="api-config.js"></script>
 <script>
+  (function() {
+    const user = getCurrentUser();
+    if (user) {
+      if (user.name) {
+        document.getElementById('nameHeading').textContent = user.name;
+        document.getElementById('inpName').value = user.name;
+        const initials = user.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+        document.querySelectorAll('.big-av, .user-avatar-sm').forEach(el => el.textContent = initials);
+        const footerName = document.querySelector('.sidebar-footer div div');
+        if (footerName) footerName.textContent = user.name;
+      }
+      if (user.email) {
+        document.getElementById('emailHeading').textContent = user.email;
+        const emailInputs = document.querySelectorAll('input[type="email"]');
+        if (emailInputs[0]) emailInputs[0].value = user.email;
+      }
+      if (user.phone) {
+        const phoneInputs = document.querySelectorAll('input[type="tel"]');
+        if (phoneInputs[0]) phoneInputs[0].value = user.phone;
+      }
+    }
+
+    async function loadMe() {
+      const res = await apiRequest('/auth/me');
+      if (res.success && res.data) {
+        localStorage.setItem('smartpark_user', JSON.stringify(res.data));
+        const u = res.data;
+        document.getElementById('nameHeading').textContent = u.name;
+        document.getElementById('inpName').value = u.name;
+        document.getElementById('emailHeading').textContent = u.email;
+      }
+    }
+    loadMe();
+  })();
+
   function updateProfile(e) {
     e.preventDefault();
     const val = document.getElementById('inpName').value;
     document.getElementById('nameHeading').textContent = val;
+    const user = getCurrentUser();
+    user.name = val;
+    localStorage.setItem('smartpark_user', JSON.stringify(user));
     showToast('✓ Profile updated!');
   }
   function updatePassword(e) {

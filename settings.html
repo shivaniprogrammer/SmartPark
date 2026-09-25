@@ -325,7 +325,19 @@
 
 <div class="toast" id="toast">✓ Setting updated!</div>
 
+<script src="api-config.js"></script>
 <script>
+  (function() {
+    const user = getCurrentUser();
+    if (user && user.name) {
+      const initials = user.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+      const avatarEl = document.querySelector('.user-avatar-sm');
+      if (avatarEl) avatarEl.textContent = initials;
+      const footerName = document.querySelector('.sidebar-footer div div');
+      if (footerName) footerName.textContent = user.name;
+    }
+  })();
+
   function notify() {
     const t = document.getElementById('toast');
     t.style.display = 'block';

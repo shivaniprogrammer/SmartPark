@@ -1320,10 +1320,21 @@ function selectPayment(el, method) {
 }
 
 // ── CONFIRMATION MODAL ──
-function confirmBooking() {
+async function confirmBooking() {
   const lot = state.lots.find(l => l.id === state.selectedLotId);
   const cost = lot.rates[state.vehicleType] * state.duration;
   const bookingId = '#SP-2024-' + Math.floor(1000 + Math.random() * 9000);
+
+  // Post to backend API
+  await apiRequest('/bookings', 'POST', {
+    locationId: state.selectedLotId,
+    locationName: lot ? lot.name : "Forum Mall",
+    slotNumber: state.selectedSlot || 'A-01',
+    durationHours: state.duration,
+    totalAmount: cost,
+    vehicleType: state.vehicleType,
+    paymentMethod: 'wallet'
+  });
 
   document.getElementById('mBookingId').textContent = bookingId;
   document.getElementById('mVehicle').textContent = state.vehicleType === '2W' ? '2-Wheeler (Bike)' : '4-Wheeler (Car)';
@@ -1350,5 +1361,6 @@ renderLots();
 buildSlotGrid();
 updateSummary();
 </script>
+<script src="api-config.js"></script>
 </body>
 </html>

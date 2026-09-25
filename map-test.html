@@ -358,7 +358,18 @@
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   }
 
-  window.onload = initMap;
+  window.onload = function() {
+    const user = getCurrentUser();
+    if (user && user.name) {
+      const initials = user.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+      const avEl = document.querySelector('.user-avatar-sm');
+      if (avEl) avEl.textContent = initials;
+      const fName = document.querySelector('.sidebar-footer div div');
+      if (fName) fName.textContent = user.name;
+    }
+    initMap();
+  };
 </script>
+<script src="api-config.js"></script>
 </body>
 </html>

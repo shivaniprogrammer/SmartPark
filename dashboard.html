@@ -279,14 +279,18 @@ tr:hover td{background:rgba(255,255,255,.02);}
       </div>
     </div>
 
-<<<<<<< HEAD
     <!-- BOOKINGS TABLE -->
     <div class="card">
-      <div class="card-title"><i class="fas fa-clock-rotate-left"></i> Recent Bookings</div>
+      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
+        <span><i class="fas fa-clock-rotate-left"></i> Recent Bookings</span>
+        <a href="history.html" style="font-size:0.8rem;color:var(--gold);text-decoration:none;">View All →</a>
+      </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Booking ID</th><th>Location</th><th>Slot</th><th>Date & Time</th><th>Duration</th><th>Amount</th><th>Status</th></tr></thead>
-          <tbody>
+          <thead>
+            <tr><th>Booking ID</th><th>Location</th><th>Slot</th><th>Date & Time</th><th>Duration</th><th>Amount</th><th>Status</th></tr>
+          </thead>
+          <tbody id="recentBookingsTable">
             <tr><td>#SP2024001</td><td>Forum Mall, Koramangala</td><td>B-204</td><td>Today, 4:00 PM</td><td>3 hrs</td><td>₹180</td><td><span class="status-badge active">Active</span></td></tr>
             <tr><td>#SP2024002</td><td>Orion Mall, Rajajinagar</td><td>A-108</td><td>22 Sep, 10:00 AM</td><td>5 hrs</td><td>₹350</td><td><span class="status-badge completed">Completed</span></td></tr>
             <tr><td>#SP2024003</td><td>UB City, Cubbon Park</td><td>C-312</td><td>20 Sep, 2:00 PM</td><td>2 hrs</td><td>₹120</td><td><span class="status-badge completed">Completed</span></td></tr>
@@ -294,72 +298,63 @@ tr:hover td{background:rgba(255,255,255,.02);}
           </tbody>
         </table>
       </div>
-=======
-    <!-- SLOT MAP -->
-    <div class="card slot-map">
-      <div class="card-header">
-        <h3>🗺️ Live Slot View — Koramangala Forum Mall</h3>
-        <span style="font-size:0.8rem;color:var(--green);font-weight:600;"><i class="fas fa-circle" style="font-size:0.5rem;"></i> Live</span>
-      </div>
-      <div style="display:flex;gap:1rem;margin-bottom:0.5rem;font-size:0.8rem;color:var(--grey);">
-        <span>Zone A</span><span>Zone B</span><span>Zone C</span>
-      </div>
-      <div class="slot-grid" id="slotGrid"></div>
-      <div class="map-legend">
-        <div class="leg"><div class="leg-dot" style="background:#DCFCE7;border:1px solid #86EFAC;"></div>Available (18)</div>
-        <div class="leg"><div class="leg-dot" style="background:#FEE2E2;border:1px solid #FCA5A5;"></div>Occupied (9)</div>
-        <div class="leg"><div class="leg-dot" style="background:var(--blue);"></div>Your Slot (B-204)</div>
-        <div class="leg"><div class="leg-dot" style="background:#FEF3C7;border:1px solid #FCD34D;"></div>EV Slot (3)</div>
-      </div>
-    </div>
-
-    <!-- RECENT BOOKINGS (preview — 3 rows only, full list on History page) -->
-    <div class="card">
-      <div class="card-header">
-        <h3>📋 Recent Bookings</h3>
-        <a href="history.html">View All →</a>
-      </div>
-      <table class="bookings-table">
-        <thead>
-          <tr>
-            <th>Booking ID</th>
-            <th>Location</th>
-            <th>Slot</th>
-            <th>Date & Time</th>
-            <th>Duration</th>
-            <th>Amount</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td><b>#SP2024001</b></td><td>Forum Mall, Koramangala</td><td>B-204</td><td>24 Sep, 6:00 PM</td><td>3 hrs</td><td>₹180</td><td><span class="status active"><i class="fas fa-circle" style="font-size:0.5rem;"></i> Active</span></td></tr>
-          <tr><td><b>#SP2024000</b></td><td>Orion Mall, Rajajinagar</td><td>A-108</td><td>22 Sep, 10:00 AM</td><td>5 hrs</td><td>₹350</td><td><span class="status completed">Completed</span></td></tr>
-          <tr><td><b>#SP2023999</b></td><td>UB City, Vittal Mallya</td><td>C-312</td><td>20 Sep, 2:00 PM</td><td>2 hrs</td><td>₹160</td><td><span class="status completed">Completed</span></td></tr>
-        </tbody>
-      </table>
-      <div style="text-align:center;padding:1rem;border-top:1px solid var(--border);">
-        <a href="history.html" style="font-size:0.85rem;font-weight:600;color:var(--blue);text-decoration:none;">📋 View all 24 bookings →</a>
-      </div>
->>>>>>> 51ad5e9 (feat(ui): Add Customer Profile and App Settings pages with full navigation)
     </div>
   </div>
 </main>
 
 <a href="#" class="fab"><i class="fab fa-whatsapp"></i></a>
 
+<script src="api-config.js"></script>
 <script>
 (function(){
+  // User profile dynamic update
+  const user = getCurrentUser();
+  if (user && user.name) {
+    const firstName = user.name.split(' ')[0];
+    const initials = user.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+    
+    document.querySelectorAll('.avatar').forEach(el => el.textContent = initials);
+    const welcomeH2 = document.querySelector('.welcome-text h2');
+    if (welcomeH2) welcomeH2.textContent = `Good Evening, ${firstName} 👋`;
+    
+    const userChipH4 = document.querySelector('.user-info h4');
+    if (userChipH4) userChipH4.textContent = user.name;
+    
+    const profileBtnSpan = document.querySelector('.profile-btn span');
+    if (profileBtnSpan) profileBtnSpan.textContent = user.name;
+  }
+
+  // Fetch active user data from API if logged in
+  async function loadDashboardData() {
+    const userRes = await apiRequest('/auth/me');
+    if (userRes.success && userRes.data) {
+      localStorage.setItem('smartpark_user', JSON.stringify(userRes.data));
+    }
+    const walletRes = await apiRequest('/wallet');
+    if (walletRes.success && walletRes.data) {
+      const w = walletRes.data;
+      const wStatBal = document.querySelectorAll('.wstat-num')[2];
+      if (wStatBal) wStatBal.textContent = `₹${w.balance}`;
+      const wStatPts = document.querySelectorAll('.wstat-num')[1];
+      if (wStatPts) wStatPts.textContent = `${w.loyaltyPoints}`;
+    }
+  }
+  loadDashboardData();
+
   // Slot map
   var types=['free','taken','free','mine','taken','free','ev','free','taken','free','free','taken','free','free','free','taken','free','free','taken','free','free','free','taken','free','free','ev','free','taken','free','free'];
   var labels=['A1','A2','A3','A4','A5','A6','A7','A8','A9','A10','B1','B2','B3','B4','B5','B6','B7','B8','B9','B10','C1','C2','C3','C4','C5','C6','C7','C8','C9','C10'];
   var g=document.getElementById('slotMap');
-  types.forEach(function(t,i){var d=document.createElement('div');d.className='slot-box '+t;d.textContent=labels[i];g.appendChild(d);});
+  if (g) {
+    types.forEach(function(t,i){var d=document.createElement('div');d.className='slot-box '+t;d.textContent=labels[i];g.appendChild(d);});
+  }
 
   // Countdown
   var secs=6442;
   function tick(){
     var h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60),s=secs%60;
-    document.getElementById('countdown').textContent=(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+    const cdEl = document.getElementById('countdown');
+    if (cdEl) cdEl.textContent=(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
     if(secs>0)secs--;
   }
   tick();setInterval(tick,1000);

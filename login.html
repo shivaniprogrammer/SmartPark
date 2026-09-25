@@ -122,13 +122,13 @@ body{font-family:"Inter",system-ui,sans-serif;background:#000;display:flex;min-h
 
       <!-- LOGIN -->
       <div id="loginForm">
-        <div class="form-group"><label>Email Address</label><div class="input-wrap"><i class="fas fa-envelope"></i><input type="email" placeholder="you@example.com"/></div></div>
-        <div class="form-group"><label>Password</label><div class="input-wrap"><i class="fas fa-lock"></i><input type="password" placeholder="Enter your password"/></div></div>
+        <div class="form-group"><label>Email Address</label><div class="input-wrap"><i class="fas fa-envelope"></i><input type="email" id="loginEmail" placeholder="you@example.com"/></div></div>
+        <div class="form-group"><label>Password</label><div class="input-wrap"><i class="fas fa-lock"></i><input type="password" id="loginPassword" placeholder="Enter your password"/></div></div>
         <div class="form-options">
           <label class="checkbox-wrap"><input type="checkbox"/> Remember me</label>
           <a href="#" class="forgot">Forgot password?</a>
         </div>
-        <button class="btn-submit" onclick="location.href='dashboard.html'">Sign In to SmartPark</button>
+        <button class="btn-submit" onclick="handleLogin()">Sign In to SmartPark</button>
         <div class="divider">or continue with</div>
         <button class="btn-google">
           <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.9z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34 6.5 29.3 4 24 4 16.3 4 9.7 8.5 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.1 35.5 26.6 36 24 36c-5.3 0-9.7-3.3-11.3-8H6.4C9.8 36.2 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.3 4.1-4.2 5.4l6.2 5.2C36.9 40.1 44 35 44 24c0-1.3-.1-2.7-.4-3.9z"/></svg>
@@ -140,14 +140,14 @@ body{font-family:"Inter",system-ui,sans-serif;background:#000;display:flex;min-h
       <!-- SIGNUP -->
       <div id="signupForm" style="display:none;">
         <div class="form-row">
-          <div class="form-group"><label>First Name</label><div class="input-wrap"><i class="fas fa-user"></i><input type="text" placeholder="Rahul"/></div></div>
-          <div class="form-group"><label>Last Name</label><div class="input-wrap"><i class="fas fa-user"></i><input type="text" placeholder="Sharma"/></div></div>
+          <div class="form-group"><label>First Name</label><div class="input-wrap"><i class="fas fa-user"></i><input type="text" id="signUpFirstName" placeholder="Rahul"/></div></div>
+          <div class="form-group"><label>Last Name</label><div class="input-wrap"><i class="fas fa-user"></i><input type="text" id="signUpLastName" placeholder="Sharma"/></div></div>
         </div>
-        <div class="form-group"><label>Phone Number</label><div class="input-wrap"><i class="fas fa-phone"></i><input type="tel" placeholder="+91 98765 43210"/></div></div>
-        <div class="form-group"><label>Email Address</label><div class="input-wrap"><i class="fas fa-envelope"></i><input type="email" placeholder="you@example.com"/></div></div>
-        <div class="form-group"><label>Password</label><div class="input-wrap"><i class="fas fa-lock"></i><input type="password" placeholder="Create a strong password"/></div></div>
+        <div class="form-group"><label>Phone Number</label><div class="input-wrap"><i class="fas fa-phone"></i><input type="tel" id="signUpPhone" placeholder="+91 98765 43210"/></div></div>
+        <div class="form-group"><label>Email Address</label><div class="input-wrap"><i class="fas fa-envelope"></i><input type="email" id="signUpEmail" placeholder="you@example.com"/></div></div>
+        <div class="form-group"><label>Password</label><div class="input-wrap"><i class="fas fa-lock"></i><input type="password" id="signUpPassword" placeholder="Create a strong password"/></div></div>
         <div class="form-group"><label>Confirm Password</label><div class="input-wrap"><i class="fas fa-lock"></i><input type="password" placeholder="Repeat your password"/></div></div>
-        <button class="btn-submit" onclick="location.href='dashboard.html'">Create My Account</button>
+        <button class="btn-submit" onclick="handleSignup()">Create My Account</button>
         <div class="divider">or sign up with</div>
         <button class="btn-google">
           <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.9z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34 6.5 29.3 4 24 4 16.3 4 9.7 8.5 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.1 35.5 26.6 36 24 36c-5.3 0-9.7-3.3-11.3-8H6.4C9.8 36.2 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.3 4.1-4.2 5.4l6.2 5.2C36.9 40.1 44 35 44 24c0-1.3-.1-2.7-.4-3.9z"/></svg>
@@ -159,6 +159,7 @@ body{font-family:"Inter",system-ui,sans-serif;background:#000;display:flex;min-h
   </div>
 </div>
 
+<script src="api-config.js"></script>
 <script>
 (function(){
   var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -176,6 +177,52 @@ body{font-family:"Inter",system-ui,sans-serif;background:#000;display:flex;min-h
     document.querySelector('.form-box .sub').textContent=tab==='login'?'Sign in to your SmartPark account':'Start parking smarter today — it\'s free.';
   }
   window.switchTab=switchTab;
+
+  async function handleLogin() {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+
+    if (!email || !password) {
+      alert("Please enter both email and password.");
+      return;
+    }
+
+    const res = await apiRequest('/auth/login', 'POST', { email, password });
+    if (res.success) {
+      localStorage.setItem('smartpark_token', res.data.token);
+      localStorage.setItem('smartpark_user', JSON.stringify(res.data.user));
+    } else {
+      // Demo Fallback user
+      localStorage.setItem('smartpark_user', JSON.stringify({ name: "Rahul Sharma", email, phone: "+91 98765 43210" }));
+    }
+    window.location.href = 'dashboard.html';
+  }
+
+  async function handleSignup() {
+    const firstName = document.getElementById('signUpFirstName').value;
+    const lastName = document.getElementById('signUpLastName').value;
+    const phone = document.getElementById('signUpPhone').value;
+    const email = document.getElementById('signUpEmail').value;
+    const password = document.getElementById('signUpPassword').value;
+
+    if (!email || !password) {
+      alert("Please enter email and password.");
+      return;
+    }
+
+    const name = `${firstName} ${lastName}`.trim() || "User";
+    const res = await apiRequest('/auth/register', 'POST', { name, email, phone, password });
+    if (res.success) {
+      localStorage.setItem('smartpark_token', res.data.token);
+      localStorage.setItem('smartpark_user', JSON.stringify(res.data.user));
+    } else {
+      localStorage.setItem('smartpark_user', JSON.stringify({ name, email, phone }));
+    }
+    window.location.href = 'dashboard.html';
+  }
+
+  window.handleLogin = handleLogin;
+  window.handleSignup = handleSignup;
 }());
 </script>
 </body>

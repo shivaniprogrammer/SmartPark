@@ -235,8 +235,9 @@
   </div>
 </div>
 
+<script src="api-config.js"></script>
 <script>
-  const bookings = [
+  let bookings = [
     { id:'#SP2024001', location:'Forum Mall, Koramangala', slot:'B-204', datetime:'24 Sep, 6:00 PM', duration:'3 hrs', amount:'₹180', status:'active' },
     { id:'#SP2024000', location:'Orion Mall, Rajajinagar', slot:'A-108', datetime:'22 Sep, 10:00 AM', duration:'5 hrs', amount:'₹350', status:'completed' },
     { id:'#SP2023999', location:'UB City, Vittal Mallya', slot:'C-312', datetime:'20 Sep, 2:00 PM', duration:'2 hrs', amount:'₹160', status:'completed' },
@@ -244,6 +245,32 @@
     { id:'#SP2023997', location:'Phoenix Mall, Whitefield', slot:'D-220', datetime:'15 Sep, 5:00 PM', duration:'6 hrs', amount:'₹420', status:'completed' },
   ];
   let current = [...bookings];
+
+  const user = getCurrentUser();
+  if (user && user.name) {
+    const initials = user.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+    const avatarEl = document.querySelector('.user-avatar-sm');
+    if (avatarEl) avatarEl.textContent = initials;
+    const footerName = document.querySelector('.sidebar-footer div div');
+    if (footerName) footerName.textContent = user.name;
+  }
+
+  async function loadUserBookings() {
+    const res = await apiRequest('/bookings/my');
+    if (res.success && res.data && res.data.length > 0) {
+      bookings = res.data.map(b => ({
+        id: b.bookingId || `#SP2024${b._id ? b._id.substring(0,4) : '001'}`,
+        location: b.locationName || 'Forum Mall, Koramangala',
+        slot: b.slotNumber || 'A-01',
+        datetime: new Date(b.createdAt || Date.now()).toLocaleDateString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }),
+        duration: `${b.durationHours || 2} hrs`,
+        amount: `₹${b.totalAmount || 120}`,
+        status: b.status || 'active'
+      }));
+      current = [...bookings];
+      render();
+    }
+  }
 
   function render() {
     document.getElementById('histBody').innerHTML = current.map(b => `
@@ -277,6 +304,7 @@
   }
 
   render();
+  loadUserBookings();
 </script>
 </body>
 </html>

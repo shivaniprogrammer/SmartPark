@@ -1354,8 +1354,33 @@
   document.getElementById('modalOkBtn').addEventListener('click', closeModal);
   modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
-  // ── Add Money button ────────────────────────────────────────
-  document.getElementById('addMoneyBtn').addEventListener('click', () => {
+<script src="api-config.js"></script>
+<script>
+(function() {
+  // ── User initials & session update ──
+  const user = getCurrentUser();
+  if (user && user.name) {
+    const initials = user.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+    document.querySelectorAll('.avatar-circle').forEach(el => el.textContent = initials);
+    const userChipName = document.querySelector('.user-chip-name');
+    if (userChipName) userChipName.textContent = user.name;
+  }
+
+  // ── Dynamic Wallet Data Fetch ──
+  async function loadWalletData() {
+    const res = await apiRequest('/wallet');
+    if (res.success && res.data) {
+      const w = res.data;
+      const balNum = document.querySelector('.balance-number');
+      if (balNum) balNum.textContent = `₹${w.balance.toLocaleString('en-IN')}`;
+      const ptsVal = document.querySelector('.pts-value');
+      if (ptsVal) ptsVal.textContent = w.loyaltyPoints.toLocaleString('en-IN');
+    }
+  }
+  loadWalletData();
+
+  // ── Add Money button via API ────────────────────────────────────────
+  document.getElementById('addMoneyBtn').addEventListener('click', async () => {
     const val = parseFloat(amountInput.value);
     if (!val || val <= 0) {
       amountInput.focus();
@@ -1363,6 +1388,15 @@
       setTimeout(() => amountInput.style.borderColor = '', 1400);
       return;
     }
+
+    const apiRes = await apiRequest('/wallet/add-funds', 'POST', { amount: val });
+    if (apiRes.success && apiRes.data) {
+      const balNum = document.querySelector('.balance-number');
+      if (balNum) balNum.textContent = `₹${apiRes.data.balance.toLocaleString('en-IN')}`;
+      const ptsVal = document.querySelector('.pts-value');
+      if (ptsVal && apiRes.data.loyaltyPoints) ptsVal.textContent = apiRes.data.loyaltyPoints.toLocaleString('en-IN');
+    }
+
     showModal(
       `₹${val.toLocaleString('en-IN')} Added Successfully!`,
       `Your SmartPark Wallet has been credited with ₹${val.toLocaleString('en-IN')}. Loyalty points have been added to your account.`

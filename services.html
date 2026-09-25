@@ -777,14 +777,22 @@
   </a>
 
   <!-- ══ JAVASCRIPT ════════════════════════════════════════ -->
+  <script src="api-config.js"></script>
   <script>
+    (function() {
+      const user = getCurrentUser();
+      if (user && user.name) {
+        const initials = user.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+        document.querySelectorAll('.topbar-avatar').forEach(el => el.textContent = initials);
+      }
+    })();
+
     /* ── Entrance animation via double rAF ──────────────── */
     (function() {
       var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (reduced) return;
       var els = document.querySelectorAll('.anim-el');
       els.forEach(function(el, i) {
-        // delay is already set via inline style transition-delay
         requestAnimationFrame(function() {
           requestAnimationFrame(function() {
             el.classList.add('is-in');
@@ -795,7 +803,6 @@
 
     /* ── Category tab switching ─────────────────────────── */
     function switchTab(btn, targetId) {
-      // Update tab styles
       document.querySelectorAll('.cat-tab').forEach(function(t) {
         t.classList.remove('active');
         t.classList.add('inactive');
@@ -803,10 +810,9 @@
       btn.classList.remove('inactive');
       btn.classList.add('active');
 
-      // Smooth scroll to target section
       var target = document.getElementById(targetId);
       if (target) {
-        var offset = 80; // account for sticky topbar
+        var offset = 80;
         var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
         window.scrollTo({ top: top, behavior: 'smooth' });
       }
@@ -836,8 +842,15 @@
       }
     }, { passive: true });
 
-    /* ── Modal ──────────────────────────────────────────── */
-    function openModal(serviceName) {
+    /* ── Modal & Service Booking API ───────────────────── */
+    async function openModal(serviceName) {
+      // Post service booking to API
+      await apiRequest('/services', 'POST', {
+        serviceType: serviceName.includes('Wash') || serviceName.includes('Detail') ? 'car_wash' : 'mechanic',
+        serviceName: serviceName,
+        bookingDate: new Date().toISOString()
+      });
+
       document.getElementById('modalServiceName').textContent = serviceName;
       document.getElementById('successModal').classList.add('open');
       document.body.style.overflow = 'hidden';
