@@ -1,6 +1,7 @@
 const Booking = require("../models/Booking");
 const ParkingSlot = require("../models/ParkingSlot");
 const ParkingLocation = require("../models/ParkingLocation");
+const { getDemandPrediction } = require("../services/aiService");
 
 const createBooking = async (req, res) => {
     try {
@@ -64,9 +65,33 @@ const createBooking = async (req, res) => {
             }
         );
 
+        // Fetch location details to pass to AI
+        const locationDoc = await ParkingLocation.findById(slot.location);
+        let aiDemand = null;
+        if (locationDoc) {
+            aiDemand = await getDemandPrediction(
+                locationDoc.name,
+                locationDoc.totalSlots,
+                locationDoc.availableSlots - 1  // after this booking
+            );
+        }
+
         res.status(201).json({
             message: "Parking slot booked successfully",
-            booking
+            booking,
+            ai_demand_alert: aiDemand
+                ? {
+                      demand: aiDemand.demand,
+                      predicted_occupancy: aiDemand.predicted_occupancy,
+                      confidence: aiDemand.confidence,
+                      warning:
+                          aiDemand.demand === "HIGH"
+                              ? "🔴 High demand at this location right now. Your booking is confirmed!"
+                              : aiDemand.demand === "MEDIUM"
+                              ? "🟡 Moderate demand — you booked at the right time."
+                              : "🟢 Low demand — plenty of availability."
+                  }
+                : null
         });
     } catch (error) {
         res.status(500).json({
