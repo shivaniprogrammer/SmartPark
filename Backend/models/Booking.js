@@ -24,6 +24,30 @@ const bookingSchema = new mongoose.Schema(
             required: true
         },
 
+        durationHours: {
+            type: Number,
+            default: 1
+        },
+
+        totalAmount: {
+            type: Number,
+            required: true,
+            min: 0
+        },
+
+        paymentMethod: {
+            type: String,
+            enum: ["wallet", "upi", "card", "netbanking"],
+            default: "wallet"
+        },
+
+        servicesAdded: [
+            {
+                name: String,
+                price: Number
+            }
+        ],
+
         status: {
             type: String,
             enum: ["confirmed", "active", "completed", "cancelled", "overstayed"],

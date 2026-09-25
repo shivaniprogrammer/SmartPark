@@ -7,6 +7,8 @@ const authRoutes = require("./routes/authRoutes");
 const parkingRoutes = require("./routes/parkingRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
 const aiRoutes = require("./routes/aiRoutes");
+const walletRoutes = require("./routes/walletRoutes");
+const serviceRoutes = require("./routes/serviceRoutes");
 
 const app = express();
 
@@ -17,12 +19,23 @@ app.use("/api/auth", authRoutes);
 app.use("/api/parking", parkingRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/wallet", walletRoutes);
+app.use("/api/services", serviceRoutes);
 
 connectDB();
 
 app.get("/", (req, res) => {
     res.json({
-        message: "SmartPark Backend is running!"
+        message: "SmartPark Backend is running!",
+        version: "1.2.0",
+        services: [
+            "/api/auth",
+            "/api/parking",
+            "/api/bookings",
+            "/api/ai",
+            "/api/wallet",
+            "/api/services"
+        ]
     });
 });
 
