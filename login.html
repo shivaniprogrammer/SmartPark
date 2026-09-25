@@ -178,8 +178,22 @@ body{font-family:"Inter",system-ui,sans-serif;background:#000;display:flex;min-h
   }
   window.switchTab=switchTab;
 
+  function getUsersDB() {
+    try {
+      return JSON.parse(localStorage.getItem('smartpark_users_db') || '{}');
+    } catch(e) {
+      return {};
+    }
+  }
+
+  function saveUserToDB(userObj) {
+    const db = getUsersDB();
+    db[userObj.email.toLowerCase()] = userObj;
+    localStorage.setItem('smartpark_users_db', JSON.stringify(db));
+  }
+
   async function handleLogin() {
-    const email = document.getElementById('loginEmail').value;
+    const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
 
     if (!email || !password) {
@@ -188,21 +202,35 @@ body{font-family:"Inter",system-ui,sans-serif;background:#000;display:flex;min-h
     }
 
     const res = await apiRequest('/auth/login', 'POST', { email, password });
-    if (res.success) {
+    if (res.success && res.data && res.data.user) {
       localStorage.setItem('smartpark_token', res.data.token);
       localStorage.setItem('smartpark_user', JSON.stringify(res.data.user));
+      saveUserToDB({ name: res.data.user.name, email: res.data.user.email, phone: res.data.user.phone, password });
     } else {
-      // Demo Fallback user
-      localStorage.setItem('smartpark_user', JSON.stringify({ name: "Rahul Sharma", email, phone: "+91 98765 43210" }));
+      // Local DB lookup fallback
+      const db = getUsersDB();
+      const localUser = db[email.toLowerCase()];
+      if (localUser) {
+        if (localUser.password && localUser.password !== password) {
+          alert("Invalid password. Please check your credentials.");
+          return;
+        }
+        localStorage.setItem('smartpark_user', JSON.stringify({ name: localUser.name, email: localUser.email, phone: localUser.phone || "+91 98765 43210" }));
+      } else {
+        const derivedName = email.split('@')[0].replace('.', ' ');
+        const newUser = { name: derivedName.charAt(0).toUpperCase() + derivedName.slice(1), email, phone: "+91 98765 43210" };
+        localStorage.setItem('smartpark_user', JSON.stringify(newUser));
+        saveUserToDB({ ...newUser, password });
+      }
     }
     window.location.href = 'dashboard.html';
   }
 
   async function handleSignup() {
-    const firstName = document.getElementById('signUpFirstName').value;
-    const lastName = document.getElementById('signUpLastName').value;
-    const phone = document.getElementById('signUpPhone').value;
-    const email = document.getElementById('signUpEmail').value;
+    const firstName = document.getElementById('signUpFirstName').value.trim();
+    const lastName = document.getElementById('signUpLastName').value.trim();
+    const phone = document.getElementById('signUpPhone').value.trim();
+    const email = document.getElementById('signUpEmail').value.trim();
     const password = document.getElementById('signUpPassword').value;
 
     if (!email || !password) {
@@ -210,13 +238,18 @@ body{font-family:"Inter",system-ui,sans-serif;background:#000;display:flex;min-h
       return;
     }
 
-    const name = `${firstName} ${lastName}`.trim() || "User";
+    const name = `${firstName} ${lastName}`.trim() || (email.split('@')[0]);
+    const userData = { name, email, phone: phone || "+91 98765 43210" };
+
+    // Always save to local DB so created account works for subsequent logins
+    saveUserToDB({ ...userData, password });
+
     const res = await apiRequest('/auth/register', 'POST', { name, email, phone, password });
-    if (res.success) {
+    if (res.success && res.data && res.data.user) {
       localStorage.setItem('smartpark_token', res.data.token);
       localStorage.setItem('smartpark_user', JSON.stringify(res.data.user));
     } else {
-      localStorage.setItem('smartpark_user', JSON.stringify({ name, email, phone }));
+      localStorage.setItem('smartpark_user', JSON.stringify(userData));
     }
     window.location.href = 'dashboard.html';
   }
