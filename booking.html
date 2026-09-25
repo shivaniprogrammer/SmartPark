@@ -1,459 +1,1353 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Book Parking — SmartPark</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    :root{--navy:#0A1628;--navy2:#1E3A5F;--blue:#2563EB;--gold:#F59E0B;--white:#fff;--light:#F8FAFC;--grey:#64748B;--border:#E2E8F0;--green:#10B981;--red:#EF4444;}
-    body{font-family:'Inter',sans-serif;background:var(--light);color:var(--navy);}
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Book Parking – SmartPark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+  :root {
+    --bg: #000000;
+    --surface: rgba(255,255,255,0.04);
+    --surface-hover: rgba(255,255,255,0.07);
+    --border: rgba(255,255,255,0.1);
+    --border-active: rgba(245,158,11,0.5);
+    --muted: #9a9a9a;
+    --gold: #F59E0B;
+    --gold-dim: rgba(245,158,11,0.15);
+    --blue: #2563EB;
+    --blue-dim: rgba(37,99,235,0.15);
+    --green: #10B981;
+    --green-dim: rgba(16,185,129,0.15);
+    --red: #EF4444;
+    --red-dim: rgba(239,68,68,0.15);
+    --spring: cubic-bezier(0.16,1,0.3,1);
+  }
 
-    /* TOPNAV */
-    nav{background:var(--navy);padding:0 5%;height:68px;display:flex;align-items:center;justify-content:space-between;}
-    .logo{font-size:1.4rem;font-weight:800;color:var(--white);text-decoration:none;}
-    .logo span{color:var(--gold);}
-    .nav-right{display:flex;align-items:center;gap:1rem;}
-    .nav-right a{color:rgba(255,255,255,0.7);text-decoration:none;font-size:0.875rem;font-weight:500;}
-    .nav-right a:hover{color:var(--white);}
-    .btn-dash{background:var(--blue);color:var(--white)!important;padding:0.45rem 1rem;border-radius:8px;font-weight:600!important;}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); color: #fff; overflow-x: hidden; }
 
-    /* STEP INDICATOR */
-    .step-bar{background:var(--white);border-bottom:1px solid var(--border);padding:1.25rem 5%;}
-    .steps-row{display:flex;align-items:center;max-width:700px;margin:0 auto;}
-    .step-item{display:flex;align-items:center;gap:0.5rem;flex:1;}
-    .step-circle{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:800;flex-shrink:0;transition:all .3s;}
-    .step-circle.done{background:var(--green);color:var(--white);}
-    .step-circle.active{background:var(--blue);color:var(--white);box-shadow:0 4px 12px rgba(37,99,235,0.35);}
-    .step-circle.pending{background:var(--border);color:var(--grey);}
-    .step-label{font-size:0.8rem;font-weight:600;color:var(--grey);}
-    .step-label.active{color:var(--navy);}
-    .step-line{flex:1;height:2px;background:var(--border);margin:0 0.5rem;}
-    .step-line.done{background:var(--green);}
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
 
-    /* MAIN LAYOUT */
-    .main-layout{display:grid;grid-template-columns:1fr 340px;gap:1.5rem;padding:2rem 5%;max-width:1200px;margin:0 auto;}
+  /* Entrance animation */
+  .animate-el {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.5s var(--spring), transform 0.5s var(--spring);
+  }
+  .animate-el.is-in { opacity: 1; transform: translateY(0); }
+  @media(prefers-reduced-motion:reduce){
+    .animate-el { opacity: 1; transform: none; transition: none; }
+  }
 
-    /* SEARCH */
-    .search-section{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;}
-    .search-section h2{font-size:1.1rem;font-weight:700;margin-bottom:1rem;}
-    .search-row{display:flex;gap:0.75rem;}
-    .search-input{flex:1;display:flex;align-items:center;gap:0.75rem;border:1.5px solid var(--border);border-radius:10px;padding:0.75rem 1rem;transition:all .3s;}
-    .search-input:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,0.1);}
-    .search-input i{color:var(--grey);}
-    .search-input input{border:none;outline:none;font-size:0.9rem;font-family:'Inter',sans-serif;color:var(--navy);width:100%;}
-    .btn-search{background:var(--blue);color:var(--white);border:none;padding:0.75rem 1.5rem;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;transition:all .3s;font-family:'Inter',sans-serif;}
-    .btn-search:hover{background:#1d4ed8;}
-    .filter-chips{display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:1rem;}
-    .chip{padding:0.4rem 0.9rem;border-radius:100px;font-size:0.78rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--white);color:var(--grey);transition:all .3s;}
-    .chip:hover,.chip.active{background:var(--blue);border-color:var(--blue);color:var(--white);}
+  /* ── LAYOUT ── */
+  .app-shell { display: flex; min-height: 100vh; position: relative; z-index: 1; }
 
-    /* LOT CARDS */
-    .section-title{font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:1rem;}
-    .lot-cards{display:flex;flex-direction:column;gap:1rem;margin-bottom:1.5rem;}
-    .lot-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:1.25rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:all .3s;}
-    .lot-card:hover,.lot-card.selected{border-color:var(--blue);background:#EFF6FF;}
-    .lot-info h3{font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:0.3rem;}
-    .lot-meta{display:flex;gap:1rem;flex-wrap:wrap;}
-    .lot-badge{display:flex;align-items:center;gap:0.35rem;font-size:0.775rem;color:var(--grey);}
-    .avail-count{font-size:0.775rem;font-weight:700;color:var(--green);background:#DCFCE7;padding:0.2rem 0.6rem;border-radius:100px;}
-    .lot-price{text-align:right;}
-    .lot-price .price{font-size:1.25rem;font-weight:800;color:var(--navy);}
-    .lot-price small{font-size:0.75rem;color:var(--grey);}
-    .btn-select{background:var(--blue);color:var(--white);border:none;padding:0.55rem 1.1rem;border-radius:8px;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all .3s;font-family:'Inter',sans-serif;margin-top:0.5rem;}
-    .btn-select:hover{background:#1d4ed8;}
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 240px;
+    min-width: 240px;
+    background: #0a0a0a;
+    border-right: 1px solid rgba(255,255,255,.08);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+    overflow-y: auto;
+  }
+  .sidebar-logo {
+    display: flex; align-items: center; gap: 10px;
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    text-decoration: none;
+  }
+  .logo-icon {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: linear-gradient(135deg, #F59E0B, #d97706);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 17px; color: #000; flex-shrink: 0;
+  }
+  .logo-text { font-weight: 700; font-size: 17px; letter-spacing: -.3px; color: #fff; }
+  .logo-text span { color: var(--gold); }
 
-    /* SLOT GRID */
-    .slot-section{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;}
-    .slot-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin:1rem 0;}
-    .sl{height:44px;border-radius:8px;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;}
-    .sl.free{background:#DCFCE7;border:1.5px solid #86EFAC;color:#15803D;}
-    .sl.free:hover{background:#BBF7D0;transform:scale(1.05);}
-    .sl.taken{background:#FEE2E2;border:1.5px solid #FCA5A5;color:#B91C1C;cursor:not-allowed;}
-    .sl.selected{background:var(--blue);border:1.5px solid var(--blue);color:var(--white);box-shadow:0 4px 12px rgba(37,99,235,0.4);transform:scale(1.05);}
-    .sl.ev{background:#FEF3C7;border:1.5px solid #FCD34D;color:#92400E;}
-    .slot-legend{display:flex;gap:1.25rem;flex-wrap:wrap;}
-    .leg{display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;color:var(--grey);}
-    .ld{width:14px;height:14px;border-radius:3px;}
+  .sidebar-nav { flex: 1; padding: 14px 12px; }
+  .nav-section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: .08em;
+    color: rgba(255,255,255,.3); text-transform: uppercase;
+    padding: 8px 10px 4px; margin-top: 6px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 11px;
+    padding: 10px 12px; border-radius: 9px;
+    color: var(--muted); font-size: 13.5px; font-weight: 500;
+    text-decoration: none; cursor: pointer;
+    transition: background .2s, color .2s;
+    margin-bottom: 2px;
+    border-left: 2px solid transparent;
+  }
+  .nav-item:hover { background: rgba(255,255,255,.05); color: #eee; }
+  .nav-item.active {
+    background: rgba(255,255,255,.08);
+    border-left: 2px solid var(--gold);
+    color: #fff; border-radius: 0 9px 9px 0;
+  }
+  .nav-item i { width: 16px; text-align: center; font-size: 14px; }
 
-    /* DURATION */
-    .duration-section{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;}
-    .duration-display{text-align:center;margin:1rem 0;}
-    .dur-num{font-size:3rem;font-weight:900;color:var(--navy);}
-    .dur-label{font-size:0.85rem;color:var(--grey);}
-    input[type=range]{width:100%;accent-color:var(--blue);height:6px;border-radius:3px;}
-    .dur-prices{display:flex;justify-content:space-between;font-size:0.75rem;color:var(--grey);margin-top:0.5rem;}
+  .sidebar-user {
+    padding: 14px 18px;
+    border-top: 1px solid rgba(255,255,255,.06);
+    display: flex; align-items: center; gap: 11px;
+  }
+  .user-avatar-sm {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: linear-gradient(135deg, #1E3A5F, #2563EB);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; color: #fff; flex-shrink: 0;
+  }
+  .user-info-sm .user-name-sm { font-size: 13px; font-weight: 600; color: #fff; }
+  .user-info-sm .user-tier-sm { font-size: 11px; color: var(--gold); }
 
-    /* SERVICES ADD-ONS */
-    .services-section{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;}
-    .addon-cards{display:grid;grid-template-columns:1fr 1fr;gap:0.875rem;margin-top:1rem;}
-    .addon{border:1.5px solid var(--border);border-radius:12px;padding:1rem;display:flex;justify-content:space-between;align-items:center;transition:all .3s;}
-    .addon.selected{border-color:var(--blue);background:#EFF6FF;}
-    .addon-info{display:flex;align-items:center;gap:0.75rem;}
-    .addon-icon{font-size:1.5rem;}
-    .addon-name{font-size:0.85rem;font-weight:700;color:var(--navy);}
-    .addon-price{font-size:0.78rem;color:var(--blue);font-weight:600;}
-    .toggle{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.9rem;transition:all .3s;}
-    .toggle.on{background:var(--blue);border-color:var(--blue);color:var(--white);}
+  /* ── MAIN ── */
+  .main-content {
+    margin-left: 240px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
 
-    /* ORDER SUMMARY (RIGHT) */
-    .summary-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.5rem;position:sticky;top:88px;}
-    .summary-card h3{font-size:1rem;font-weight:700;margin-bottom:1.25rem;}
-    .summary-row{display:flex;justify-content:space-between;font-size:0.875rem;padding:0.5rem 0;border-bottom:1px solid var(--border);}
-    .summary-row:last-of-type{border:none;}
-    .summary-row.total{font-weight:800;font-size:1rem;color:var(--navy);}
-    .summary-row span:first-child{color:var(--grey);}
-    .pay-options{margin:1.25rem 0;}
-    .pay-options p{font-size:0.8rem;font-weight:600;color:var(--grey);margin-bottom:0.75rem;}
-    .pay-btns{display:flex;flex-direction:column;gap:0.5rem;}
-    .pay-opt{display:flex;align-items:center;gap:0.75rem;padding:0.7rem 0.875rem;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all .3s;font-size:0.85rem;font-weight:600;}
-    .pay-opt:hover,.pay-opt.active{border-color:var(--blue);background:#EFF6FF;}
-    .pay-opt input{accent-color:var(--blue);}
-    .btn-confirm{width:100%;padding:1rem;background:linear-gradient(135deg,var(--blue),#1d4ed8);color:var(--white);border:none;border-radius:12px;font-size:1rem;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;transition:all .3s;margin-top:1rem;}
-    .btn-confirm:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,99,235,0.4);}
+  /* ── TOPBAR ── */
+  .topbar {
+    position: sticky; top: 0; z-index: 90;
+    background: rgba(0,0,0,.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    padding: 0 28px;
+    height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .topbar-title { font-size: 17px; font-weight: 700; letter-spacing: -.3px; }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .search-input-wrap { position: relative; }
+  .search-input-wrap i {
+    position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+    color: var(--muted); font-size: 13px;
+  }
+  .topbar-search {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    color: #fff; border-radius: 9px;
+    padding: 7px 14px 7px 32px;
+    font-size: 13px; font-family: inherit;
+    width: 200px; outline: none;
+    transition: border-color .2s;
+  }
+  .topbar-search:focus { border-color: rgba(255,255,255,.25); }
 
-    /* MODAL */
-    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,22,40,0.6);z-index:1000;align-items:center;justify-content:center;}
-    .modal-overlay.show{display:flex;}
-    .modal{background:var(--white);border-radius:20px;padding:3rem 2rem;text-align:center;max-width:400px;width:90%;animation:popIn .4s ease;}
-    @keyframes popIn{from{opacity:0;transform:scale(0.8);}to{opacity:1;transform:scale(1);}}
-    .modal .icon{font-size:4rem;margin-bottom:1rem;}
-    .modal h2{font-size:1.5rem;font-weight:800;color:var(--navy);margin-bottom:0.5rem;}
-    .modal p{font-size:0.9rem;color:var(--grey);line-height:1.6;margin-bottom:1.5rem;}
-    .modal .booking-ref{background:var(--light);border-radius:10px;padding:0.875rem;font-size:1.1rem;font-weight:800;color:var(--blue);margin-bottom:1.5rem;}
-    .btn-modal{background:var(--blue);color:var(--white);border:none;padding:0.875rem 2rem;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;}
+  /* ── PAGE BODY ── */
+  .page-body {
+    padding: 24px 28px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 
-    .fab{position:fixed;bottom:2rem;right:2rem;z-index:900;width:52px;height:52px;border-radius:50%;background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.35rem;box-shadow:0 8px 24px rgba(37,211,102,0.4);cursor:pointer;text-decoration:none;transition:all .3s;}
-    .fab:hover{transform:scale(1.1);}
+  /* ── STEPPER ── */
+  .stepper {
+    display: flex; align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 24px;
+  }
+  .step-item { display: flex; align-items: center; gap: 10px; flex: 1; }
+  .step-item:last-child { flex: none; }
+  .step-circle {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    border: 2px solid rgba(255,255,255,.15);
+    color: var(--muted); flex-shrink: 0;
+    transition: all .3s;
+  }
+  .step-circle.active {
+    border-color: var(--gold);
+    background: var(--gold);
+    color: #000;
+    box-shadow: 0 0 16px rgba(245,158,11,.35);
+  }
+  .step-circle.done {
+    border-color: var(--green);
+    background: var(--green);
+    color: #fff;
+  }
+  .step-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+  .step-label.active { color: #fff; }
+  .step-label.done { color: #bbb; }
+  .step-connector {
+    flex: 1; height: 2px;
+    background: rgba(255,255,255,.1);
+    margin: 0 14px;
+    transition: background .3s;
+  }
+  .step-connector.done { background: var(--green); }
 
-    @media(max-width:900px){.main-layout{grid-template-columns:1fr;}}
-  </style>
+  /* ── TWO COLUMN ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+  }
+
+  /* ── VEHICLE SELECTION (2-WHEELER VS 4-WHEELER) ── */
+  .vehicle-selector-wrap {
+    margin-bottom: 22px;
+  }
+  .section-subtitle {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 3px;
+    margin-bottom: 14px;
+  }
+  .vehicle-options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .vehicle-card {
+    background: rgba(255,255,255,.03);
+    border: 1.5px solid rgba(255,255,255,.1);
+    border-radius: 14px;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: all .25s var(--spring);
+    position: relative;
+    overflow: hidden;
+  }
+  .vehicle-card:hover {
+    background: rgba(255,255,255,.06);
+    border-color: rgba(255,255,255,.25);
+    transform: translateY(-2px);
+  }
+  .vehicle-card.active {
+    background: linear-gradient(135deg, rgba(245,158,11,.08) 0%, rgba(255,255,255,.04) 100%);
+    border-color: var(--gold);
+    box-shadow: 0 0 24px rgba(245,158,11,.15), inset 0 0 0 1px rgba(245,158,11,.3);
+  }
+  .vehicle-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .vehicle-icon-badge {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: #fff;
+    transition: all .25s;
+  }
+  .vehicle-card.active .vehicle-icon-badge {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .vehicle-radio-indicator {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,.3);
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
+  }
+  .vehicle-card.active .vehicle-radio-indicator {
+    border-color: var(--gold);
+    background: var(--gold);
+  }
+  .vehicle-radio-indicator::after {
+    content: '';
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #000;
+    opacity: 0; transition: opacity .2s;
+  }
+  .vehicle-card.active .vehicle-radio-indicator::after {
+    opacity: 1;
+  }
+  .vehicle-title {
+    font-size: 16px; font-weight: 800; color: #fff;
+    letter-spacing: -.2px; margin-bottom: 3px;
+  }
+  .vehicle-sub {
+    font-size: 11.5px; color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .vehicle-badge-row {
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .v-tag {
+    font-size: 10.5px; font-weight: 600;
+    padding: 3px 8px; border-radius: 6px;
+    background: rgba(255,255,255,.06);
+    color: rgba(255,255,255,.75);
+  }
+  .vehicle-card.active .v-tag.v-tag-highlight {
+    background: var(--gold-dim);
+    color: var(--gold);
+    border: 1px solid rgba(245,158,11,.3);
+  }
+
+  /* ── VEHICLE REGISTRATION INPUT ── */
+  .reg-input-group {
+    margin-top: 14px;
+    display: flex; gap: 10px;
+  }
+  .reg-input {
+    flex: 1;
+    background: rgba(255,255,255,.05);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    font-family: inherit;
+    color: #fff;
+    outline: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: border-color .2s;
+  }
+  .reg-input:focus { border-color: rgba(255,255,255,.3); }
+
+  /* ── STEP PANELS ── */
+  .step-panel { display: none; }
+  .step-panel.active-panel { display: block; }
+
+  /* Step 1 Search & Lots */
+  .section-head {
+    font-size: 15px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 12px;
+  }
+  .location-search-wrap {
+    position: relative; margin-bottom: 12px;
+  }
+  .location-search-wrap i {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    color: var(--muted); font-size: 14px;
+  }
+  .location-search {
+    width: 100%;
+    background: rgba(255,255,255,.05);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px 11px 38px;
+    font-size: 13.5px; font-family: inherit;
+    color: #fff; outline: none;
+    transition: border-color .2s;
+  }
+  .location-search:focus { border-color: rgba(255,255,255,.3); }
+
+  .filter-chips {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px;
+  }
+  .chip {
+    padding: 5px 12px; border-radius: 100px;
+    font-size: 11.5px; font-weight: 600;
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--border);
+    color: var(--muted); cursor: pointer;
+    transition: all .2s; user-select: none;
+  }
+  .chip:hover { border-color: rgba(255,255,255,.25); color: #ddd; }
+  .chip.chip-active {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .lot-cards { display: flex; flex-direction: column; gap: 12px; }
+  .lot-card {
+    background: rgba(255,255,255,.03);
+    border: 1.5px solid var(--border);
+    border-radius: 14px; padding: 18px;
+    cursor: pointer; transition: all .25s var(--spring);
+  }
+  .lot-card:hover {
+    background: rgba(255,255,255,.06);
+    border-color: rgba(255,255,255,.25);
+    transform: translateY(-2px);
+  }
+  .lot-card.active-lot {
+    border-color: var(--gold);
+    background: rgba(245,158,11,.05);
+  }
+  .lot-card-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .lot-name { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .lot-meta { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+  .stars { color: var(--gold); }
+  .dist-badge {
+    background: rgba(255,255,255,.06);
+    padding: 2px 7px; border-radius: 6px; font-size: 11px;
+  }
+  .lot-price-block { text-align: right; }
+  .price-main { font-size: 20px; font-weight: 800; color: var(--gold); }
+  .price-unit { font-size: 11px; color: var(--muted); }
+
+  .lot-card-mid {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .slots-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 6px;
+    font-size: 11.5px; font-weight: 700;
+    background: var(--green-dim); color: var(--green);
+    border: 1px solid rgba(16,185,129,.25);
+  }
+  .tag {
+    font-size: 11px; padding: 3px 8px; border-radius: 6px;
+    background: rgba(255,255,255,.05); color: rgba(255,255,255,.7);
+  }
+  .tag-ev { background: rgba(245,158,11,.15); color: var(--gold); border: 1px solid rgba(245,158,11,.25); }
+
+  /* ── STEP 2: SLOT SELECTION ── */
+  .slot-legend {
+    display: flex; gap: 14px; flex-wrap: wrap; margin: 12px 0 16px;
+    font-size: 12px; color: var(--muted);
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+  .legend-dot.free { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.2); }
+  .legend-dot.taken { background: var(--red-dim); border: 1px solid var(--red); }
+  .legend-dot.selected { background: var(--gold); }
+  .legend-dot.ev { background: var(--gold-dim); border: 1px solid var(--gold); }
+
+  .slot-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .slot-cell {
+    height: 48px; border-radius: 9px;
+    background: rgba(255,255,255,.04);
+    border: 1.5px solid rgba(255,255,255,.12);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer; transition: all .2s;
+    user-select: none;
+    font-size: 11.5px; font-weight: 700; color: #eee;
+    position: relative;
+  }
+  .slot-cell:hover:not(.taken) {
+    background: rgba(255,255,255,.09);
+    border-color: rgba(255,255,255,.3);
+    transform: scale(1.03);
+  }
+  .slot-cell.taken {
+    background: rgba(239,68,68,.08);
+    border-color: rgba(239,68,68,.25);
+    color: rgba(239,68,68,.55);
+    cursor: not-allowed;
+  }
+  .slot-cell.ev {
+    background: var(--gold-dim);
+    border-color: rgba(245,158,11,.35);
+    color: var(--gold);
+  }
+  .slot-cell.selected {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #000; font-weight: 800;
+    box-shadow: 0 0 16px rgba(245,158,11,.4);
+    transform: scale(1.04);
+  }
+  .slot-sub { font-size: 8.5px; font-weight: 600; opacity: .7; }
+
+  /* DURATION SLIDER */
+  .duration-block {
+    background: rgba(255,255,255,.03);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px;
+    margin-bottom: 16px;
+  }
+  .duration-label-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px; font-size: 13.5px; font-weight: 600;
+  }
+  .duration-val { font-size: 18px; font-weight: 800; color: var(--gold); }
+  input[type=range] {
+    width: 100%; accent-color: var(--gold);
+    height: 6px; border-radius: 3px; cursor: pointer;
+  }
+
+  .cost-line {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 16px;
+    background: rgba(245,158,11,.06);
+    border: 1px solid rgba(245,158,11,.2);
+    border-radius: 10px; margin-bottom: 18px;
+  }
+  .cost-label { font-size: 13px; font-weight: 600; color: #ddd; }
+  .cost-amount { font-size: 20px; font-weight: 900; color: var(--gold); }
+
+  /* ── STEP 3: PAYMENT ── */
+  .payment-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .payment-option {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px; border-radius: 12px;
+    background: rgba(255,255,255,.03);
+    border: 1.5px solid var(--border);
+    cursor: pointer; transition: all .2s;
+  }
+  .payment-option:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.25); }
+  .payment-option.selected-pay {
+    border-color: var(--gold);
+    background: rgba(245,158,11,.05);
+  }
+  .pay-radio { accent-color: var(--gold); width: 16px; height: 16px; }
+  .pay-icon {
+    width: 38px; height: 38px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .pay-details { flex: 1; }
+  .pay-name { font-size: 14px; font-weight: 700; color: #fff; }
+  .pay-sub { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+  .pay-badge {
+    font-size: 11px; font-weight: 700;
+    padding: 3px 8px; border-radius: 6px;
+    background: var(--green-dim); color: var(--green);
+  }
+
+  /* BUTTONS */
+  .step-nav { display: flex; gap: 10px; justify-content: space-between; }
+  .btn-primary {
+    padding: 11px 22px;
+    border-radius: 10px;
+    background: linear-gradient(140deg, #e4e4e4 0%, #ffffff 50%, #cccccc 100%);
+    color: #000;
+    font-size: 13.5px; font-weight: 700;
+    border: 1px solid rgba(255,255,255,.6);
+    cursor: pointer; transition: all .25s var(--spring);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 24px rgba(255,255,255,.2);
+    transform: translateY(-1px);
+  }
+  .btn-secondary {
+    padding: 11px 20px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.07);
+    border: 1px solid var(--border);
+    color: #ddd;
+    font-size: 13.5px; font-weight: 600;
+    cursor: pointer; transition: all .2s;
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,.12); color: #fff; }
+
+  /* ── RIGHT COLUMN: ORDER SUMMARY ── */
+  .order-summary {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    position: sticky; top: 80px;
+  }
+  .summary-title {
+    font-size: 15px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 16px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .summary-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 10px; font-size: 13px;
+  }
+  .summary-label { color: var(--muted); }
+  .summary-val { font-weight: 600; text-align: right; }
+  .summary-vehicle-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 8px; border-radius: 6px;
+    background: var(--gold-dim); color: var(--gold);
+    font-size: 11px; font-weight: 700;
+  }
+  .summary-divider { height: 1px; background: rgba(255,255,255,.08); margin: 14px 0; }
+  .summary-total-row {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .summary-total-label { font-size: 14px; font-weight: 700; }
+  .summary-total-val { font-size: 22px; font-weight: 900; color: var(--gold); }
+
+  .step-dots { display: flex; gap: 6px; justify-content: center; margin-top: 18px; }
+  .step-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(255,255,255,.15); transition: all .3s;
+  }
+  .step-dot.active-dot { background: var(--gold); width: 22px; border-radius: 4px; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 500;
+    background: rgba(0,0,0,.8);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-card {
+    background: #0f0f0f;
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 20px; padding: 32px 28px;
+    max-width: 400px; width: 92%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,.8);
+  }
+  .modal-check {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--green-dim); border: 2px solid var(--green);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px; font-size: 28px; color: var(--green);
+  }
+  .modal-title { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+  .modal-ref { font-size: 12.5px; color: var(--muted); margin-bottom: 18px; }
+  .modal-ref span { color: var(--gold); font-weight: 700; }
+  .modal-info-grid {
+    background: rgba(255,255,255,.03);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; text-align: left; margin-bottom: 18px;
+  }
+  .modal-info-label { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+  .modal-info-val { font-size: 13.5px; font-weight: 700; }
+  .modal-total { font-size: 17px; font-weight: 800; color: var(--gold); margin-bottom: 20px; }
+  .modal-btns { display: flex; gap: 10px; }
+  .modal-btns .btn-primary, .modal-btns .btn-secondary { flex: 1; }
+
+  @media(max-width: 900px) {
+    .sidebar { display: none; }
+    .main-content { margin-left: 0; }
+    .two-col { grid-template-columns: 1fr; }
+    .vehicle-options-grid { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 <body>
+<div class="app-shell">
 
-<!-- NAV -->
-<nav>
-  <a href="index.html" class="logo">🅿 Smart<span>Park</span></a>
-  <div class="nav-right">
-    <a href="dashboard.html">Dashboard</a>
-    <a href="services.html">Services</a>
-    <a href="wallet.html">Wallet</a>
-    <a href="dashboard.html" class="btn-dash">My Account</a>
-  </div>
-</nav>
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar-logo">
+      <div class="logo-icon">P</div>
+      <div class="logo-text">Smart<span>Park</span></div>
+    </a>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Menu</div>
+      <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+      <a href="booking.html" class="nav-item active"><i class="fa-solid fa-square-parking"></i> Book Parking</a>
+      <a href="services.html" class="nav-item"><i class="fa-solid fa-wrench"></i> Services</a>
+      <a href="services.html#cab" class="nav-item"><i class="fa-solid fa-car"></i> Book Cab</a>
+      <div class="nav-section-label">Account</div>
+      <a href="wallet.html" class="nav-item"><i class="fa-solid fa-wallet"></i> Wallet</a>
+      <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-user"></i> Profile</a>
+      <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i> Home</a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="user-avatar-sm">RS</div>
+      <div class="user-info-sm">
+        <div class="user-name-sm">Rahul Sharma</div>
+        <div class="user-tier-sm">★ Gold Member</div>
+      </div>
+    </div>
+  </aside>
 
-<!-- STEP BAR -->
-<div class="step-bar">
-  <div class="steps-row">
-    <div class="step-item">
-      <div class="step-circle active" id="s1">1</div>
-      <div class="step-label active">Choose Lot</div>
-    </div>
-    <div class="step-line" id="l1"></div>
-    <div class="step-item">
-      <div class="step-circle pending" id="s2">2</div>
-      <div class="step-label" id="sl2">Select Slot</div>
-    </div>
-    <div class="step-line" id="l2"></div>
-    <div class="step-item">
-      <div class="step-circle pending" id="s3">3</div>
-      <div class="step-label" id="sl3">Add Services</div>
-    </div>
-    <div class="step-line" id="l3"></div>
-    <div class="step-item">
-      <div class="step-circle pending" id="s4">4</div>
-      <div class="step-label" id="sl4">Pay</div>
-    </div>
-  </div>
-</div>
+  <!-- ── MAIN ── -->
+  <div class="main-content">
 
-<div class="main-layout">
-  <!-- LEFT -->
-  <div>
-    <!-- STEP 1: CHOOSE LOT -->
-    <div id="step1">
-      <div class="search-section">
-        <h2>🔍 Find Parking Near You</h2>
-        <div class="search-row">
-          <div class="search-input">
-            <i class="fas fa-map-marker-alt"></i>
-            <input type="text" placeholder="Enter location, landmark or mall name..." value="Koramangala, Bangalore"/>
-          </div>
-          <button class="btn-search" onclick="goStep(2)"><i class="fas fa-search"></i> Search</button>
+    <!-- TOPBAR -->
+    <header class="topbar animate-el">
+      <div class="topbar-title">Book Parking</div>
+      <div class="topbar-right">
+        <div class="search-input-wrap">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input class="topbar-search" type="text" placeholder="Search parking lots..."/>
         </div>
-        <div class="filter-chips">
-          <span class="chip active">All</span>
-          <span class="chip">🔌 EV Slots</span>
-          <span class="chip">🏍️ 2-Wheeler</span>
-          <span class="chip">🏠 Covered</span>
-          <span class="chip">🕐 24/7 Open</span>
-          <span class="chip">🔒 CCTV</span>
-          <span class="chip">♿ Accessible</span>
-        </div>
+        <a href="wallet.html" style="text-decoration:none;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);padding:6px 12px;border-radius:8px;font-size:12px;color:var(--gold);font-weight:700;">
+          <i class="fa-solid fa-wallet"></i> ₹850
+        </a>
       </div>
-      <p class="section-title">📍 Parking Lots Near Koramangala</p>
-      <div class="lot-cards">
-        <div class="lot-card" onclick="selectLot(this,'Forum Mall')">
-          <div class="lot-info">
-            <h3>Forum Mall Parking</h3>
-            <div class="lot-meta">
-              <span class="lot-badge"><i class="fas fa-location-dot"></i> 0.2 km away</span>
-              <span class="lot-badge"><i class="fas fa-star" style="color:var(--gold);"></i> 4.8 (320 reviews)</span>
-              <span class="lot-badge"><i class="fas fa-clock"></i> Open 24/7</span>
-              <span class="avail-count">18 slots available</span>
-            </div>
-          </div>
-          <div class="lot-price">
-            <div class="price">₹60<small>/hr</small></div>
-            <button class="btn-select">Select</button>
-          </div>
-        </div>
-        <div class="lot-card" onclick="selectLot(this,'KFC Junction')">
-          <div class="lot-info">
-            <h3>KFC Junction Parking</h3>
-            <div class="lot-meta">
-              <span class="lot-badge"><i class="fas fa-location-dot"></i> 0.5 km away</span>
-              <span class="lot-badge"><i class="fas fa-star" style="color:var(--gold);"></i> 4.5 (210 reviews)</span>
-              <span class="lot-badge"><i class="fas fa-clock"></i> 6 AM – 12 AM</span>
-              <span class="avail-count">32 slots available</span>
-            </div>
-          </div>
-          <div class="lot-price">
-            <div class="price">₹40<small>/hr</small></div>
-            <button class="btn-select">Select</button>
-          </div>
-        </div>
-        <div class="lot-card" onclick="selectLot(this,'Oasis Centre')">
-          <div class="lot-info">
-            <h3>Oasis Centre Basement Parking</h3>
-            <div class="lot-meta">
-              <span class="lot-badge"><i class="fas fa-location-dot"></i> 0.8 km away</span>
-              <span class="lot-badge"><i class="fas fa-star" style="color:var(--gold);"></i> 4.3 (98 reviews)</span>
-              <span class="lot-badge"><i class="fas fa-clock"></i> 8 AM – 11 PM</span>
-              <span class="avail-count">7 slots available</span>
-            </div>
-          </div>
-          <div class="lot-price">
-            <div class="price">₹30<small>/hr</small></div>
-            <button class="btn-select">Select</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    </header>
 
-    <!-- STEP 2: SELECT SLOT -->
-    <div id="step2" style="display:none;">
-      <div class="slot-section">
-        <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;">🅿️ Select Your Slot — <span id="lotName">Forum Mall</span></h2>
-        <p style="font-size:0.85rem;color:var(--grey);margin-bottom:1rem;">Click any green slot to select it. EV slots support electric vehicle charging.</p>
-        <div class="slot-grid" id="bookingSlotGrid"></div>
-        <div class="slot-legend" style="margin-top:1rem;">
-          <div class="leg"><div class="ld" style="background:#DCFCE7;border:1px solid #86EFAC;"></div>Available</div>
-          <div class="leg"><div class="ld" style="background:#FEE2E2;border:1px solid #FCA5A5;"></div>Occupied</div>
-          <div class="leg"><div class="ld" style="background:var(--blue);"></div>Selected</div>
-          <div class="leg"><div class="ld" style="background:#FEF3C7;border:1px solid #FCD34D;"></div>EV Slot</div>
-        </div>
-      </div>
-      <div class="duration-section">
-        <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;">⏱️ Choose Duration</h2>
-        <div class="duration-display">
-          <div class="dur-num" id="durNum">2</div>
-          <div class="dur-label">hours</div>
-        </div>
-        <input type="range" min="1" max="24" value="2" id="durSlider" oninput="updateDuration(this.value)"/>
-        <div class="dur-prices">
-          <span>1 hr</span><span>6 hrs</span><span>12 hrs</span><span>24 hrs</span>
-        </div>
-        <p style="text-align:center;margin-top:0.75rem;font-size:0.875rem;color:var(--grey);">Estimated parking cost: <strong id="parkCost" style="color:var(--blue);">₹120</strong></p>
-      </div>
-      <div style="display:flex;gap:1rem;">
-        <button onclick="goStep(1)" style="flex:1;padding:0.875rem;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;background:var(--white);font-family:'Inter',sans-serif;">← Back</button>
-        <button onclick="goStep(3)" style="flex:2;padding:0.875rem;background:var(--blue);color:var(--white);border:none;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">Continue to Services →</button>
-      </div>
-    </div>
+    <!-- PAGE BODY -->
+    <div class="page-body">
 
-    <!-- STEP 3: ADD SERVICES -->
-    <div id="step3" style="display:none;">
-      <div class="services-section">
-        <h2 style="font-size:1.1rem;font-weight:700;">🛎️ Add Services (Optional)</h2>
-        <p style="font-size:0.85rem;color:var(--grey);margin-top:0.25rem;">Services will be performed while your car is parked.</p>
-        <div class="addon-cards" id="addonCards">
-          <div class="addon" onclick="toggleAddon(this,99)">
-            <div class="addon-info">
-              <div class="addon-icon">🚿</div>
-              <div><div class="addon-name">Basic Car Wash</div><div class="addon-price">+₹99</div></div>
-            </div>
-            <div class="toggle">+</div>
-          </div>
-          <div class="addon" onclick="toggleAddon(this,199)">
-            <div class="addon-info">
-              <div class="addon-icon">✨</div>
-              <div><div class="addon-name">Premium Wash</div><div class="addon-price">+₹199</div></div>
-            </div>
-            <div class="toggle">+</div>
-          </div>
-          <div class="addon" onclick="toggleAddon(this,99)">
-            <div class="addon-info">
-              <div class="addon-icon">🛞</div>
-              <div><div class="addon-name">Tyre Pressure Check</div><div class="addon-price">+₹99</div></div>
-            </div>
-            <div class="toggle">+</div>
-          </div>
-          <div class="addon" onclick="toggleAddon(this,149)">
-            <div class="addon-info">
-              <div class="addon-icon">🛢️</div>
-              <div><div class="addon-name">Oil Level Check</div><div class="addon-price">+₹149</div></div>
-            </div>
-            <div class="toggle">+</div>
-          </div>
-          <div class="addon" onclick="toggleAddon(this,249)">
-            <div class="addon-info">
-              <div class="addon-icon">📋</div>
-              <div><div class="addon-name">Vehicle Inspection</div><div class="addon-price">+₹249</div></div>
-            </div>
-            <div class="toggle">+</div>
-          </div>
-          <div class="addon" onclick="toggleAddon(this,149)">
-            <div class="addon-info">
-              <div class="addon-icon">🪟</div>
-              <div><div class="addon-name">Windshield Clean</div><div class="addon-price">+₹149</div></div>
-            </div>
-            <div class="toggle">+</div>
-          </div>
+      <!-- STEPPER (Streamlined 3 Steps: Vehicle & Lot -> Slot & Duration -> Pay) -->
+      <div class="stepper animate-el">
+        <div class="step-item">
+          <div class="step-circle active" id="sc1">1</div>
+          <div class="step-label active" id="sl1">Vehicle &amp; Lot</div>
+        </div>
+        <div class="step-connector" id="conn1"></div>
+        <div class="step-item">
+          <div class="step-circle" id="sc2">2</div>
+          <div class="step-label" id="sl2">Select Slot</div>
+        </div>
+        <div class="step-connector" id="conn2"></div>
+        <div class="step-item">
+          <div class="step-circle" id="sc3">3</div>
+          <div class="step-label" id="sl3">Pay &amp; Confirm</div>
         </div>
       </div>
-      <div style="display:flex;gap:1rem;">
-        <button onclick="goStep(2)" style="flex:1;padding:0.875rem;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;background:var(--white);font-family:'Inter',sans-serif;">← Back</button>
-        <button onclick="goStep(4)" style="flex:2;padding:0.875rem;background:var(--blue);color:var(--white);border:none;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">Continue to Payment →</button>
-      </div>
-    </div>
 
-    <!-- STEP 4: PAY -->
-    <div id="step4" style="display:none;">
-      <div class="services-section">
-        <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:1rem;">💳 Choose Payment Method</h2>
-        <div class="pay-btns">
-          <label class="pay-opt active"><input type="radio" name="pay" checked/> 💳 SmartPark Wallet (Balance: ₹850)</label>
-          <label class="pay-opt"><input type="radio" name="pay"/> 📱 UPI (GPay / PhonePe / Paytm)</label>
-          <label class="pay-opt"><input type="radio" name="pay"/> 🏦 Net Banking</label>
-          <label class="pay-opt"><input type="radio" name="pay"/> 💳 Debit / Credit Card</label>
-        </div>
-      </div>
-      <div style="display:flex;gap:1rem;">
-        <button onclick="goStep(3)" style="flex:1;padding:0.875rem;border:1.5px solid var(--border);border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;background:var(--white);font-family:'Inter',sans-serif;">← Back</button>
-        <button onclick="confirmBooking()" style="flex:2;padding:0.875rem;background:linear-gradient(135deg,var(--blue),#1d4ed8);color:var(--white);border:none;border-radius:10px;font-size:0.9rem;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;">🔒 Confirm & Pay</button>
-      </div>
-    </div>
-  </div>
+      <!-- TWO COLUMN -->
+      <div class="two-col">
 
-  <!-- RIGHT: SUMMARY -->
-  <div>
-    <div class="summary-card">
-      <h3>📋 Booking Summary</h3>
-      <div class="summary-row"><span>Parking Lot</span><span id="sumLot">—</span></div>
-      <div class="summary-row"><span>Slot</span><span id="sumSlot">—</span></div>
-      <div class="summary-row"><span>Duration</span><span id="sumDur">—</span></div>
-      <div class="summary-row"><span>Parking Fee</span><span id="sumPark">—</span></div>
-      <div class="summary-row"><span>Services</span><span id="sumSvc">—</span></div>
-      <div class="summary-row"><span>Platform Fee</span><span>₹10</span></div>
-      <div class="summary-row total"><span>Total</span><span id="sumTotal">—</span></div>
-      <button class="btn-confirm" onclick="goStep(parseInt(document.querySelector('[id^=step]:not([style*=none])').id.replace('step',''))+1)">
-        Continue →
-      </button>
-      <p style="text-align:center;font-size:0.75rem;color:var(--grey);margin-top:0.75rem;"><i class="fas fa-shield-alt"></i> Secure & encrypted payment</p>
-    </div>
-  </div>
-</div>
+        <!-- LEFT COLUMN: STEPS -->
+        <div>
 
-<!-- SUCCESS MODAL -->
+          <!-- ════ STEP 1: VEHICLE & LOT ════ -->
+          <div class="card step-panel active-panel animate-el" id="step1">
+
+            <!-- VEHICLE TYPE SELECTOR -->
+            <div class="vehicle-selector-wrap">
+              <div class="section-head"><i class="fa-solid fa-motorcycle" style="color:var(--gold);"></i> Step 1: Select Your Vehicle Type</div>
+              <div class="section-subtitle">Choose your vehicle to view dedicated slots and customized hourly pricing.</div>
+              
+              <div class="vehicle-options-grid">
+                <!-- 2-Wheeler -->
+                <div class="vehicle-card" id="card2W" onclick="selectVehicle('2W')">
+                  <div class="vehicle-card-top">
+                    <div class="vehicle-icon-badge">🛵</div>
+                    <div class="vehicle-radio-indicator"></div>
+                  </div>
+                  <div class="vehicle-title">2-Wheeler</div>
+                  <div class="vehicle-sub">Motorcycles, Scooters &amp; Electric 2W</div>
+                  <div class="vehicle-badge-row">
+                    <span class="v-tag v-tag-highlight" id="rateBadge2W">From ₹10/hr</span>
+                    <span class="v-tag">Fast Entry</span>
+                    <span class="v-tag">Compact Bays</span>
+                  </div>
+                </div>
+
+                <!-- 4-Wheeler (Default Selected) -->
+                <div class="vehicle-card active" id="card4W" onclick="selectVehicle('4W')">
+                  <div class="vehicle-card-top">
+                    <div class="vehicle-icon-badge">🚗</div>
+                    <div class="vehicle-radio-indicator"></div>
+                  </div>
+                  <div class="vehicle-title">4-Wheeler</div>
+                  <div class="vehicle-sub">Hatchbacks, Sedans, SUVs &amp; EV Cars</div>
+                  <div class="vehicle-badge-row">
+                    <span class="v-tag v-tag-highlight" id="rateBadge4W">From ₹30/hr</span>
+                    <span class="v-tag">EV Ready</span>
+                    <span class="v-tag">CCTV Security</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Registration number optional input -->
+              <div class="reg-input-group">
+                <input class="reg-input" type="text" id="regNumber" placeholder="Enter Vehicle Number (e.g. KA-01-AB-1234)" value="KA-01-MH-1234" oninput="updateSummary()"/>
+              </div>
+            </div>
+
+            <!-- PARKING LOT SELECTOR -->
+            <div class="section-head" style="margin-top:24px;border-top:1px solid var(--border);padding-top:20px;">
+              <i class="fa-solid fa-location-dot" style="color:var(--gold);"></i> Choose Parking Location
+            </div>
+
+            <div class="location-search-wrap">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input class="location-search" type="text" placeholder="Search mall, metro, airport, or landmark..." id="locSearch"/>
+            </div>
+
+            <div class="filter-chips">
+              <div class="chip chip-active">All Lots</div>
+              <div class="chip">⚡ EV Charging</div>
+              <div class="chip">🏠 Covered</div>
+              <div class="chip">🕐 24/7 Open</div>
+              <div class="chip">📷 CCTV Security</div>
+            </div>
+
+            <div class="lot-cards" id="lotCardsContainer">
+              <!-- Rendered dynamically based on 2W / 4W pricing -->
+            </div>
+          </div>
+
+          <!-- ════ STEP 2: SELECT SLOT & DURATION ════ -->
+          <div class="card step-panel animate-el" id="step2">
+            <div class="section-head">
+              <i class="fa-solid fa-border-all" style="color:var(--gold);"></i>
+              <span id="step2LotName">Select Parking Slot</span>
+            </div>
+            <div class="section-subtitle" id="step2Sub">Tap an available green bay to reserve your spot.</div>
+
+            <div class="slot-legend">
+              <div class="legend-item"><div class="legend-dot free"></div>Available</div>
+              <div class="legend-item"><div class="legend-dot taken"></div>Occupied</div>
+              <div class="legend-item"><div class="legend-dot selected"></div>Your Selection</div>
+              <div class="legend-item" id="evLegendItem"><div class="legend-dot ev"></div>EV Charging</div>
+            </div>
+
+            <!-- Dynamic Slot Grid -->
+            <div class="slot-grid" id="slotGrid"></div>
+
+            <!-- DURATION SLIDER -->
+            <div class="duration-block">
+              <div class="duration-label-row">
+                <span>Parking Duration</span>
+                <span class="duration-val" id="durationDisplay">2 hours</span>
+              </div>
+              <input type="range" id="durationSlider" min="1" max="24" value="2" oninput="updateDuration(this.value)"/>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:6px;">
+                <span>1 hr</span><span>6 hrs</span><span>12 hrs</span><span>24 hrs</span>
+              </div>
+            </div>
+
+            <div class="cost-line">
+              <div class="cost-label">Calculated Parking Fee:</div>
+              <div class="cost-amount" id="costDisplay">₹120</div>
+            </div>
+
+            <div class="step-nav">
+              <button class="btn-secondary" onclick="goStep(1)"><i class="fa-solid fa-arrow-left" style="margin-right:6px;"></i> Back</button>
+              <button class="btn-primary" onclick="proceedToPay()">Proceed to Pay <i class="fa-solid fa-arrow-right" style="margin-left:6px;"></i></button>
+            </div>
+          </div>
+
+          <!-- ════ STEP 3: PAYMENT & CONFIRMATION ════ -->
+          <div class="card step-panel animate-el" id="step3">
+            <div class="section-head"><i class="fa-solid fa-credit-card" style="color:var(--gold);"></i> Select Payment Method</div>
+            <div class="section-subtitle">Secure encrypted payment with instant ticket confirmation.</div>
+
+            <div class="payment-options">
+              <div class="payment-option selected-pay" onclick="selectPayment(this,'wallet')">
+                <input type="radio" class="pay-radio" name="payMethod" checked/>
+                <div class="pay-icon" style="background:var(--green-dim);color:var(--green);">
+                  <i class="fa-solid fa-wallet"></i>
+                </div>
+                <div class="pay-details">
+                  <div class="pay-name">SmartPark Wallet</div>
+                  <div class="pay-sub">Fastest checkout with 1-tap booking</div>
+                </div>
+                <div class="pay-badge">₹850 Balance</div>
+              </div>
+
+              <div class="payment-option" onclick="selectPayment(this,'upi')">
+                <input type="radio" class="pay-radio" name="payMethod"/>
+                <div class="pay-icon" style="background:var(--blue-dim);color:#60a5fa;">
+                  <i class="fa-solid fa-mobile-screen"></i>
+                </div>
+                <div class="pay-details">
+                  <div class="pay-name">UPI (GPay / PhonePe / Paytm / BHIM)</div>
+                  <div class="pay-sub">Scan QR or enter UPI ID</div>
+                </div>
+              </div>
+
+              <div class="payment-option" onclick="selectPayment(this,'card')">
+                <input type="radio" class="pay-radio" name="payMethod"/>
+                <div class="pay-icon" style="background:var(--gold-dim);color:var(--gold);">
+                  <i class="fa-solid fa-credit-card"></i>
+                </div>
+                <div class="pay-details">
+                  <div class="pay-name">Credit / Debit Card</div>
+                  <div class="pay-sub">Visa, Mastercard, RuPay</div>
+                </div>
+              </div>
+
+              <div class="payment-option" onclick="selectPayment(this,'netbanking')">
+                <input type="radio" class="pay-radio" name="payMethod"/>
+                <div class="pay-icon" style="background:rgba(124,58,237,.15);color:#a78bfa;">
+                  <i class="fa-solid fa-building-columns"></i>
+                </div>
+                <div class="pay-details">
+                  <div class="pay-name">Net Banking</div>
+                  <div class="pay-sub">HDFC, SBI, ICICI, Axis &amp; more</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-nav">
+              <button class="btn-secondary" onclick="goStep(2)"><i class="fa-solid fa-arrow-left" style="margin-right:6px;"></i> Change Slot</button>
+              <button class="btn-primary" onclick="confirmBooking()">
+                <i class="fa-solid fa-lock" style="margin-right:6px;"></i> Confirm &amp; Pay
+              </button>
+            </div>
+          </div>
+
+        </div><!-- /LEFT -->
+
+        <!-- RIGHT COLUMN: ORDER SUMMARY -->
+        <div>
+          <div class="order-summary animate-el">
+            <div class="summary-title"><i class="fa-solid fa-receipt" style="color:var(--gold);"></i> Booking Summary</div>
+
+            <div class="summary-row">
+              <span class="summary-label">Vehicle</span>
+              <span class="summary-val">
+                <span class="summary-vehicle-badge" id="sumVehicle">🚗 4-Wheeler</span>
+              </span>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Vehicle Reg</span>
+              <span class="summary-val" id="sumReg">KA-01-MH-1234</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Parking Lot</span>
+              <span class="summary-val" id="sumLot">Forum Mall Parking</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Selected Slot</span>
+              <span class="summary-val" id="sumSlot" style="color:var(--gold);font-weight:700;">A-12</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Duration</span>
+              <span class="summary-val" id="sumDuration">2 hours</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Hourly Rate</span>
+              <span class="summary-val" id="sumRate">₹60/hr</span>
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-total-row">
+              <span class="summary-total-label">Total Payable</span>
+              <span class="summary-total-val" id="sumTotal">₹120</span>
+            </div>
+
+            <div class="step-dots">
+              <div class="step-dot active-dot" id="dot1"></div>
+              <div class="step-dot" id="dot2"></div>
+              <div class="step-dot" id="dot3"></div>
+            </div>
+          </div>
+        </div><!-- /RIGHT -->
+
+      </div><!-- /two-col -->
+    </div><!-- /page-body -->
+  </div><!-- /main-content -->
+</div><!-- /app-shell -->
+
+<!-- SUCCESS CONFIRMATION MODAL -->
 <div class="modal-overlay" id="successModal">
-  <div class="modal">
-    <div class="icon">🎉</div>
-    <h2>Booking Confirmed!</h2>
-    <p>Your parking slot has been reserved. You'll receive a confirmation on WhatsApp and email.</p>
-    <div class="booking-ref">#SP2024002 — Slot B-108</div>
-    <button class="btn-modal" onclick="location.href='dashboard.html'">Go to Dashboard</button>
+  <div class="modal-card">
+    <div class="modal-check"><i class="fa-solid fa-check"></i></div>
+    <div class="modal-title">Slot Reserved! 🎉</div>
+    <div class="modal-ref">Booking ID: <span id="mBookingId">#SP-2024-9182</span></div>
+
+    <div class="modal-info-grid">
+      <div class="modal-info-item">
+        <div class="modal-info-label">Vehicle Type</div>
+        <div class="modal-info-val" id="mVehicle">4-Wheeler (Car)</div>
+      </div>
+      <div class="modal-info-item">
+        <div class="modal-info-label">Parking Bay</div>
+        <div class="modal-info-val" id="mSlot" style="color:var(--gold);">A-12</div>
+      </div>
+      <div class="modal-info-item">
+        <div class="modal-info-label">Location</div>
+        <div class="modal-info-val" id="mLot">Forum Mall</div>
+      </div>
+      <div class="modal-info-item">
+        <div class="modal-info-label">Duration</div>
+        <div class="modal-info-val" id="mDuration">2 Hours</div>
+      </div>
+    </div>
+
+    <div class="modal-total">
+      <span style="font-size:12px;color:var(--muted);display:block;margin-bottom:2px;">Amount Paid</span>
+      <span id="mTotal">₹120</span>
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-primary" onclick="window.location='dashboard.html'"><i class="fa-solid fa-gauge" style="margin-right:6px;"></i> Dashboard</button>
+      <button class="btn-secondary" onclick="closeModal()">Close</button>
+    </div>
   </div>
 </div>
 
-<a href="#" class="fab"><i class="fab fa-whatsapp"></i></a>
+<!-- Floating WhatsApp Support -->
+<a href="https://wa.me/919999999999" target="_blank" style="position:fixed;bottom:24px;right:24px;width:52px;height:52px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.4);z-index:999;text-decoration:none;">
+  <i class="fab fa-whatsapp" style="font-size:26px;color:#fff;"></i>
+</a>
 
 <script>
-  let selectedSlot = null, addonsTotal = 0, parkRate = 60, duration = 2;
-  let selectedLotName = '—';
+// ── STATE ──
+const state = {
+  currentStep: 1,
+  vehicleType: '4W', // '2W' or '4W'
+  selectedLotId: 1,
+  selectedSlot: null,
+  duration: 2,
 
-  // Slot grid
-  const slotTypes = ['free','taken','free','free','taken','free','ev','free','taken','free','free','taken','free','free','free','taken','free','free','taken','free','free','free','taken','free','free','ev','free','taken','free','free','taken','free'];
-  const slotLabels = ['A1','A2','A3','A4','A5','A6','A7','A8','A9','A10','B1','B2','B3','B4','B5','B6','B7','B8','B9','B10','C1','C2','C3','C4','C5','C6','C7','C8','C9','C10','D1','D2'];
-  const g = document.getElementById('bookingSlotGrid');
-  slotTypes.forEach((t,i)=>{
-    const d=document.createElement('div');
-    d.className='sl '+t;
-    d.textContent=slotLabels[i];
-    if(t!=='taken'){
-      d.onclick=()=>{
-        document.querySelectorAll('.sl.selected').forEach(s=>{s.className='sl '+(slotTypes[slotLabels.indexOf(s.textContent)]);s.textContent=slotLabels[slotLabels.indexOf(s.textContent)];});
-        d.className='sl selected';
-        selectedSlot=slotLabels[i];
-        document.getElementById('sumSlot').textContent=selectedSlot;
-        updateTotal();
+  lots: [
+    {
+      id: 1,
+      name: 'Forum Mall Parking',
+      landmark: 'Koramangala, Bangalore',
+      distance: '0.3 km',
+      rating: '4.8',
+      rates: { '2W': 20, '4W': 60 },
+      freeSlots: { '2W': 36, '4W': 18 },
+      hasEV: true,
+      indoor: true
+    },
+    {
+      id: 2,
+      name: 'KFC Junction Parking',
+      landmark: '100ft Road, Indiranagar',
+      distance: '0.7 km',
+      rating: '4.5',
+      rates: { '2W': 15, '4W': 40 },
+      freeSlots: { '2W': 48, '4W': 32 },
+      hasEV: false,
+      indoor: false
+    },
+    {
+      id: 3,
+      name: 'Oasis Centre Parking',
+      landmark: 'Sony World Signal, Koramangala',
+      distance: '1.2 km',
+      rating: '4.3',
+      rates: { '2W': 10, '4W': 30 },
+      freeSlots: { '2W': 24, '4W': 7 },
+      hasEV: true,
+      indoor: true
+    }
+  ],
+
+  // 4-Wheeler Slots (Bays A1..D6)
+  slots4W: [
+    { id: 'A-01', status: 'free' },
+    { id: 'A-02', status: 'taken' },
+    { id: 'A-03', status: 'free' },
+    { id: 'A-04', status: 'ev' },
+    { id: 'A-05', status: 'free' },
+    { id: 'A-06', status: 'taken' },
+    { id: 'B-01', status: 'free' },
+    { id: 'B-02', status: 'free' },
+    { id: 'B-03', status: 'taken' },
+    { id: 'B-04', status: 'free' },
+    { id: 'B-05', status: 'free' },
+    { id: 'B-06', status: 'taken' },
+    { id: 'C-01', status: 'free' },
+    { id: 'C-02', status: 'free' },
+    { id: 'C-03', status: 'ev' },
+    { id: 'C-04', status: 'free' },
+    { id: 'C-05', status: 'free' },
+    { id: 'C-06', status: 'free' },
+    { id: 'D-01', status: 'taken' },
+    { id: 'D-02', status: 'free' },
+    { id: 'D-03', status: 'free' },
+    { id: 'D-04', status: 'taken' },
+    { id: 'D-05', status: 'free' },
+    { id: 'D-06', status: 'free' },
+  ],
+
+  // 2-Wheeler Slots (Compact Bays 2W-01..2W-24)
+  slots2W: [
+    { id: '2W-01', status: 'free' },
+    { id: '2W-02', status: 'free' },
+    { id: '2W-03', status: 'taken' },
+    { id: '2W-04', status: 'free' },
+    { id: '2W-05', status: 'free' },
+    { id: '2W-06', status: 'taken' },
+    { id: '2W-07', status: 'free' },
+    { id: '2W-08', status: 'ev' },
+    { id: '2W-09', status: 'free' },
+    { id: '2W-10', status: 'free' },
+    { id: '2W-11', status: 'taken' },
+    { id: '2W-12', status: 'free' },
+    { id: '2W-13', status: 'free' },
+    { id: '2W-14', status: 'free' },
+    { id: '2W-15', status: 'free' },
+    { id: '2W-16', status: 'free' },
+    { id: '2W-17', status: 'taken' },
+    { id: '2W-18', status: 'ev' },
+    { id: '2W-19', status: 'free' },
+    { id: '2W-20', status: 'free' },
+    { id: '2W-21', status: 'free' },
+    { id: '2W-22', status: 'taken' },
+    { id: '2W-23', status: 'free' },
+    { id: '2W-24', status: 'free' },
+  ]
+};
+
+// ── VEHICLE SWITCHER ──
+function selectVehicle(type) {
+  state.vehicleType = type;
+  document.getElementById('card2W').classList.toggle('active', type === '2W');
+  document.getElementById('card4W').classList.toggle('active', type === '4W');
+  
+  // Reset selected slot when vehicle changes
+  state.selectedSlot = null;
+
+  renderLots();
+  buildSlotGrid();
+  updateSummary();
+}
+
+// ── RENDER LOTS ──
+function renderLots() {
+  const container = document.getElementById('lotCardsContainer');
+  container.innerHTML = '';
+
+  state.lots.forEach(lot => {
+    const rate = lot.rates[state.vehicleType];
+    const freeCount = lot.freeSlots[state.vehicleType];
+    const isSelected = lot.id === state.selectedLotId;
+    const vName = state.vehicleType === '2W' ? '2-Wheeler' : '4-Wheeler';
+
+    const card = document.createElement('div');
+    card.className = 'lot-card' + (isSelected ? ' active-lot' : '');
+    card.onclick = () => selectLot(lot.id);
+
+    card.innerHTML = `
+      <div class="lot-card-top">
+        <div>
+          <div class="lot-name">${lot.name}</div>
+          <div class="lot-meta">
+            <span class="stars">★★★★★</span>
+            <span style="font-weight:700;color:#fff;">${lot.rating}</span>
+            <span>•</span>
+            <span class="dist-badge"><i class="fa-solid fa-location-dot" style="font-size:10px;"></i> ${lot.distance}</span>
+            <span>•</span>
+            <span>${lot.landmark}</span>
+          </div>
+        </div>
+        <div class="lot-price-block">
+          <div class="price-main">₹${rate}</div>
+          <div class="price-unit">per hour (${vName})</div>
+        </div>
+      </div>
+
+      <div class="lot-card-mid">
+        <div class="slots-badge">
+          <i class="fa-solid fa-circle-check" style="font-size:11px;"></i>
+          ${freeCount} ${vName} slots available
+        </div>
+        <span class="tag">${lot.indoor ? '🏛️ Covered Indoor' : '🌤️ Open Parking'}</span>
+        ${lot.hasEV ? '<span class="tag tag-ev">⚡ EV Charging</span>' : ''}
+        <span class="tag">📷 CCTV</span>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;">
+        <button class="btn-primary" onclick="selectLot(${lot.id});event.stopPropagation();">
+          Select &amp; Pick Slot <i class="fa-solid fa-arrow-right" style="margin-left:6px;"></i>
+        </button>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+function selectLot(lotId) {
+  state.selectedLotId = lotId;
+  state.selectedSlot = null;
+  renderLots();
+  buildSlotGrid();
+  updateSummary();
+  goStep(2);
+}
+
+// ── BUILD SLOT GRID ──
+function buildSlotGrid() {
+  const lot = state.lots.find(l => l.id === state.selectedLotId);
+  const vName = state.vehicleType === '2W' ? '2-Wheeler (Bike)' : '4-Wheeler (Car)';
+  const vIcon = state.vehicleType === '2W' ? '🛵' : '🚗';
+
+  document.getElementById('step2LotName').innerHTML = `${lot.name} – <span style="color:var(--gold);">${vIcon} ${vName} Slots</span>`;
+  document.getElementById('step2Sub').textContent = `Showing dedicated ${vName} parking bays. Tap an available spot to reserve.`;
+
+  const grid = document.getElementById('slotGrid');
+  grid.innerHTML = '';
+
+  const slotList = state.vehicleType === '2W' ? state.slots2W : state.slots4W;
+
+  slotList.forEach(s => {
+    const isSelected = state.selectedSlot === s.id;
+    const cell = document.createElement('div');
+    cell.className = 'slot-cell' + 
+      (s.status === 'taken' ? ' taken' : '') + 
+      (s.status === 'ev' && !isSelected ? ' ev' : '') + 
+      (isSelected ? ' selected' : '');
+
+    const label = s.id;
+    const subText = s.status === 'taken' ? 'Taken' : (s.status === 'ev' ? '⚡ EV' : (state.vehicleType === '2W' ? 'Bike' : 'Car'));
+
+    cell.innerHTML = `<span>${label}</span><span class="slot-sub">${subText}</span>`;
+
+    if (s.status !== 'taken') {
+      cell.onclick = () => {
+        state.selectedSlot = (state.selectedSlot === s.id) ? null : s.id;
+        buildSlotGrid();
+        updateSummary();
       };
     }
-    g.appendChild(d);
+
+    grid.appendChild(cell);
   });
 
-  function selectLot(card,name){
-    document.querySelectorAll('.lot-card').forEach(c=>c.classList.remove('selected'));
-    card.classList.add('selected');
-    selectedLotName=name;
-    document.getElementById('sumLot').textContent=name;
-    document.getElementById('lotName').textContent=name;
-    goStep(2);
-  }
-
-  function goStep(n){
-    for(let i=1;i<=4;i++){
-      document.getElementById('step'+i).style.display=i===n?'block':'none';
-      const c=document.getElementById('s'+i);
-      const l=document.getElementById('sl'+i);
-      if(i<n){c.className='step-circle done';c.innerHTML='<i class="fas fa-check"></i>';}
-      else if(i===n){c.className='step-circle active';}
-      else{c.className='step-circle pending';c.textContent=i;}
-      if(l){l.className='step-label'+(i===n?' active':'');}
-      if(i<4){const line=document.getElementById('l'+i);if(line)line.className='step-line'+(i<n?' done':'');}
+  // Default to first free slot if none selected
+  if (!state.selectedSlot) {
+    const firstFree = slotList.find(s => s.status === 'free');
+    if (firstFree) {
+      state.selectedSlot = firstFree.id;
+      buildSlotGrid();
     }
-    window.scrollTo({top:0,behavior:'smooth'});
+  }
+}
+
+// ── DURATION & COSTS ──
+function updateDuration(val) {
+  state.duration = parseInt(val);
+  const hrs = state.duration;
+  document.getElementById('durationDisplay').textContent = hrs + ' hour' + (hrs > 1 ? 's' : '');
+
+  const lot = state.lots.find(l => l.id === state.selectedLotId);
+  const rate = lot.rates[state.vehicleType];
+  const cost = rate * hrs;
+
+  document.getElementById('costDisplay').textContent = '₹' + cost;
+  updateSummary();
+}
+
+// ── UPDATE SUMMARY ──
+function updateSummary() {
+  const lot = state.lots.find(l => l.id === state.selectedLotId);
+  const rate = lot.rates[state.vehicleType];
+  const cost = rate * state.duration;
+  const reg = document.getElementById('regNumber').value.trim() || '—';
+
+  document.getElementById('sumVehicle').textContent = (state.vehicleType === '2W' ? '🛵 2-Wheeler' : '🚗 4-Wheeler');
+  document.getElementById('sumReg').textContent = reg;
+  document.getElementById('sumLot').textContent = lot.name;
+  document.getElementById('sumSlot').textContent = state.selectedSlot || 'Select slot';
+  document.getElementById('sumDuration').textContent = state.duration + ' hr' + (state.duration > 1 ? 's' : '');
+  document.getElementById('sumRate').textContent = '₹' + rate + '/hr';
+  document.getElementById('sumTotal').textContent = '₹' + cost;
+}
+
+// ── STEP NAVIGATION ──
+function goStep(n) {
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active-panel'));
+  document.getElementById('step' + n).classList.add('active-panel');
+  state.currentStep = n;
+
+  for (let i = 1; i <= 3; i++) {
+    const c = document.getElementById('sc' + i);
+    const l = document.getElementById('sl' + i);
+    c.className = 'step-circle';
+    l.className = 'step-label';
+
+    if (i < n) {
+      c.classList.add('done');
+      c.innerHTML = '<i class="fa-solid fa-check" style="font-size:12px;"></i>';
+      l.classList.add('done');
+    } else if (i === n) {
+      c.classList.add('active');
+      c.textContent = i;
+      l.classList.add('active');
+    } else {
+      c.textContent = i;
+    }
   }
 
-  function updateDuration(v){
-    duration=parseInt(v);
-    document.getElementById('durNum').textContent=duration;
-    const cost=duration*parkRate;
-    document.getElementById('parkCost').textContent='₹'+cost;
-    document.getElementById('sumDur').textContent=duration+' hr'+(duration>1?'s':'');
-    document.getElementById('sumPark').textContent='₹'+cost;
-    updateTotal();
+  for (let i = 1; i <= 2; i++) {
+    const conn = document.getElementById('conn' + i);
+    conn.className = 'step-connector' + (i < n ? ' done' : '');
   }
 
-  function toggleAddon(el,price){
-    const t=el.querySelector('.toggle');
-    if(el.classList.contains('selected')){el.classList.remove('selected');t.textContent='+';t.classList.remove('on');addonsTotal-=price;}
-    else{el.classList.add('selected');t.textContent='✓';t.classList.add('on');addonsTotal+=price;}
-    document.getElementById('sumSvc').textContent=addonsTotal>0?'₹'+addonsTotal:'₹0';
-    updateTotal();
+  for (let i = 1; i <= 3; i++) {
+    const dot = document.getElementById('dot' + i);
+    dot.className = 'step-dot' + (i === n ? ' active-dot' : '');
   }
 
-  function updateTotal(){
-    const park=duration*parkRate;
-    const total=park+addonsTotal+10;
-    document.getElementById('sumTotal').textContent='₹'+total;
-  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-  function confirmBooking(){
-    document.getElementById('successModal').classList.add('show');
+function proceedToPay() {
+  if (!state.selectedSlot) {
+    alert('Please choose a parking slot first.');
+    return;
   }
+  goStep(3);
+}
+
+// ── PAYMENT SELECTION ──
+function selectPayment(el, method) {
+  document.querySelectorAll('.payment-option').forEach(opt => {
+    opt.classList.remove('selected-pay');
+    opt.querySelector('input').checked = false;
+  });
+  el.classList.add('selected-pay');
+  el.querySelector('input').checked = true;
+}
+
+// ── CONFIRMATION MODAL ──
+function confirmBooking() {
+  const lot = state.lots.find(l => l.id === state.selectedLotId);
+  const cost = lot.rates[state.vehicleType] * state.duration;
+  const bookingId = '#SP-2024-' + Math.floor(1000 + Math.random() * 9000);
+
+  document.getElementById('mBookingId').textContent = bookingId;
+  document.getElementById('mVehicle').textContent = state.vehicleType === '2W' ? '2-Wheeler (Bike)' : '4-Wheeler (Car)';
+  document.getElementById('mSlot').textContent = state.selectedSlot || 'A-01';
+  document.getElementById('mLot').textContent = lot.name;
+  document.getElementById('mDuration').textContent = state.duration + ' Hours';
+  document.getElementById('mTotal').textContent = '₹' + cost;
+
+  document.getElementById('successModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('successModal').classList.remove('open');
+}
+
+// ── ANIMATION KICKOFF ──
+(function(){
+  const els = document.querySelectorAll('.animate-el');
+  els.forEach(el => el.classList.add('is-in'));
+})();
+
+// ── INIT ──
+renderLots();
+buildSlotGrid();
+updateSummary();
 </script>
 </body>
 </html>

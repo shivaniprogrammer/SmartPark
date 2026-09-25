@@ -1,474 +1,1438 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Services — SmartPark</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Services Hub – SmartPark</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    :root{--navy:#0A1628;--navy2:#1E3A5F;--blue:#2563EB;--gold:#F59E0B;--white:#fff;--light:#F8FAFC;--grey:#64748B;--border:#E2E8F0;--green:#10B981;}
-    body{font-family:'Inter',sans-serif;background:var(--light);color:var(--navy);}
+    /* ─── CSS TOKENS ─────────────────────────────────── */
+    :root {
+      --bg: #000;
+      --surface: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.1);
+      --muted: #9a9a9a;
+      --gold: #F59E0B;
+      --blue: #2563EB;
+      --green: #10B981;
+      --red: #EF4444;
+      --spring: cubic-bezier(0.16,1,0.3,1);
+      --sidebar-w: 240px;
+    }
 
-    nav{background:var(--navy);padding:0 5%;height:68px;display:flex;align-items:center;justify-content:space-between;}
-    .logo{font-size:1.4rem;font-weight:800;color:var(--white);text-decoration:none;}
-    .logo span{color:var(--gold);}
-    .nav-right{display:flex;align-items:center;gap:1rem;}
-    .nav-right a{color:rgba(255,255,255,0.7);text-decoration:none;font-size:0.875rem;font-weight:500;transition:color .3s;}
-    .nav-right a:hover,.nav-right a.active{color:var(--white);}
-    .btn-dash{background:var(--blue);color:var(--white)!important;padding:0.45rem 1rem;border-radius:8px;font-weight:600!important;}
+    /* ─── RESET ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+    }
 
-    /* HERO */
-    .hero{background:linear-gradient(135deg,#0A1628,#1E3A5F);padding:5rem 5% 3.5rem;color:var(--white);text-align:center;}
-    .hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:900;letter-spacing:-1.5px;margin-bottom:1rem;}
-    .hero h1 span{background:linear-gradient(135deg,#60A5FA,#F59E0B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-    .hero p{color:rgba(255,255,255,0.6);font-size:1.05rem;max-width:560px;margin:0 auto;}
+    /* ─── ANIMATED GRID BACKGROUND ───────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-    /* CATEGORIES */
-    .categories{background:var(--white);border-bottom:1px solid var(--border);padding:1rem 5%;overflow-x:auto;}
-    .cat-scroll{display:flex;gap:0.75rem;min-width:max-content;}
-    .cat-btn{display:flex;align-items:center;gap:0.5rem;padding:0.6rem 1.25rem;border-radius:100px;font-size:0.875rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--white);color:var(--grey);transition:all .3s;white-space:nowrap;}
-    .cat-btn:hover,.cat-btn.active{background:var(--blue);border-color:var(--blue);color:var(--white);}
+    /* ─── SIDEBAR ─────────────────────────────────────── */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: var(--sidebar-w);
+      height: 100vh;
+      background: #0a0a0a;
+      border-right: 1px solid rgba(255,255,255,.08);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      overflow-y: auto;
+    }
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--gold), #f97316);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 16px; color: #000;
+      flex-shrink: 0;
+    }
+    .logo-text { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -.3px; }
+    .logo-text span { color: var(--gold); }
 
-    /* CONTENT */
-    .content{padding:2.5rem 5%;max-width:1100px;margin:0 auto;}
-    .section-header{margin-bottom:1.75rem;}
-    .section-header h2{font-size:1.4rem;font-weight:800;color:var(--navy);margin-bottom:0.3rem;}
-    .section-header p{font-size:0.9rem;color:var(--grey);}
+    .sidebar-nav {
+      flex: 1;
+      padding: 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .nav-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 10px 8px 6px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: background .2s, color .2s;
+      border-left: 2px solid transparent;
+      position: relative;
+    }
+    .nav-item:hover { background: rgba(255,255,255,.05); color: #fff; }
+    .nav-item.active {
+      background: rgba(255,255,255,.08);
+      border-left: 2px solid var(--gold);
+      color: #fff;
+    }
+    .nav-item i { width: 18px; text-align: center; font-size: 14px; flex-shrink: 0; }
 
-    /* CAR WASH CARDS */
-    .wash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;margin-bottom:3rem;}
-    .wash-card{background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:1.75rem;position:relative;transition:all .3s;text-align:center;}
-    .wash-card:hover{transform:translateY(-5px);box-shadow:0 20px 50px rgba(10,22,40,0.1);}
-    .wash-card.featured{border-color:var(--blue);background:linear-gradient(180deg,#EFF6FF,#fff);}
-    .featured-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--blue);color:var(--white);font-size:0.7rem;font-weight:800;padding:0.25rem 0.875rem;border-radius:100px;letter-spacing:0.5px;white-space:nowrap;}
-    .wash-icon{font-size:2.5rem;margin-bottom:0.875rem;}
-    .wash-card h3{font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:0.25rem;}
-    .wash-price{font-size:2rem;font-weight:900;color:var(--blue);margin:0.5rem 0;}
-    .wash-price small{font-size:0.9rem;font-weight:600;}
-    .wash-features{list-style:none;text-align:left;margin:1rem 0;display:flex;flex-direction:column;gap:0.5rem;}
-    .wash-features li{display:flex;align-items:center;gap:0.5rem;font-size:0.825rem;color:var(--grey);}
-    .wash-features li::before{content:'✓';color:var(--green);font-weight:800;flex-shrink:0;}
-    .btn-book{width:100%;padding:0.75rem;background:var(--blue);color:var(--white);border:none;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .3s;margin-top:0.5rem;}
-    .btn-book:hover{background:#1d4ed8;transform:translateY(-1px);}
-    .btn-book.outline{background:transparent;border:1.5px solid var(--blue);color:var(--blue);}
-    .btn-book.outline:hover{background:var(--blue);color:var(--white);}
+    .sidebar-user {
+      padding: 16px 16px 20px;
+      border-top: 1px solid rgba(255,255,255,.06);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .user-avatar-sm {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), #7c3aed);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px; color: #fff;
+      flex-shrink: 0;
+    }
+    .user-info-sm { overflow: hidden; }
+    .user-name-sm { font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-email-sm { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* MECHANIC CARDS */
-    .mech-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;margin-bottom:3rem;}
-    .mech-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:1.5rem;display:flex;flex-direction:column;gap:0.75rem;transition:all .3s;cursor:pointer;}
-    .mech-card:hover{border-color:var(--blue);transform:translateY(-3px);box-shadow:0 12px 30px rgba(10,22,40,0.08);}
-    .mech-icon{font-size:2rem;}
-    .mech-card h3{font-size:1rem;font-weight:700;color:var(--navy);}
-    .mech-card p{font-size:0.825rem;color:var(--grey);line-height:1.5;}
-    .mech-meta{display:flex;justify-content:space-between;align-items:center;padding-top:0.5rem;border-top:1px solid var(--border);}
-    .mech-price{font-size:1.1rem;font-weight:800;color:var(--navy);}
-    .mech-time{font-size:0.75rem;color:var(--grey);}
+    /* ─── MAIN LAYOUT ─────────────────────────────────── */
+    .main-wrapper {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
 
-    /* CAB SECTION */
-    .cab-search{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;}
-    .cab-search h3{font-size:1rem;font-weight:700;margin-bottom:1rem;}
-    .cab-inputs{display:flex;flex-direction:column;gap:0.75rem;}
-    .cab-input{display:flex;align-items:center;gap:0.75rem;border:1.5px solid var(--border);border-radius:10px;padding:0.875rem 1rem;transition:all .3s;}
-    .cab-input:focus-within{border-color:var(--blue);}
-    .cab-input i{color:var(--grey);width:18px;text-align:center;}
-    .cab-input input{border:none;outline:none;font-size:0.9rem;font-family:'Inter',sans-serif;color:var(--navy);width:100%;}
-    .btn-find{background:var(--blue);color:var(--white);border:none;padding:0.875rem;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .3s;margin-top:0.25rem;}
-    .btn-find:hover{background:#1d4ed8;}
-    .cab-options{display:flex;flex-direction:column;gap:0.875rem;margin-bottom:3rem;}
-    .cab-opt{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:1.25rem;display:flex;align-items:center;gap:1rem;cursor:pointer;transition:all .3s;}
-    .cab-opt:hover{border-color:var(--blue);background:#EFF6FF;}
-    .cab-opt .cab-icon{font-size:2rem;width:44px;text-align:center;}
-    .cab-info{flex:1;}
-    .cab-info h4{font-size:0.95rem;font-weight:700;color:var(--navy);}
-    .cab-info p{font-size:0.8rem;color:var(--grey);margin-top:0.2rem;}
-    .cab-right{text-align:right;}
-    .cab-price{font-size:1.15rem;font-weight:800;color:var(--navy);}
-    .cab-eta{font-size:0.75rem;color:var(--green);font-weight:600;}
-    .btn-ride{background:var(--blue);color:var(--white);border:none;padding:0.55rem 1.1rem;border-radius:8px;font-size:0.8rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-top:0.35rem;}
+    /* ─── TOPBAR ──────────────────────────────────────── */
+    .topbar {
+      position: sticky;
+      top: 0;
+      background: rgba(0,0,0,.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 90;
+    }
+    .topbar-title { font-size: 16px; font-weight: 600; color: #fff; }
+    .topbar-right { display: flex; align-items: center; gap: 14px; }
+    .topbar-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 14px;
+    }
+    .topbar-search i { color: var(--muted); font-size: 13px; }
+    .topbar-search input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      width: 160px;
+    }
+    .topbar-search input::placeholder { color: var(--muted); }
+    .bell-wrap { position: relative; cursor: pointer; }
+    .bell-wrap i { font-size: 18px; color: var(--muted); transition: color .2s; }
+    .bell-wrap:hover i { color: #fff; }
+    .notif-dot {
+      position: absolute;
+      top: -2px; right: -2px;
+      width: 8px; height: 8px;
+      background: var(--red);
+      border-radius: 50%;
+      border: 2px solid #000;
+    }
+    .topbar-avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), #7c3aed);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px; color: #fff;
+      cursor: pointer;
+    }
 
-    /* LAUNDRY */
-    .laundry-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;margin-bottom:3rem;}
-    .laundry-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:1.5rem;transition:all .3s;}
-    .laundry-card:hover{border-color:var(--blue);transform:translateY(-3px);}
-    .laundry-card .icon{font-size:2rem;margin-bottom:0.75rem;}
-    .laundry-card h3{font-size:1rem;font-weight:700;margin-bottom:0.4rem;}
-    .laundry-card p{font-size:0.825rem;color:var(--grey);line-height:1.5;margin-bottom:0.75rem;}
-    .laundry-price{font-size:1.1rem;font-weight:800;color:var(--blue);}
+    /* ─── PAGE CONTENT ────────────────────────────────── */
+    .page-content { padding: 32px 28px 80px; }
 
-    /* MODAL */
-    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,22,40,0.6);z-index:1000;align-items:center;justify-content:center;}
-    .modal-overlay.show{display:flex;}
-    .modal{background:var(--white);border-radius:20px;padding:2.5rem 2rem;text-align:center;max-width:380px;width:90%;animation:popIn .35s ease;}
-    @keyframes popIn{from{opacity:0;transform:scale(0.85);}to{opacity:1;transform:scale(1);}}
-    .modal .m-icon{font-size:3.5rem;margin-bottom:1rem;}
-    .modal h2{font-size:1.4rem;font-weight:800;color:var(--navy);margin-bottom:0.5rem;}
-    .modal p{font-size:0.875rem;color:var(--grey);margin-bottom:1.25rem;line-height:1.6;}
-    .modal .ref{background:var(--light);border-radius:8px;padding:0.75rem;font-weight:800;color:var(--blue);font-size:1rem;margin-bottom:1.25rem;}
-    .btn-ok{background:var(--blue);color:var(--white);border:none;padding:0.875rem 2rem;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;}
+    /* ─── PAGE HEADER ─────────────────────────────────── */
+    .page-header { margin-bottom: 28px; }
+    .page-header h1 {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+      background: linear-gradient(135deg, #fff 40%, #9a9a9a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .page-header p { color: var(--muted); font-size: 14px; margin-top: 4px; }
 
-    .fab{position:fixed;bottom:2rem;right:2rem;z-index:998;width:52px;height:52px;border-radius:50%;background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.35rem;box-shadow:0 8px 24px rgba(37,211,102,0.4);cursor:pointer;text-decoration:none;transition:all .3s;}
-    .fab:hover{transform:scale(1.1);}
+    /* ─── CATEGORY CHIPS ──────────────────────────────── */
+    .cat-tabs {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 36px;
+      scrollbar-width: none;
+    }
+    .cat-tabs::-webkit-scrollbar { display: none; }
+    .cat-tab {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 18px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all .22s var(--spring);
+      user-select: none;
+      border: none;
+      font-family: 'Inter', sans-serif;
+    }
+    .cat-tab.inactive {
+      background: rgba(255,255,255,.07);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .cat-tab.inactive:hover { background: rgba(255,255,255,.12); color: #fff; }
+    .cat-tab.active {
+      background: #fff;
+      color: #000;
+      border: 1px solid transparent;
+    }
+
+    /* ─── SECTION HEADINGS ────────────────────────────── */
+    .section-block { margin-bottom: 52px; }
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .section-head-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .section-head h2 { font-size: 18px; font-weight: 700; color: #fff; }
+    .section-head p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* ─── CARD GRID ───────────────────────────────────── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .cards-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    /* ─── SERVICE CARD ────────────────────────────────── */
+    .svc-card {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 14px;
+      padding: 22px 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: border-color .25s, transform .25s var(--spring), background .25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .svc-card:hover {
+      border-color: rgba(255,255,255,.22);
+      background: rgba(255,255,255,.07);
+      transform: translateY(-3px);
+    }
+    .svc-card-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .badge-popular {
+      position: absolute;
+      top: 14px; right: 14px;
+      background: var(--gold);
+      color: #000;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 50px;
+      letter-spacing: .3px;
+      text-transform: uppercase;
+    }
+    .svc-name { font-size: 15px; font-weight: 700; color: #fff; }
+    .svc-price { font-size: 22px; font-weight: 800; color: #fff; }
+    .svc-price span { font-size: 13px; font-weight: 400; color: var(--muted); }
+    .svc-features { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .svc-features li {
+      font-size: 12.5px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .svc-features li i { color: var(--green); font-size: 11px; }
+    .svc-meta { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .svc-meta i { font-size: 11px; }
+
+    /* ─── BUTTONS ─────────────────────────────────────── */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      background: linear-gradient(140deg, #e4e4e4, #fff, #ccc);
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: opacity .2s, transform .2s var(--spring);
+      width: 100%;
+    }
+    .btn-primary:hover { opacity: .88; transform: scale(.98); }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid var(--border);
+      color: #fff;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: background .2s, transform .2s var(--spring);
+      width: 100%;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,.13); transform: scale(.98); }
+
+    /* ─── CAB SECTION ─────────────────────────────────── */
+    .cab-form {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 14px;
+      padding: 22px 22px 18px;
+      margin-bottom: 20px;
+    }
+    .cab-form-title { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 16px; }
+    .cab-form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .cab-form-row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+    .form-input {
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--border);
+      color: #fff;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 13.5px;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .form-input::placeholder { color: var(--muted); }
+    .form-input:focus { border-color: rgba(255,255,255,.3); }
+    .form-input.readonly { color: var(--muted); cursor: default; }
+
+    /* ─── CAB CARD ────────────────────────────────────── */
+    .cab-card {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 14px;
+      padding: 18px 18px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color .25s, transform .25s var(--spring), background .25s;
+    }
+    .cab-card:hover {
+      border-color: rgba(255,255,255,.22);
+      background: rgba(255,255,255,.07);
+      transform: translateY(-2px);
+    }
+    .cab-card-top { display: flex; align-items: center; gap: 12px; }
+    .cab-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .cab-info { flex: 1; }
+    .cab-name { font-size: 14px; font-weight: 700; color: #fff; }
+    .cab-price { font-size: 13px; font-weight: 600; color: var(--gold); margin-top: 2px; }
+    .cab-meta-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .cab-eta {
+      background: rgba(16,185,129,.15);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 50px;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .cab-rating {
+      font-size: 12px;
+      color: var(--gold);
+      display: flex; align-items: center; gap: 4px;
+    }
+    .cab-features { display: flex; gap: 7px; flex-wrap: wrap; }
+    .cab-feat-tag {
+      background: rgba(255,255,255,.07);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 9px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* ─── FOOD/LAUNDRY/FUEL CARDS ─────────────────────── */
+    .info-card {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 14px;
+      padding: 20px 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color .25s, transform .25s var(--spring), background .25s;
+    }
+    .info-card:hover {
+      border-color: rgba(255,255,255,.22);
+      background: rgba(255,255,255,.07);
+      transform: translateY(-3px);
+    }
+    .info-card-top { display: flex; align-items: center; gap: 12px; }
+    .info-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .info-name { font-size: 14px; font-weight: 700; color: #fff; }
+    .info-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .info-price { font-size: 20px; font-weight: 800; color: #fff; }
+    .info-price span { font-size: 12px; font-weight: 400; color: var(--muted); }
+    .info-tags { display: flex; gap: 7px; flex-wrap: wrap; }
+    .info-tag {
+      background: rgba(255,255,255,.07);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 9px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* ─── SUCCESS MODAL ───────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal-card {
+      background: #111;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 20px;
+      padding: 40px 36px 32px;
+      width: 340px;
+      max-width: 90vw;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      transform: scale(.9) translateY(16px);
+      transition: transform .35s var(--spring);
+    }
+    .modal-overlay.open .modal-card { transform: scale(1) translateY(0); }
+    .modal-check {
+      width: 68px; height: 68px;
+      border-radius: 50%;
+      background: rgba(16,185,129,.15);
+      border: 2px solid var(--green);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      color: var(--green);
+    }
+    .modal-title { font-size: 20px; font-weight: 800; color: #fff; }
+    .modal-service { font-size: 14px; font-weight: 600; color: var(--gold); }
+    .modal-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .modal-ok {
+      background: linear-gradient(140deg, #e4e4e4, #fff, #ccc);
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 32px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: opacity .2s;
+      margin-top: 6px;
+    }
+    .modal-ok:hover { opacity: .85; }
+
+    /* ─── ENTRANCE ANIMATION ──────────────────────────── */
+    .anim-el {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity .55s var(--spring), transform .55s var(--spring);
+    }
+    .anim-el.is-in { opacity: 1; transform: translateY(0); }
+    @media (prefers-reduced-motion: reduce) {
+      .anim-el { opacity: 1; transform: none; transition: none; }
+    }
+
+    /* ─── SCROLLBAR ───────────────────────────────────── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.22); }
   </style>
 </head>
 <body>
 
-<nav>
-  <a href="index.html" class="logo">🅿 Smart<span>Park</span></a>
-  <div class="nav-right">
-    <a href="dashboard.html">Dashboard</a>
-    <a href="booking.html">Book Parking</a>
-    <a href="services.html" class="active">Services</a>
-    <a href="wallet.html">Wallet</a>
-    <a href="dashboard.html" class="btn-dash">My Account</a>
+  <!-- ══ SIDEBAR ══════════════════════════════════════════ -->
+  <aside class="sidebar">
+    <a href="dashboard.html" class="sidebar-logo">
+      <div class="logo-icon">P</div>
+      <div class="logo-text">Smart<span>Park</span></div>
+    </a>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Menu</div>
+      <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+      <a href="booking.html"   class="nav-item"><i class="fa-solid fa-ticket"></i> Book Parking</a>
+      <a href="services.html"  class="nav-item active"><i class="fa-solid fa-wrench"></i> Services</a>
+      <a href="services.html#cab" class="nav-item"><i class="fa-solid fa-car"></i> Book Cab</a>
+      <a href="wallet.html"    class="nav-item"><i class="fa-solid fa-wallet"></i> Wallet</a>
+
+      <div class="nav-label" style="margin-top:12px;">Account</div>
+      <a href="#" class="nav-item"><i class="fa-solid fa-user"></i> Profile</a>
+      <a href="#" class="nav-item"><i class="fa-solid fa-gear"></i> Settings</a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-avatar-sm">RS</div>
+      <div class="user-info-sm">
+        <div class="user-name-sm">Rahul Singh</div>
+        <div class="user-email-sm">rahul@email.com</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN WRAPPER ══════════════════════════════════════ -->
+  <div class="main-wrapper">
+
+    <!-- ── TOPBAR ── -->
+    <header class="topbar">
+      <div class="topbar-title">Services Hub</div>
+      <div class="topbar-right">
+        <div class="topbar-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" placeholder="Search services…" />
+        </div>
+        <div class="bell-wrap">
+          <i class="fa-regular fa-bell"></i>
+          <span class="notif-dot"></span>
+        </div>
+        <div class="topbar-avatar">RS</div>
+      </div>
+    </header>
+
+    <!-- ── PAGE CONTENT ── -->
+    <main class="page-content">
+
+      <!-- PAGE HEADER -->
+      <div class="page-header anim-el">
+        <h1>Services Hub</h1>
+        <p>While You Park, We Take Care</p>
+      </div>
+
+      <!-- CATEGORY CHIPS -->
+      <div class="cat-tabs anim-el" style="transition-delay:.06s">
+        <button class="cat-tab active" data-target="carwash"  onclick="switchTab(this,'carwash')">
+          <i class="fa-solid fa-droplets"></i> Car Wash
+        </button>
+        <button class="cat-tab inactive" data-target="mechanic" onclick="switchTab(this,'mechanic')">
+          <i class="fa-solid fa-screwdriver-wrench"></i> Mechanic
+        </button>
+        <button class="cat-tab inactive" data-target="cab" onclick="switchTab(this,'cab')">
+          <i class="fa-solid fa-car"></i> Book Cab
+        </button>
+        <button class="cat-tab inactive" data-target="laundry" onclick="switchTab(this,'laundry')">
+          <i class="fa-solid fa-shirt"></i> Laundry
+        </button>
+        <button class="cat-tab inactive" data-target="fuel" onclick="switchTab(this,'fuel')">
+          <i class="fa-solid fa-gas-pump"></i> Fuel
+        </button>
+        <button class="cat-tab inactive" data-target="food" onclick="switchTab(this,'food')">
+          <i class="fa-solid fa-utensils"></i> Food
+        </button>
+      </div>
+
+      <!-- ═══════════ CAR WASH ═══════════ -->
+      <section class="section-block anim-el" id="carwash" style="transition-delay:.1s">
+        <div class="section-head">
+          <div class="section-head-icon" style="background:rgba(37,99,235,.15);color:var(--blue);">
+            <i class="fa-solid fa-droplets"></i>
+          </div>
+          <div>
+            <h2>Car Wash</h2>
+            <p>Professional cleaning at your spot</p>
+          </div>
+        </div>
+        <div class="cards-grid">
+
+          <!-- Basic Wash -->
+          <div class="svc-card">
+            <div class="svc-card-icon" style="background:rgba(37,99,235,.12);color:var(--blue);">
+              <i class="fa-solid fa-car-side"></i>
+            </div>
+            <div>
+              <div class="svc-name">Basic Wash</div>
+              <div class="svc-price">₹99</div>
+            </div>
+            <ul class="svc-features">
+              <li><i class="fa-solid fa-check"></i> Exterior wash</li>
+              <li><i class="fa-solid fa-check"></i> Wheel cleaning</li>
+              <li><i class="fa-solid fa-check"></i> Quick dry</li>
+            </ul>
+            <button class="btn-primary" onclick="openModal('Basic Wash – ₹99')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+          <!-- Premium Wash -->
+          <div class="svc-card">
+            <span class="badge-popular">Most Popular</span>
+            <div class="svc-card-icon" style="background:rgba(245,158,11,.12);color:var(--gold);">
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <div>
+              <div class="svc-name">Premium Wash</div>
+              <div class="svc-price">₹199</div>
+            </div>
+            <ul class="svc-features">
+              <li><i class="fa-solid fa-check"></i> Full exterior</li>
+              <li><i class="fa-solid fa-check"></i> Interior vacuum</li>
+              <li><i class="fa-solid fa-check"></i> Dashboard polish</li>
+              <li><i class="fa-solid fa-check"></i> Tire shine</li>
+            </ul>
+            <button class="btn-primary" onclick="openModal('Premium Wash – ₹199')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+          <!-- Full Detail -->
+          <div class="svc-card">
+            <div class="svc-card-icon" style="background:rgba(16,185,129,.12);color:var(--green);">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div>
+              <div class="svc-name">Full Detail</div>
+              <div class="svc-price">₹499</div>
+            </div>
+            <ul class="svc-features">
+              <li><i class="fa-solid fa-check"></i> Complete exterior</li>
+              <li><i class="fa-solid fa-check"></i> Full interior</li>
+              <li><i class="fa-solid fa-check"></i> Seat shampoo</li>
+              <li><i class="fa-solid fa-check"></i> Fragrance</li>
+              <li><i class="fa-solid fa-check"></i> Engine bay</li>
+            </ul>
+            <button class="btn-primary" onclick="openModal('Full Detail – ₹499')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+          <!-- Waterless Wash -->
+          <div class="svc-card">
+            <div class="svc-card-icon" style="background:rgba(16,185,129,.12);color:var(--green);">
+              <i class="fa-solid fa-leaf"></i>
+            </div>
+            <div>
+              <div class="svc-name">Waterless Wash</div>
+              <div class="svc-price">₹149</div>
+            </div>
+            <ul class="svc-features">
+              <li><i class="fa-solid fa-check"></i> Eco-friendly</li>
+              <li><i class="fa-solid fa-check"></i> No water used</li>
+              <li><i class="fa-solid fa-check"></i> Quick 20 min</li>
+              <li><i class="fa-solid fa-check"></i> Safe for paint</li>
+            </ul>
+            <button class="btn-primary" onclick="openModal('Waterless Wash – ₹149')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ═══════════ MECHANIC ═══════════ -->
+      <section class="section-block anim-el" id="mechanic" style="transition-delay:.14s">
+        <div class="section-head">
+          <div class="section-head-icon" style="background:rgba(245,158,11,.12);color:var(--gold);">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+          </div>
+          <div>
+            <h2>Mechanic Services</h2>
+            <p>Expert repairs right at your parking spot</p>
+          </div>
+        </div>
+        <div class="cards-grid">
+
+          <!-- Oil Change -->
+          <div class="svc-card">
+            <div class="svc-card-icon" style="background:rgba(245,158,11,.12);color:var(--gold);">
+              <i class="fa-solid fa-oil-can"></i>
+            </div>
+            <div>
+              <div class="svc-name">Oil Change</div>
+              <div class="svc-price">₹349</div>
+            </div>
+            <div class="svc-meta"><i class="fa-regular fa-clock"></i> Est. 30 min</div>
+            <button class="btn-primary" onclick="openModal('Oil Change – ₹349')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+          <!-- Tyre Service -->
+          <div class="svc-card">
+            <div class="svc-card-icon" style="background:rgba(239,68,68,.12);color:var(--red);">
+              <i class="fa-solid fa-circle-dot"></i>
+            </div>
+            <div>
+              <div class="svc-name">Tyre Service</div>
+              <div class="svc-price">₹99</div>
+            </div>
+            <div class="svc-meta"><i class="fa-regular fa-clock"></i> Est. 20 min</div>
+            <button class="btn-primary" onclick="openModal('Tyre Service – ₹99')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+          <!-- Battery Check -->
+          <div class="svc-card">
+            <div class="svc-card-icon" style="background:rgba(16,185,129,.12);color:var(--green);">
+              <i class="fa-solid fa-car-battery"></i>
+            </div>
+            <div>
+              <div class="svc-name">Battery Check</div>
+              <div class="svc-price">₹149</div>
+            </div>
+            <div class="svc-meta"><i class="fa-regular fa-clock"></i> Est. 15 min</div>
+            <button class="btn-primary" onclick="openModal('Battery Check – ₹149')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+          <!-- Full Inspection -->
+          <div class="svc-card">
+            <div class="svc-card-icon" style="background:rgba(37,99,235,.12);color:var(--blue);">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <div>
+              <div class="svc-name">Full Inspection</div>
+              <div class="svc-price">₹249</div>
+            </div>
+            <div class="svc-meta"><i class="fa-regular fa-clock"></i> Est. 45 min</div>
+            <button class="btn-primary" onclick="openModal('Full Inspection – ₹249')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+          <!-- Wiper Replacement -->
+          <div class="svc-card">
+            <div class="svc-card-icon" style="background:rgba(37,99,235,.12);color:var(--blue);">
+              <i class="fa-solid fa-droplet"></i>
+            </div>
+            <div>
+              <div class="svc-name">Wiper Replacement</div>
+              <div class="svc-price">₹199</div>
+            </div>
+            <div class="svc-meta"><i class="fa-regular fa-clock"></i> Est. 10 min</div>
+            <button class="btn-primary" onclick="openModal('Wiper Replacement – ₹199')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+          <!-- AC Check -->
+          <div class="svc-card">
+            <div class="svc-card-icon" style="background:rgba(37,99,235,.12);color:#60a5fa;">
+              <i class="fa-solid fa-snowflake"></i>
+            </div>
+            <div>
+              <div class="svc-name">AC Check</div>
+              <div class="svc-price">₹299</div>
+            </div>
+            <div class="svc-meta"><i class="fa-regular fa-clock"></i> Est. 40 min</div>
+            <button class="btn-primary" onclick="openModal('AC Check – ₹299')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+          <!-- Headlight Service -->
+          <div class="svc-card">
+            <div class="svc-card-icon" style="background:rgba(245,158,11,.12);color:var(--gold);">
+              <i class="fa-solid fa-lightbulb"></i>
+            </div>
+            <div>
+              <div class="svc-name">Headlight Service</div>
+              <div class="svc-price">₹149</div>
+            </div>
+            <div class="svc-meta"><i class="fa-regular fa-clock"></i> Est. 25 min</div>
+            <button class="btn-primary" onclick="openModal('Headlight Service – ₹149')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+          <!-- Jump Start -->
+          <div class="svc-card">
+            <div class="svc-card-icon" style="background:rgba(239,68,68,.12);color:var(--red);">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+            <div>
+              <div class="svc-name">Jump Start</div>
+              <div class="svc-price">₹199</div>
+            </div>
+            <div class="svc-meta"><i class="fa-regular fa-clock"></i> Est. 10 min</div>
+            <button class="btn-primary" onclick="openModal('Jump Start – ₹199')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ═══════════ BOOK CAB ═══════════ -->
+      <section class="section-block anim-el" id="cab" style="transition-delay:.18s">
+        <div class="section-head">
+          <div class="section-head-icon" style="background:rgba(245,158,11,.12);color:var(--gold);">
+            <i class="fa-solid fa-car"></i>
+          </div>
+          <div>
+            <h2>Book a Cab</h2>
+            <p>Ride from your parking spot instantly</p>
+          </div>
+        </div>
+
+        <!-- Cab Form -->
+        <div class="cab-form">
+          <div class="cab-form-title"><i class="fa-solid fa-route" style="color:var(--gold);margin-right:6px;"></i> Where are you headed?</div>
+          <div class="cab-form-row">
+            <div class="form-group">
+              <label class="form-label">From</label>
+              <input class="form-input readonly" type="text" value="Forum Mall Parking" readonly />
+            </div>
+            <div class="form-group">
+              <label class="form-label">To</label>
+              <input class="form-input" type="text" placeholder="Enter destination" />
+            </div>
+          </div>
+          <div class="cab-form-row-3">
+            <div class="form-group">
+              <label class="form-label">Date</label>
+              <input class="form-input" type="date" style="color-scheme:dark;" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Time</label>
+              <input class="form-input" type="time" style="color-scheme:dark;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Cab Options -->
+        <div class="cards-grid-2">
+
+          <!-- Ola Mini -->
+          <div class="cab-card">
+            <div class="cab-card-top">
+              <div class="cab-icon" style="background:rgba(245,158,11,.12);color:var(--gold);">
+                <i class="fa-solid fa-taxi"></i>
+              </div>
+              <div class="cab-info">
+                <div class="cab-name">Ola Mini</div>
+                <div class="cab-price">₹89 – ₹120</div>
+              </div>
+            </div>
+            <div class="cab-meta-row">
+              <span class="cab-eta"><i class="fa-solid fa-location-dot"></i> 3 min away</span>
+              <span class="cab-rating"><i class="fa-solid fa-star"></i> 4.7</span>
+            </div>
+            <div class="cab-features">
+              <span class="cab-feat-tag"><i class="fa-solid fa-wind" style="margin-right:4px;"></i> AC</span>
+              <span class="cab-feat-tag">4 seats</span>
+            </div>
+            <button class="btn-primary" onclick="openModal('Ola Mini Cab – ₹89–₹120')">
+              <i class="fa-solid fa-car"></i> Book Ride
+            </button>
+          </div>
+
+          <!-- Uber Go -->
+          <div class="cab-card">
+            <div class="cab-card-top">
+              <div class="cab-icon" style="background:rgba(37,99,235,.12);color:var(--blue);">
+                <i class="fa-solid fa-car-side"></i>
+              </div>
+              <div class="cab-info">
+                <div class="cab-name">Uber Go</div>
+                <div class="cab-price">₹99 – ₹130</div>
+              </div>
+            </div>
+            <div class="cab-meta-row">
+              <span class="cab-eta"><i class="fa-solid fa-location-dot"></i> 5 min away</span>
+              <span class="cab-rating"><i class="fa-solid fa-star"></i> 4.5</span>
+            </div>
+            <div class="cab-features">
+              <span class="cab-feat-tag"><i class="fa-solid fa-wind" style="margin-right:4px;"></i> AC</span>
+              <span class="cab-feat-tag">4 seats</span>
+            </div>
+            <button class="btn-primary" onclick="openModal('Uber Go – ₹99–₹130')">
+              <i class="fa-solid fa-car"></i> Book Ride
+            </button>
+          </div>
+
+          <!-- Auto Rickshaw -->
+          <div class="cab-card">
+            <div class="cab-card-top">
+              <div class="cab-icon" style="background:rgba(16,185,129,.12);color:var(--green);">
+                <i class="fa-solid fa-motorcycle"></i>
+              </div>
+              <div class="cab-info">
+                <div class="cab-name">Auto Rickshaw</div>
+                <div class="cab-price">₹45 – ₹70</div>
+              </div>
+            </div>
+            <div class="cab-meta-row">
+              <span class="cab-eta"><i class="fa-solid fa-location-dot"></i> 2 min away</span>
+              <span class="cab-rating"><i class="fa-solid fa-star"></i> 4.3</span>
+            </div>
+            <div class="cab-features">
+              <span class="cab-feat-tag">3 seats</span>
+              <span class="cab-feat-tag">Budget</span>
+            </div>
+            <button class="btn-primary" onclick="openModal('Auto Rickshaw – ₹45–₹70')">
+              <i class="fa-solid fa-car"></i> Book Ride
+            </button>
+          </div>
+
+          <!-- Ola Prime SUV -->
+          <div class="cab-card">
+            <div class="cab-card-top">
+              <div class="cab-icon" style="background:rgba(124,58,237,.15);color:#a78bfa;">
+                <i class="fa-solid fa-van-shuttle"></i>
+              </div>
+              <div class="cab-info">
+                <div class="cab-name">Ola Prime SUV</div>
+                <div class="cab-price">₹199 – ₹280</div>
+              </div>
+            </div>
+            <div class="cab-meta-row">
+              <span class="cab-eta"><i class="fa-solid fa-location-dot"></i> 8 min away</span>
+              <span class="cab-rating"><i class="fa-solid fa-star"></i> 4.8</span>
+            </div>
+            <div class="cab-features">
+              <span class="cab-feat-tag"><i class="fa-solid fa-wind" style="margin-right:4px;"></i> AC</span>
+              <span class="cab-feat-tag">Spacious</span>
+              <span class="cab-feat-tag">6 seats</span>
+            </div>
+            <button class="btn-primary" onclick="openModal('Ola Prime SUV – ₹199–₹280')">
+              <i class="fa-solid fa-car"></i> Book Ride
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ═══════════ LAUNDRY ═══════════ -->
+      <section class="section-block anim-el" id="laundry" style="transition-delay:.22s">
+        <div class="section-head">
+          <div class="section-head-icon" style="background:rgba(37,99,235,.12);color:var(--blue);">
+            <i class="fa-solid fa-shirt"></i>
+          </div>
+          <div>
+            <h2>Laundry</h2>
+            <p>Fresh clothes delivered back to you</p>
+          </div>
+        </div>
+        <div class="cards-grid">
+
+          <div class="info-card">
+            <div class="info-card-top">
+              <div class="info-icon" style="background:rgba(37,99,235,.12);color:var(--blue);">
+                <i class="fa-solid fa-shirt"></i>
+              </div>
+              <div>
+                <div class="info-name">Wash &amp; Fold</div>
+                <div class="info-sub">Standard laundry service</div>
+              </div>
+            </div>
+            <div class="info-price">₹79 <span>/ kg</span></div>
+            <div class="info-tags">
+              <span class="info-tag"><i class="fa-regular fa-clock" style="margin-right:4px;"></i> 24 hrs delivery</span>
+              <span class="info-tag">Fresh scent</span>
+            </div>
+            <button class="btn-primary" onclick="openModal('Wash & Fold – ₹79/kg')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+          <div class="info-card">
+            <div class="info-card-top">
+              <div class="info-icon" style="background:rgba(245,158,11,.12);color:var(--gold);">
+                <i class="fa-solid fa-star"></i>
+              </div>
+              <div>
+                <div class="info-name">Dry Cleaning</div>
+                <div class="info-sub">Premium garment care</div>
+              </div>
+            </div>
+            <div class="info-price">₹199 <span>/ item</span></div>
+            <div class="info-tags">
+              <span class="info-tag">Premium care</span>
+              <span class="info-tag">Hanger packed</span>
+            </div>
+            <button class="btn-primary" onclick="openModal('Dry Cleaning – ₹199/item')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+          <div class="info-card">
+            <div class="info-card-top">
+              <div class="info-icon" style="background:rgba(239,68,68,.12);color:var(--red);">
+                <i class="fa-solid fa-bolt"></i>
+              </div>
+              <div>
+                <div class="info-name">Express Laundry</div>
+                <div class="info-sub">When you need it fast</div>
+              </div>
+            </div>
+            <div class="info-price">₹149 <span>/ kg</span></div>
+            <div class="info-tags">
+              <span class="info-tag"><i class="fa-solid fa-bolt" style="margin-right:4px;"></i> Ready in 4 hrs</span>
+            </div>
+            <button class="btn-primary" onclick="openModal('Express Laundry – ₹149/kg')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+          <div class="info-card">
+            <div class="info-card-top">
+              <div class="info-icon" style="background:rgba(16,185,129,.12);color:var(--green);">
+                <i class="fa-solid fa-dumbbell"></i>
+              </div>
+              <div>
+                <div class="info-name">Sports Gear</div>
+                <div class="info-sub">Specialized odor treatment</div>
+              </div>
+            </div>
+            <div class="info-price">₹99 <span>/ set</span></div>
+            <div class="info-tags">
+              <span class="info-tag">Odor treatment</span>
+              <span class="info-tag">Anti-bacterial</span>
+            </div>
+            <button class="btn-primary" onclick="openModal('Sports Gear Laundry – ₹99/set')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ═══════════ FUEL ═══════════ -->
+      <section class="section-block anim-el" id="fuel" style="transition-delay:.26s">
+        <div class="section-head">
+          <div class="section-head-icon" style="background:rgba(239,68,68,.12);color:var(--red);">
+            <i class="fa-solid fa-gas-pump"></i>
+          </div>
+          <div>
+            <h2>Fuel &amp; EV</h2>
+            <p>Top up without leaving your spot</p>
+          </div>
+        </div>
+        <div class="cards-grid">
+
+          <div class="info-card">
+            <div class="info-card-top">
+              <div class="info-icon" style="background:rgba(239,68,68,.12);color:var(--red);">
+                <i class="fa-solid fa-gas-pump"></i>
+              </div>
+              <div>
+                <div class="info-name">Petrol Top-up</div>
+                <div class="info-sub">Doorstep fuel delivery</div>
+              </div>
+            </div>
+            <div class="info-price">₹0 <span>service fee</span></div>
+            <div class="info-tags">
+              <span class="info-tag">Min ₹500</span>
+              <span class="info-tag"><i class="fa-regular fa-clock" style="margin-right:4px;"></i> 30 min</span>
+            </div>
+            <button class="btn-primary" onclick="openModal('Petrol Top-up')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+          <div class="info-card">
+            <div class="info-card-top">
+              <div class="info-icon" style="background:rgba(245,158,11,.12);color:var(--gold);">
+                <i class="fa-solid fa-gas-pump"></i>
+              </div>
+              <div>
+                <div class="info-name">Diesel Top-up</div>
+                <div class="info-sub">Doorstep fuel delivery</div>
+              </div>
+            </div>
+            <div class="info-price">₹0 <span>service fee</span></div>
+            <div class="info-tags">
+              <span class="info-tag">Min ₹500</span>
+              <span class="info-tag"><i class="fa-regular fa-clock" style="margin-right:4px;"></i> 30 min</span>
+            </div>
+            <button class="btn-primary" onclick="openModal('Diesel Top-up')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+          <div class="info-card">
+            <div class="info-card-top">
+              <div class="info-icon" style="background:rgba(16,185,129,.12);color:var(--green);">
+                <i class="fa-solid fa-charging-station"></i>
+              </div>
+              <div>
+                <div class="info-name">EV Charging</div>
+                <div class="info-sub">Fast charge your EV</div>
+              </div>
+            </div>
+            <div class="info-price">₹12 <span>/ kWh</span></div>
+            <div class="info-tags">
+              <span class="info-tag">Fast charging</span>
+              <span class="info-tag">CCS / CHAdeMO</span>
+            </div>
+            <button class="btn-primary" onclick="openModal('EV Charging – ₹12/kWh')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+          <div class="info-card">
+            <div class="info-card-top">
+              <div class="info-icon" style="background:rgba(37,99,235,.12);color:var(--blue);">
+                <i class="fa-solid fa-droplet"></i>
+              </div>
+              <div>
+                <div class="info-name">Engine Coolant</div>
+                <div class="info-sub">Coolant top-up service</div>
+              </div>
+            </div>
+            <div class="info-price">₹199</div>
+            <div class="info-tags">
+              <span class="info-tag">Top-up service</span>
+              <span class="info-tag"><i class="fa-regular fa-clock" style="margin-right:4px;"></i> 15 min</span>
+            </div>
+            <button class="btn-primary" onclick="openModal('Engine Coolant – ₹199')">
+              <i class="fa-solid fa-calendar-check"></i> Book Now
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ═══════════ FOOD ═══════════ -->
+      <section class="section-block anim-el" id="food" style="transition-delay:.30s">
+        <div class="section-head">
+          <div class="section-head-icon" style="background:rgba(239,68,68,.12);color:var(--red);">
+            <i class="fa-solid fa-utensils"></i>
+          </div>
+          <div>
+            <h2>Food &amp; Drinks</h2>
+            <p>Delicious meals delivered to your car</p>
+          </div>
+        </div>
+        <div class="cards-grid">
+
+          <!-- McDonald's -->
+          <div class="info-card">
+            <div class="info-card-top">
+              <div class="info-icon" style="background:rgba(245,158,11,.12);color:var(--gold);">
+                <i class="fa-solid fa-burger"></i>
+              </div>
+              <div>
+                <div class="info-name">McDonald's</div>
+                <div class="info-sub">Fast food</div>
+              </div>
+            </div>
+            <div class="info-tags">
+              <span class="info-tag"><i class="fa-regular fa-clock" style="margin-right:4px;"></i> 20–30 min</span>
+              <span class="info-tag">Min ₹199</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
+              <i class="fa-solid fa-star" style="color:var(--gold);"></i>
+              <span>4.6 · 2.3 km away</span>
+            </div>
+            <button class="btn-primary" onclick="openModal('McDonald\'s Order')">
+              <i class="fa-solid fa-bag-shopping"></i> Order Now
+            </button>
+          </div>
+
+          <!-- Starbucks -->
+          <div class="info-card">
+            <div class="info-card-top">
+              <div class="info-icon" style="background:rgba(16,185,129,.12);color:var(--green);">
+                <i class="fa-solid fa-mug-hot"></i>
+              </div>
+              <div>
+                <div class="info-name">Starbucks</div>
+                <div class="info-sub">Coffee &amp; snacks</div>
+              </div>
+            </div>
+            <div class="info-tags">
+              <span class="info-tag"><i class="fa-regular fa-clock" style="margin-right:4px;"></i> 15 min</span>
+              <span class="info-tag">Min ₹299</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
+              <i class="fa-solid fa-star" style="color:var(--gold);"></i>
+              <span>4.8 · 0.8 km away</span>
+            </div>
+            <button class="btn-primary" onclick="openModal('Starbucks Order')">
+              <i class="fa-solid fa-bag-shopping"></i> Order Now
+            </button>
+          </div>
+
+          <!-- Domino's -->
+          <div class="info-card">
+            <div class="info-card-top">
+              <div class="info-icon" style="background:rgba(239,68,68,.12);color:var(--red);">
+                <i class="fa-solid fa-pizza-slice"></i>
+              </div>
+              <div>
+                <div class="info-name">Domino's Pizza</div>
+                <div class="info-sub">Pizza</div>
+              </div>
+            </div>
+            <div class="info-tags">
+              <span class="info-tag"><i class="fa-regular fa-clock" style="margin-right:4px;"></i> 30–40 min</span>
+              <span class="info-tag">Min ₹299</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
+              <i class="fa-solid fa-star" style="color:var(--gold);"></i>
+              <span>4.4 · 1.5 km away</span>
+            </div>
+            <button class="btn-primary" onclick="openModal('Domino\'s Pizza Order')">
+              <i class="fa-solid fa-bag-shopping"></i> Order Now
+            </button>
+          </div>
+
+          <!-- Fresh Juice Bar -->
+          <div class="info-card">
+            <div class="info-card-top">
+              <div class="info-icon" style="background:rgba(16,185,129,.12);color:var(--green);">
+                <i class="fa-solid fa-leaf"></i>
+              </div>
+              <div>
+                <div class="info-name">Fresh Juice Bar</div>
+                <div class="info-sub">Healthy drinks</div>
+              </div>
+            </div>
+            <div class="info-tags">
+              <span class="info-tag"><i class="fa-regular fa-clock" style="margin-right:4px;"></i> 10 min</span>
+              <span class="info-tag">Min ₹99</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
+              <i class="fa-solid fa-star" style="color:var(--gold);"></i>
+              <span>4.7 · 0.3 km away</span>
+            </div>
+            <button class="btn-primary" onclick="openModal('Fresh Juice Bar Order')">
+              <i class="fa-solid fa-bag-shopping"></i> Order Now
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
   </div>
-</nav>
 
-<div class="hero">
-  <h1>While You Park,<br/><span>We Take Care.</span></h1>
-  <p>Premium vehicle services, cab booking, and daily conveniences — all available at every SmartPark location.</p>
-</div>
-
-<div class="categories">
-  <div class="cat-scroll">
-    <button class="cat-btn active" onclick="showCat('wash',this)">🚿 Car Wash</button>
-    <button class="cat-btn" onclick="showCat('mech',this)">🔧 Mechanic</button>
-    <button class="cat-btn" onclick="showCat('cab',this)">🚕 Book Cab</button>
-    <button class="cat-btn" onclick="showCat('laundry',this)">🧺 Laundry</button>
-    <button class="cat-btn" onclick="showCat('fuel',this)">⛽ Fuel</button>
-    <button class="cat-btn" onclick="showCat('food',this)">☕ Food & Drinks</button>
-  </div>
-</div>
-
-<div class="content">
-
-  <!-- CAR WASH -->
-  <div id="cat-wash">
-    <div class="section-header">
-      <h2>🚿 Car Wash Packages</h2>
-      <p>Choose your wash package — professionally done while your car is parked.</p>
-    </div>
-    <div class="wash-grid">
-      <div class="wash-card">
-        <div class="wash-icon">🪣</div>
-        <h3>Basic Wash</h3>
-        <div class="wash-price">₹<span>99</span></div>
-        <ul class="wash-features">
-          <li>Exterior rinse & wipe</li>
-          <li>Glass cleaning</li>
-          <li>Ready in 20 mins</li>
-        </ul>
-        <button class="btn-book outline" onclick="bookService('Basic Car Wash','₹99')">Book Now</button>
-      </div>
-      <div class="wash-card featured">
-        <span class="featured-badge">⭐ MOST POPULAR</span>
-        <div class="wash-icon">✨</div>
-        <h3>Premium Foam Wash</h3>
-        <div class="wash-price">₹<span>199</span></div>
-        <ul class="wash-features">
-          <li>Full foam wash</li>
-          <li>Tyre & rim cleaning</li>
-          <li>Dashboard wipe</li>
-          <li>Interior vacuum</li>
-          <li>Ready in 40 mins</li>
-        </ul>
-        <button class="btn-book" onclick="bookService('Premium Foam Wash','₹199')">Book Now</button>
-      </div>
-      <div class="wash-card">
-        <div class="wash-icon">💎</div>
-        <h3>Full Detail</h3>
-        <div class="wash-price">₹<span>499</span></div>
-        <ul class="wash-features">
-          <li>Full interior + exterior</li>
-          <li>Deep carpet cleaning</li>
-          <li>Ceramic polish</li>
-          <li>Fragrance treatment</li>
-          <li>Showroom finish</li>
-        </ul>
-        <button class="btn-book outline" onclick="bookService('Full Detail','₹499')">Book Now</button>
-      </div>
-      <div class="wash-card">
-        <div class="wash-icon">🌿</div>
-        <h3>Waterless Wash</h3>
-        <div class="wash-price">₹<span>149</span></div>
-        <ul class="wash-features">
-          <li>Eco-friendly spray clean</li>
-          <li>No water used</li>
-          <li>Streak-free finish</li>
-          <li>Ready in 15 mins</li>
-        </ul>
-        <button class="btn-book outline" onclick="bookService('Waterless Wash','₹149')">Book Now</button>
-      </div>
+  <!-- ══ SUCCESS MODAL ═════════════════════════════════════ -->
+  <div class="modal-overlay" id="successModal" onclick="handleOverlayClick(event)">
+    <div class="modal-card">
+      <div class="modal-check"><i class="fa-solid fa-check"></i></div>
+      <div class="modal-title">Booking Confirmed!</div>
+      <div class="modal-service" id="modalServiceName">Premium Wash – ₹199</div>
+      <div class="modal-desc">Our team will contact you shortly.<br />You'll receive an SMS confirmation.</div>
+      <button class="modal-ok" onclick="closeModal()">OK, Got it</button>
     </div>
   </div>
 
-  <!-- MECHANIC -->
-  <div id="cat-mech" style="display:none;">
-    <div class="section-header">
-      <h2>🔧 Mechanic Services</h2>
-      <p>Verified mechanics available on-site. Get your car serviced while you shop or work.</p>
-    </div>
-    <div class="mech-grid">
-      <div class="mech-card" onclick="bookService('Oil Change','₹349')">
-        <div class="mech-icon">🛢️</div>
-        <h3>Oil Change</h3>
-        <p>Engine oil replacement with quality oil. Filter change included on request.</p>
-        <div class="mech-meta"><span class="mech-price">₹349</span><span class="mech-time">⏱ ~30 mins</span></div>
-      </div>
-      <div class="mech-card" onclick="bookService('Tyre Service','₹99')">
-        <div class="mech-icon">🛞</div>
-        <h3>Tyre Service</h3>
-        <p>Pressure check, balancing, rotation, or puncture fix — all done on-site.</p>
-        <div class="mech-meta"><span class="mech-price">₹99</span><span class="mech-time">⏱ ~20 mins</span></div>
-      </div>
-      <div class="mech-card" onclick="bookService('Battery Check','₹149')">
-        <div class="mech-icon">🔋</div>
-        <h3>Battery Check</h3>
-        <p>Full battery health test. Replacement service available if needed.</p>
-        <div class="mech-meta"><span class="mech-price">₹149</span><span class="mech-time">⏱ ~15 mins</span></div>
-      </div>
-      <div class="mech-card" onclick="bookService('Full Inspection','₹249')">
-        <div class="mech-icon">📋</div>
-        <h3>Full Inspection</h3>
-        <p>35-point digital vehicle health report delivered to your app instantly.</p>
-        <div class="mech-meta"><span class="mech-price">₹249</span><span class="mech-time">⏱ ~45 mins</span></div>
-      </div>
-      <div class="mech-card" onclick="bookService('Wiper Replacement','₹199')">
-        <div class="mech-icon">🪟</div>
-        <h3>Wiper Replacement</h3>
-        <p>Old wipers replaced with premium quality blades. Tested before delivery.</p>
-        <div class="mech-meta"><span class="mech-price">₹199</span><span class="mech-time">⏱ ~10 mins</span></div>
-      </div>
-      <div class="mech-card" onclick="bookService('AC Check','₹299')">
-        <div class="mech-icon">❄️</div>
-        <h3>AC Check & Regas</h3>
-        <p>AC performance test and refrigerant refill for optimal cooling.</p>
-        <div class="mech-meta"><span class="mech-price">₹299</span><span class="mech-time">⏱ ~40 mins</span></div>
-      </div>
-      <div class="mech-card" onclick="bookService('Headlight Fix','₹149')">
-        <div class="mech-icon">💡</div>
-        <h3>Headlight Fix</h3>
-        <p>Bulb replacement or headlight polishing for better night visibility.</p>
-        <div class="mech-meta"><span class="mech-price">₹149</span><span class="mech-time">⏱ ~20 mins</span></div>
-      </div>
-      <div class="mech-card" onclick="bookService('Jump Start','₹199')">
-        <div class="mech-icon">⚡</div>
-        <h3>Jump Start</h3>
-        <p>Car battery dead? We'll get you back on the road in minutes.</p>
-        <div class="mech-meta"><span class="mech-price">₹199</span><span class="mech-time">⏱ ~10 mins</span></div>
-      </div>
-    </div>
-  </div>
+  <!-- ══ WHATSAPP FAB ══════════════════════════════════════ -->
+  <a href="https://wa.me/919999999999" target="_blank"
+     style="position:fixed;bottom:28px;right:28px;width:56px;height:56px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.4);z-index:1000;text-decoration:none;">
+    <i class="fab fa-whatsapp" style="font-size:26px;color:#fff;"></i>
+  </a>
 
-  <!-- CAB -->
-  <div id="cat-cab" style="display:none;">
-    <div class="section-header">
-      <h2>🚕 Book a Cab</h2>
-      <p>Compare Ola, Uber & Auto — pickup location auto-filled from your parking lot.</p>
-    </div>
-    <div class="cab-search">
-      <h3>Where do you want to go?</h3>
-      <div class="cab-inputs">
-        <div class="cab-input" style="background:#EFF6FF;">
-          <i class="fas fa-circle" style="color:var(--blue);font-size:0.6rem;"></i>
-          <input type="text" value="Forum Mall, Koramangala (Your Parking)" readonly/>
-        </div>
-        <div class="cab-input">
-          <i class="fas fa-map-marker-alt" style="color:var(--red);"></i>
-          <input type="text" placeholder="Enter destination..."/>
-        </div>
-        <button class="btn-find">🔍 Find Cabs</button>
-      </div>
-    </div>
-    <div class="cab-options">
-      <div class="cab-opt" onclick="bookService('Ola Mini Cab','₹89')">
-        <div class="cab-icon">🟡</div>
-        <div class="cab-info">
-          <h4>Ola Mini</h4>
-          <p>Hatchback · Up to 4 passengers · AC</p>
-        </div>
-        <div class="cab-right">
-          <div class="cab-price">₹89–120</div>
-          <div class="cab-eta">3 mins away</div>
-          <button class="btn-ride">Book</button>
-        </div>
-      </div>
-      <div class="cab-opt" onclick="bookService('Uber Go','₹99')">
-        <div class="cab-icon">⚫</div>
-        <div class="cab-info">
-          <h4>Uber Go</h4>
-          <p>Sedan · Up to 4 passengers · AC</p>
-        </div>
-        <div class="cab-right">
-          <div class="cab-price">₹99–130</div>
-          <div class="cab-eta">5 mins away</div>
-          <button class="btn-ride">Book</button>
-        </div>
-      </div>
-      <div class="cab-opt" onclick="bookService('Auto Rickshaw','₹45')">
-        <div class="cab-icon">🛺</div>
-        <div class="cab-info">
-          <h4>Auto Rickshaw</h4>
-          <p>3-wheeler · Up to 3 passengers</p>
-        </div>
-        <div class="cab-right">
-          <div class="cab-price">₹45–70</div>
-          <div class="cab-eta">2 mins away</div>
-          <button class="btn-ride">Book</button>
-        </div>
-      </div>
-      <div class="cab-opt" onclick="bookService('Ola Prime SUV','₹199')">
-        <div class="cab-icon">🚐</div>
-        <div class="cab-info">
-          <h4>Ola Prime SUV</h4>
-          <p>6-seater SUV · Luxury · AC</p>
-        </div>
-        <div class="cab-right">
-          <div class="cab-price">₹199–280</div>
-          <div class="cab-eta">8 mins away</div>
-          <button class="btn-ride">Book</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- ══ JAVASCRIPT ════════════════════════════════════════ -->
+  <script>
+    /* ── Entrance animation via double rAF ──────────────── */
+    (function() {
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduced) return;
+      var els = document.querySelectorAll('.anim-el');
+      els.forEach(function(el, i) {
+        // delay is already set via inline style transition-delay
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            el.classList.add('is-in');
+          });
+        });
+      });
+    })();
 
-  <!-- LAUNDRY -->
-  <div id="cat-laundry" style="display:none;">
-    <div class="section-header">
-      <h2>🧺 Laundry Services</h2>
-      <p>Drop your clothes at the parking counter — we'll handle the rest.</p>
-    </div>
-    <div class="laundry-grid">
-      <div class="laundry-card">
-        <div class="icon">👕</div>
-        <h3>Wash & Fold</h3>
-        <p>Drop clothes at the counter. Washed, dried and folded — returned within 24 hrs.</p>
-        <div class="laundry-price">₹79 / kg</div>
-        <button class="btn-book" style="margin-top:0.875rem;" onclick="bookService('Wash & Fold Laundry','₹79/kg')">Schedule Pickup</button>
-      </div>
-      <div class="laundry-card">
-        <div class="icon">👔</div>
-        <h3>Dry Cleaning</h3>
-        <p>Premium dry cleaning for suits, sarees, blazers, and formals. Delivered in 48 hrs.</p>
-        <div class="laundry-price">₹199 / item</div>
-        <button class="btn-book" style="margin-top:0.875rem;" onclick="bookService('Dry Cleaning','₹199/item')">Schedule Pickup</button>
-      </div>
-      <div class="laundry-card">
-        <div class="icon">⚡</div>
-        <h3>Express Laundry</h3>
-        <p>Same-day return in 4 hours. Ready before you leave the mall!</p>
-        <div class="laundry-price">₹149 / kg</div>
-        <button class="btn-book" style="margin-top:0.875rem;" onclick="bookService('Express Laundry','₹149/kg')">Schedule Pickup</button>
-      </div>
-      <div class="laundry-card">
-        <div class="icon">🎽</div>
-        <h3>Sports Gear</h3>
-        <p>Special wash for gym wear, sports kits, shoes, and equipment bags.</p>
-        <div class="laundry-price">₹99 / set</div>
-        <button class="btn-book" style="margin-top:0.875rem;" onclick="bookService('Sports Gear Wash','₹99/set')">Schedule Pickup</button>
-      </div>
-    </div>
-  </div>
+    /* ── Category tab switching ─────────────────────────── */
+    function switchTab(btn, targetId) {
+      // Update tab styles
+      document.querySelectorAll('.cat-tab').forEach(function(t) {
+        t.classList.remove('active');
+        t.classList.add('inactive');
+      });
+      btn.classList.remove('inactive');
+      btn.classList.add('active');
 
-  <!-- FUEL -->
-  <div id="cat-fuel" style="display:none;">
-    <div class="section-header">
-      <h2>⛽ Fuel Delivery</h2>
-      <p>Request fuel top-up delivered directly to your parked vehicle.</p>
-    </div>
-    <div class="mech-grid">
-      <div class="mech-card" onclick="bookService('Petrol Top-up (5L)','₹520')">
-        <div class="mech-icon">⛽</div>
-        <h3>Petrol Top-up (5L)</h3>
-        <p>Premium petrol delivered to your slot. Current rate: ₹104/L</p>
-        <div class="mech-meta"><span class="mech-price">₹520</span><span class="mech-time">⏱ ~15 mins</span></div>
-      </div>
-      <div class="mech-card" onclick="bookService('Petrol Top-up (10L)','₹1040')">
-        <div class="mech-icon">⛽</div>
-        <h3>Petrol Top-up (10L)</h3>
-        <p>10L premium petrol. Save ₹20 vs 2 separate 5L orders.</p>
-        <div class="mech-meta"><span class="mech-price">₹1,040</span><span class="mech-time">⏱ ~20 mins</span></div>
-      </div>
-      <div class="mech-card" onclick="bookService('Diesel Top-up (5L)','₹465')">
-        <div class="mech-icon">🛢️</div>
-        <h3>Diesel Top-up (5L)</h3>
-        <p>Premium diesel delivered to your slot. Current rate: ₹93/L</p>
-        <div class="mech-meta"><span class="mech-price">₹465</span><span class="mech-time">⏱ ~15 mins</span></div>
-      </div>
-      <div class="mech-card" onclick="bookService('Full Tank (Custom Litres)','Custom')">
-        <div class="mech-icon">🚗</div>
-        <h3>Full Tank</h3>
-        <p>Enter custom litres. We'll fill exactly what you need — petrol or diesel.</p>
-        <div class="mech-meta"><span class="mech-price">Custom</span><span class="mech-time">⏱ ~25 mins</span></div>
-      </div>
-    </div>
-  </div>
+      // Smooth scroll to target section
+      var target = document.getElementById(targetId);
+      if (target) {
+        var offset = 80; // account for sticky topbar
+        var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      }
+    }
 
-  <!-- FOOD -->
-  <div id="cat-food" style="display:none;">
-    <div class="section-header">
-      <h2>☕ Food & Drinks</h2>
-      <p>Order chai, coffee, or snacks — delivered to your car or parking exit.</p>
-    </div>
-    <div class="mech-grid">
-      <div class="mech-card" onclick="bookService('Cutting Chai (2 cups)','₹30')">
-        <div class="mech-icon">☕</div>
-        <h3>Cutting Chai</h3>
-        <p>Hot cutting chai from nearby stall. Delivered to your car in 10 mins.</p>
-        <div class="mech-meta"><span class="mech-price">₹30 (2 cups)</span><span class="mech-time">⏱ ~10 mins</span></div>
-      </div>
-      <div class="mech-card" onclick="bookService('Cold Coffee','₹80')">
-        <div class="mech-icon">🧋</div>
-        <h3>Cold Coffee</h3>
-        <p>Creamy cold coffee from CCD or nearby cafe. Delivered chilled.</p>
-        <div class="mech-meta"><span class="mech-price">₹80</span><span class="mech-time">⏱ ~15 mins</span></div>
-      </div>
-      <div class="mech-card" onclick="bookService('Snack Combo','₹120')">
-        <div class="mech-icon">🍿</div>
-        <h3>Snack Combo</h3>
-        <p>Popcorn, chips, and soft drink combo. Perfect for the wait.</p>
-        <div class="mech-meta"><span class="mech-price">₹120</span><span class="mech-time">⏱ ~10 mins</span></div>
-      </div>
-      <div class="mech-card" onclick="bookService('Vending Machine Items','Custom')">
-        <div class="mech-icon">🏪</div>
-        <h3>Vending Machine</h3>
-        <p>Browse available items at the lot's vending machine — chocolates, chips, energy drinks.</p>
-        <div class="mech-meta"><span class="mech-price">₹20 – ₹150</span><span class="mech-time">Instant</span></div>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-<!-- MODAL -->
-<div class="modal-overlay" id="bookModal">
-  <div class="modal">
-    <div class="m-icon">✅</div>
-    <h2>Service Booked!</h2>
-    <p id="modalMsg">Your service has been scheduled successfully. You'll be notified when it's done.</p>
-    <div class="ref" id="modalRef">Service Ref: #SVC-0042</div>
-    <button class="btn-ok" onclick="document.getElementById('bookModal').classList.remove('show')">Done</button>
-  </div>
-</div>
-
-<a href="#" class="fab"><i class="fab fa-whatsapp"></i></a>
-
-<script>
-  function showCat(cat,btn){
-    ['wash','mech','cab','laundry','fuel','food'].forEach(c=>{
-      document.getElementById('cat-'+c).style.display=c===cat?'block':'none';
+    /* ── Highlight tab on scroll ────────────────────────── */
+    var sections = ['carwash','mechanic','cab','laundry','fuel','food'];
+    var tabMap = {};
+    document.querySelectorAll('.cat-tab').forEach(function(t) {
+      tabMap[t.dataset.target] = t;
     });
-    document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-  }
 
-  function bookService(name,price){
-    const ref='#SVC-'+Math.floor(1000+Math.random()*9000);
-    document.getElementById('modalMsg').textContent=`${name} (${price}) has been booked. Our team will start shortly at your parking slot.`;
-    document.getElementById('modalRef').textContent='Service Ref: '+ref;
-    document.getElementById('bookModal').classList.add('show');
-  }
-</script>
+    window.addEventListener('scroll', function() {
+      var scrollY = window.pageYOffset + 120;
+      var current = sections[0];
+      sections.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el && el.offsetTop <= scrollY) current = id;
+      });
+      document.querySelectorAll('.cat-tab').forEach(function(t) {
+        t.classList.remove('active');
+        t.classList.add('inactive');
+      });
+      if (tabMap[current]) {
+        tabMap[current].classList.remove('inactive');
+        tabMap[current].classList.add('active');
+      }
+    }, { passive: true });
+
+    /* ── Modal ──────────────────────────────────────────── */
+    function openModal(serviceName) {
+      document.getElementById('modalServiceName').textContent = serviceName;
+      document.getElementById('successModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      document.getElementById('successModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    function handleOverlayClick(e) {
+      if (e.target === document.getElementById('successModal')) closeModal();
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeModal();
+    });
+  </script>
 </body>
 </html>
