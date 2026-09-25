@@ -1315,166 +1315,67 @@ body::before {
    SMARTPARK LOCATIONS
    THESE ARE THE ONLY MALLS USED
 ===================================================== */
-
 const MALLS = [
-
-    {
-        name: "Phoenix Marketcity",
-        landmark: "Velachery, Chennai",
-        search: "Phoenix Marketcity, Velachery, Chennai"
-    },
-
-    {
-        name: "Express Avenue Mall",
-        landmark: "Royapettah, Chennai",
-        search: "Express Avenue Mall, Royapettah, Chennai"
-    },
-
-    {
-        name: "VR Chennai",
-        landmark: "Anna Nagar, Chennai",
-        search: "VR Chennai, Anna Nagar, Chennai"
-    },
-
-    {
-        name: "Forum Vijaya Mall",
-        landmark: "Vadapalani, Chennai",
-        search: "Forum Vijaya Mall, Vadapalani, Chennai"
-    },
-
-    {
-        name: "Ampa Skywalk",
-        landmark: "Aminjikarai, Chennai",
-        search: "Ampa Skywalk, Aminjikarai, Chennai"
-    },
-
-    {
-        name: "Chennai Citi Centre",
-        landmark: "Mylapore, Chennai",
-        search: "Chennai Citi Centre, Mylapore, Chennai"
-    },
-
-    {
-        name: "Marina Mall",
-        landmark: "Chennai",
-        search: "Marina Mall, Chennai"
-    },
-
-    {
-        name: "Brookefields Mall",
-        landmark: "Coimbatore",
-        search: "Brookefields Mall, Coimbatore"
-    },
-
-    {
-        name: "Fun Republic Mall",
-        landmark: "Coimbatore",
-        search: "Fun Republic Mall, Coimbatore"
-    },
-
-    {
-        name: "Prozone Mall",
-        landmark: "Coimbatore",
-        search: "Prozone Mall, Coimbatore"
-    },
-
-    {
-        name: "Vishaal De Mall",
-        landmark: "Madurai",
-        search: "Vishaal De Mall, Madurai"
-    }
-
+    { name: "Phoenix Marketcity", landmark: "Velachery, Chennai", lat: 12.9909, lon: 80.2183 },
+    { name: "Express Avenue Mall", landmark: "Royapettah, Chennai", lat: 13.0577, lon: 80.2637 },
+    { name: "VR Chennai", landmark: "Anna Nagar, Chennai", lat: 13.0850, lon: 80.2101 },
+    { name: "Forum Vijaya Mall", landmark: "Vadapalani, Chennai", lat: 13.0505, lon: 80.2121 },
+    { name: "Ampa Skywalk", landmark: "Aminjikarai, Chennai", lat: 13.0736, lon: 80.2216 },
+    { name: "Chennai Citi Centre", landmark: "Mylapore, Chennai", lat: 13.0350, lon: 80.2707 },
+    { name: "Marina Mall", landmark: "Egmore, Chennai", lat: 13.0784, lon: 80.2450 },
+    { name: "Brookefields Mall", landmark: "Coimbatore", lat: 11.0038, lon: 76.9679 },
+    { name: "Fun Republic Mall", landmark: "Coimbatore", lat: 11.0345, lon: 76.9707 },
+    { name: "Prozone Mall", landmark: "Coimbatore", lat: 11.0710, lon: 77.0280 },
+    { name: "Vishaal De Mall", landmark: "Madurai", lat: 9.9421, lon: 78.1417 },
+    { name: "Grand Square Mall", landmark: "Tiruchirappalli", lat: 10.8155, lon: 78.6890 },
+    { name: "Central Mall", landmark: "Salem", lat: 11.6740, lon: 78.1460 }
 ];
-
 
 /* =====================================================
    CHENNAI METRO STATIONS
 ===================================================== */
-
-const METRO_NAMES = [
-
-    "Chennai Airport",
-
-    "Meenambakkam",
-
-    "Nanganallur Road",
-
-    "Alandur",
-
-    "Guindy",
-
-    "Little Mount",
-
-    "Saidapet",
-
-    "Nandanam",
-
-    "Teynampet",
-
-    "AG-DMS",
-
-    "Thousand Lights",
-
-    "LIC",
-
-    "Government Estate",
-
-    "Chennai Central",
-
-    "High Court",
-
-    "Mannadi",
-
-    "Washermanpet",
-
-    "Sir Thiyagaraya College",
-
-    "Tondiarpet",
-
-    "New Washermenpet",
-
-    "Tollgate",
-
-    "Kaladipet",
-
-    "Thiruvottriyur Theradi",
-
-    "Thiruvottriyur",
-
-    "Wimco Nagar",
-
-    "St. Thomas Mount",
-
-    "Ekkattuthangal",
-
-    "Ashok Nagar",
-
-    "Vadapalani",
-
-    "Arumbakkam",
-
-    "CMBT",
-
-    "Koyambedu",
-
-    "Thirumangalam",
-
-    "Anna Nagar Tower",
-
-    "Anna Nagar East",
-
-    "Shenoy Nagar",
-
-    "Pachaiyappa's College",
-
-    "Kilpauk Medical College",
-
-    "Nehru Park",
-
-    "Egmore"
-
+const METROS = [
+    { name: "Chennai Airport", lat: 12.9820, lon: 80.1636 },
+    { name: "Meenambakkam", lat: 12.9880, lon: 80.1706 },
+    { name: "Nanganallur Road", lat: 12.9885, lon: 80.1863 },
+    { name: "Alandur", lat: 12.9950, lon: 80.2010 },
+    { name: "Guindy", lat: 13.0093, lon: 80.2132 },
+    { name: "Little Mount", lat: 13.0140, lon: 80.2201 },
+    { name: "Saidapet", lat: 13.0214, lon: 80.2254 },
+    { name: "Nandanam", lat: 13.0280, lon: 80.2380 },
+    { name: "Teynampet", lat: 13.0372, lon: 80.2457 },
+    { name: "AG-DMS", lat: 13.0447, lon: 80.2480 },
+    { name: "Thousand Lights", lat: 13.0520, lon: 80.2560 },
+    { name: "LIC", lat: 13.0630, lon: 80.2700 },
+    { name: "Government Estate", lat: 13.0696, lon: 80.2723 },
+    { name: "Chennai Central", lat: 13.0815, lon: 80.2728 },
+    { name: "High Court", lat: 13.0913, lon: 80.2840 },
+    { name: "Mannadi", lat: 13.0955, lon: 80.2840 },
+    { name: "Washermanpet", lat: 13.1080, lon: 80.2830 },
+    { name: "Sir Thiyagaraya College", lat: 13.1130, lon: 80.2860 },
+    { name: "Tondiarpet", lat: 13.1244, lon: 80.2888 },
+    { name: "New Washermenpet", lat: 13.1170, lon: 80.2900 },
+    { name: "Tollgate", lat: 13.1350, lon: 80.2930 },
+    { name: "Kaladipet", lat: 13.1509, lon: 80.2994 },
+    { name: "Thiruvottriyur Theradi", lat: 13.1660, lon: 80.3010 },
+    { name: "Thiruvottriyur", lat: 13.1718, lon: 80.3052 },
+    { name: "Wimco Nagar", lat: 13.1791, lon: 80.3072 },
+    { name: "St. Thomas Mount", lat: 13.0030, lon: 80.2010 },
+    { name: "Ekkattuthangal", lat: 13.0171, lon: 80.2053 },
+    { name: "Ashok Nagar", lat: 13.0360, lon: 80.2110 },
+    { name: "Vadapalani", lat: 13.0505, lon: 80.2121 },
+    { name: "Arumbakkam", lat: 13.0700, lon: 80.2060 },
+    { name: "CMBT", lat: 13.0690, lon: 80.1960 },
+    { name: "Koyambedu", lat: 13.0736, lon: 80.1948 },
+    { name: "Thirumangalam", lat: 13.0855, lon: 80.2010 },
+    { name: "Anna Nagar Tower", lat: 13.0860, lon: 80.2110 },
+    { name: "Anna Nagar East", lat: 13.0860, lon: 80.2200 },
+    { name: "Shenoy Nagar", lat: 13.0770, lon: 80.2260 },
+    { name: "Pachaiyappa's College", lat: 13.0780, lon: 80.2340 },
+    { name: "Kilpauk Medical College", lat: 13.0775, lon: 80.2429 },
+    { name: "Nehru Park", lat: 13.0788, lon: 80.2501 },
+    { name: "Egmore", lat: 13.0770, lon: 80.2610 }
 ];
-
 
 /* =====================================================
    MAP
@@ -1517,518 +1418,67 @@ const metroMarkers =
 /* =====================================================
    STORE ALL MARKERS
 ===================================================== */
-
 let allLocations = [];
 
-
-/* =====================================================
-   MALL ICON
-===================================================== */
-
 const mallIcon = L.divIcon({
-
     className: "",
-
-    html: `
-        <div class="mall-marker">
-            🏬
-        </div>
-    `,
-
-    iconSize: [42,42],
-
-    iconAnchor: [21,21],
-
-    popupAnchor: [0,-23]
-
+    html: `<div class="mall-marker">🏬</div>`,
+    iconSize: [42,42], iconAnchor: [21,21], popupAnchor: [0,-23]
 });
-
-
-/* =====================================================
-   METRO ICON
-===================================================== */
 
 const metroIcon = L.divIcon({
-
     className: "",
-
-    html: `
-        <div class="metro-marker">
-            🚇
-        </div>
-    `,
-
-    iconSize: [42,42],
-
-    iconAnchor: [21,21],
-
-    popupAnchor: [0,-23]
-
+    html: `<div class="metro-marker">🚇</div>`,
+    iconSize: [42,42], iconAnchor: [21,21], popupAnchor: [0,-23]
 });
 
-
-/* =====================================================
-   LOADING
-===================================================== */
-
-function setLoading(show) {
-
-    const loading =
-        document.getElementById("mapLoading");
-
-    loading.classList.toggle(
-        "show",
-        show
-    );
-
+function goToBooking(type, name) {
+    window.location.href =
+        "booking.html?type=" + encodeURIComponent(type) +
+        "&name=" + encodeURIComponent(name);
 }
 
-
-/* =====================================================
-   NOMINATIM GEOCODING
-===================================================== */
-
-async function geocode(query) {
-
-    try {
-
-        const cacheKey =
-            "smartpark_geo_" +
-            query.toLowerCase();
-
-
-        /* CHECK CACHE */
-
-        const cached =
-            localStorage.getItem(cacheKey);
-
-
-        if (cached) {
-
-            return JSON.parse(cached);
-
-        }
-
-
-        /* SEARCH OPENSTREETMAP */
-
-        const url =
-            "https://nominatim.openstreetmap.org/search" +
-            "?format=json" +
-            "&limit=1" +
-            "&q=" +
-            encodeURIComponent(query);
-
-
-        const response =
-            await fetch(url);
-
-
-        if (!response.ok) {
-
-            return null;
-
-        }
-
-
-        const data =
-            await response.json();
-
-
-        if (!data.length) {
-
-            console.warn(
-                "Location not found:",
-                query
-            );
-
-            return null;
-
-        }
-
-
-        const result = {
-
-            lat:
-                parseFloat(data[0].lat),
-
-            lon:
-                parseFloat(data[0].lon)
-
-        };
-
-
-        /* SAVE FOR NEXT TIME */
-
-        localStorage.setItem(
-            cacheKey,
-            JSON.stringify(result)
-        );
-
-
-        return result;
-
-    }
-
-    catch(error) {
-
-        console.error(
-            "Geocoding error:",
-            error
-        );
-
-        return null;
-
-    }
-
-}
-
-
-/* =====================================================
-   WAIT FUNCTION
-===================================================== */
-
-function wait(ms) {
-
-    return new Promise(
-        resolve => setTimeout(resolve, ms)
-    );
-
-}
-
-
-/* =====================================================
-   CREATE MALL MARKER
-===================================================== */
-
-function createMallMarker(
-    mall,
-    location
-) {
-
-    const marker =
-        L.marker(
-            [
-                location.lat,
-                location.lon
-            ],
-            {
-                icon: mallIcon
-            }
-        );
-
+function createMallMarker(mall) {
+    const marker = L.marker([mall.lat, mall.lon], { icon: mallIcon });
 
     marker.bindPopup(`
-
         <div>
-
-            <div class="popup-title">
-                🏬 ${mall.name}
-            </div>
-
-            <div class="popup-type">
-                Mall
-            </div>
-
-            <div style="
-                font-size:11px;
-                color:#aaa;
-                margin-bottom:10px;
-            ">
-
-                ${mall.landmark}
-
-            </div>
-
-            <button
-                class="popup-button"
-                onclick="
-                    openDirections(
-                        ${location.lat},
-                        ${location.lon}
-                    )
-                "
-            >
-
-                <i class="fa-solid fa-route"></i>
-
-                Get Directions
-
+            <div class="popup-title">🏬 ${mall.name}</div>
+            <div class="popup-type">Mall</div>
+            <div style="font-size:11px;color:#aaa;margin-bottom:10px;">${mall.landmark}</div>
+            <button class="popup-button" onclick="goToBooking('mall', '${mall.name}')">
+                <i class="fa-solid fa-square-parking"></i> Book Parking
             </button>
-
         </div>
-
     `);
 
-
-    marker.addTo(
-        mallMarkers
-    );
-
-
-    allLocations.push({
-
-        type: "mall",
-
-        name: mall.name,
-
-        landmark: mall.landmark,
-
-        marker: marker,
-
-        lat: location.lat,
-
-        lon: location.lon
-
-    });
-
+    marker.addTo(mallMarkers);
+    allLocations.push({ type: "mall", name: mall.name, landmark: mall.landmark, marker, lat: mall.lat, lon: mall.lon });
 }
 
-
-/* =====================================================
-   CREATE METRO MARKER
-===================================================== */
-
-function createMetroMarker(
-    metro,
-    location
-) {
-
-    const marker =
-        L.marker(
-            [
-                location.lat,
-                location.lon
-            ],
-            {
-                icon: metroIcon
-            }
-        );
-
+function createMetroMarker(metro) {
+    const marker = L.marker([metro.lat, metro.lon], { icon: metroIcon });
 
     marker.bindPopup(`
-
         <div>
-
-            <div class="popup-title">
-                🚇 ${metro}
-            </div>
-
-            <div class="popup-type">
-                Chennai Metro Station
-            </div>
-
-            <div style="
-                font-size:11px;
-                color:#aaa;
-                margin-bottom:10px;
-            ">
-
-                Chennai Metro
-
-            </div>
-
-            <button
-                class="
-                    popup-button
-                    metro-button
-                "
-                onclick="
-                    openDirections(
-                        ${location.lat},
-                        ${location.lon}
-                    )
-                "
-            >
-
-                <i class="fa-solid fa-route"></i>
-
-                Get Directions
-
+            <div class="popup-title">🚇 ${metro.name}</div>
+            <div class="popup-type">Chennai Metro Station</div>
+            <div style="font-size:11px;color:#aaa;margin-bottom:10px;">Chennai Metro</div>
+            <button class="popup-button metro-button" onclick="goToBooking('metro', '${metro.name}')">
+                <i class="fa-solid fa-square-parking"></i> Book Parking
             </button>
-
         </div>
-
     `);
 
-
-    marker.addTo(
-        metroMarkers
-    );
-
-
-    allLocations.push({
-
-        type: "metro",
-
-        name: metro,
-
-        landmark: "Chennai Metro",
-
-        marker: marker,
-
-        lat: location.lat,
-
-        lon: location.lon
-
-    });
-
+    marker.addTo(metroMarkers);
+    allLocations.push({ type: "metro", name: metro.name, landmark: "Chennai Metro", marker, lat: metro.lat, lon: metro.lon });
 }
 
-
-/* =====================================================
-   LOAD MALLS
-===================================================== */
-
-async function loadMalls() {
-
-    for (
-        let i = 0;
-        i < MALLS.length;
-        i++
-    ) {
-
-        const mall =
-            MALLS[i];
-
-
-        const location =
-            await geocode(
-                mall.search
-            );
-
-
-        if (location) {
-
-            createMallMarker(
-                mall,
-                location
-            );
-
-        }
-
-
-        /*
-           Nominatim should not be
-           spammed with requests.
-
-           Cached locations don't need
-           to wait.
-        */
-
-        const cacheExists =
-            localStorage.getItem(
-                "smartpark_geo_" +
-                mall.search.toLowerCase()
-            );
-
-
-        if (!cacheExists) {
-
-            await wait(1100);
-
-        }
-
-    }
-
+function loadSmartParkLocations() {
+    MALLS.forEach(createMallMarker);
+    METROS.forEach(createMetroMarker);
+    console.log("SmartPark map loaded. Total markers:", allLocations.length);
 }
-
-
-/* =====================================================
-   LOAD METRO STATIONS
-===================================================== */
-
-async function loadMetros() {
-
-    for (
-        let i = 0;
-        i < METRO_NAMES.length;
-        i++
-    ) {
-
-        const metro =
-            METRO_NAMES[i];
-
-
-        const query =
-            metro +
-            " Metro Station, Chennai";
-
-
-        const location =
-            await geocode(
-                query
-            );
-
-
-        if (location) {
-
-            createMetroMarker(
-                metro,
-                location
-            );
-
-        }
-
-
-        const cacheExists =
-            localStorage.getItem(
-                "smartpark_geo_" +
-                query.toLowerCase()
-            );
-
-
-        if (!cacheExists) {
-
-            await wait(1100);
-
-        }
-
-    }
-
-}
-
-
-/* =====================================================
-   LOAD EVERYTHING
-===================================================== */
-
-async function loadSmartParkLocations() {
-
-    setLoading(true);
-
-
-    console.log(
-        "Loading SmartPark mall markers..."
-    );
-
-
-    await loadMalls();
-
-
-    console.log(
-        "Loading SmartPark metro markers..."
-    );
-
-
-    await loadMetros();
-
-
-    setLoading(false);
-
-
-    console.log(
-        "SmartPark map loaded."
-    );
-
-
-    console.log(
-        "Total markers:",
-        allLocations.length
-    );
-
-}
-
 
 /* =====================================================
    SHOW ALL
