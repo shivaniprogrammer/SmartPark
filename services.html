@@ -376,44 +376,6 @@
     }
     .btn-secondary:hover { background: rgba(255,255,255,.13); transform: scale(.98); }
 
-    /* ─── FOOD & REFRESHMENT CARDS ─────────────────────── */
-    .info-card {
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 14px;
-      padding: 20px 20px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      transition: border-color .25s, transform .25s var(--spring), background .25s;
-    }
-    .info-card:hover {
-      border-color: rgba(255,255,255,.22);
-      background: rgba(255,255,255,.07);
-      transform: translateY(-3px);
-    }
-    .info-card-top { display: flex; align-items: center; gap: 12px; }
-    .info-icon {
-      width: 44px; height: 44px;
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-    .info-name { font-size: 14px; font-weight: 700; color: #fff; }
-    .info-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
-    .info-price { font-size: 20px; font-weight: 800; color: #fff; }
-    .info-price span { font-size: 12px; font-weight: 400; color: var(--muted); }
-    .info-tags { display: flex; gap: 7px; flex-wrap: wrap; }
-    .info-tag {
-      background: rgba(255,255,255,.07);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 3px 9px;
-      font-size: 11px;
-      color: var(--muted);
-    }
-
     /* ─── SUCCESS MODAL ───────────────────────────────── */
     .modal-overlay {
       position: fixed;
@@ -555,10 +517,7 @@
           <i class="fa-solid fa-droplets"></i> Car Wash
         </button>
         <button class="cat-tab inactive" data-target="mechanic" onclick="switchTab(this,'mechanic')">
-          <i class="fa-solid fa-screwdriver-wrench"></i> Mechanic
-        </button>
-        <button class="cat-tab inactive" data-target="food" onclick="switchTab(this,'food')">
-          <i class="fa-solid fa-utensils"></i> Food &amp; Refreshments
+          <i class="fa-solid fa-screwdriver-wrench"></i> Mechanic Services
         </button>
       </div>
 
@@ -795,118 +754,6 @@
         </div>
       </section>
 
-      <!-- ═══════════ FOOD & DRINKS ═══════════ -->
-      <section class="section-block anim-el" id="food" style="transition-delay:.18s">
-        <div class="section-head">
-          <div class="section-head-icon" style="background:rgba(239,68,68,.12);color:var(--red);">
-            <i class="fa-solid fa-utensils"></i>
-          </div>
-          <div>
-            <h2>Food &amp; Drinks</h2>
-            <p>Delicious meals delivered to your car</p>
-          </div>
-        </div>
-        <div class="cards-grid">
-
-          <!-- McDonald's -->
-          <div class="info-card">
-            <div class="info-card-top">
-              <div class="info-icon" style="background:rgba(245,158,11,.12);color:var(--gold);">
-                <i class="fa-solid fa-burger"></i>
-              </div>
-              <div>
-                <div class="info-name">McDonald's</div>
-                <div class="info-sub">Fast food</div>
-              </div>
-            </div>
-            <div class="info-tags">
-              <span class="info-tag"><i class="fa-regular fa-clock" style="margin-right:4px;"></i> 20–30 min</span>
-              <span class="info-tag">Min ₹199</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
-              <i class="fa-solid fa-star" style="color:var(--gold);"></i>
-              <span>4.6 · 2.3 km away</span>
-            </div>
-            <button class="btn-primary" onclick="openModal('McDonald\'s Order')">
-              <i class="fa-solid fa-bag-shopping"></i> Order Now
-            </button>
-          </div>
-
-          <!-- Starbucks -->
-          <div class="info-card">
-            <div class="info-card-top">
-              <div class="info-icon" style="background:rgba(16,185,129,.12);color:var(--green);">
-                <i class="fa-solid fa-mug-hot"></i>
-              </div>
-              <div>
-                <div class="info-name">Starbucks</div>
-                <div class="info-sub">Coffee &amp; snacks</div>
-              </div>
-            </div>
-            <div class="info-tags">
-              <span class="info-tag"><i class="fa-regular fa-clock" style="margin-right:4px;"></i> 15 min</span>
-              <span class="info-tag">Min ₹299</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
-              <i class="fa-solid fa-star" style="color:var(--gold);"></i>
-              <span>4.8 · 0.8 km away</span>
-            </div>
-            <button class="btn-primary" onclick="openModal('Starbucks Order')">
-              <i class="fa-solid fa-bag-shopping"></i> Order Now
-            </button>
-          </div>
-
-          <!-- Domino's -->
-          <div class="info-card">
-            <div class="info-card-top">
-              <div class="info-icon" style="background:rgba(239,68,68,.12);color:var(--red);">
-                <i class="fa-solid fa-pizza-slice"></i>
-              </div>
-              <div>
-                <div class="info-name">Domino's Pizza</div>
-                <div class="info-sub">Pizza</div>
-              </div>
-            </div>
-            <div class="info-tags">
-              <span class="info-tag"><i class="fa-regular fa-clock" style="margin-right:4px;"></i> 30–40 min</span>
-              <span class="info-tag">Min ₹299</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
-              <i class="fa-solid fa-star" style="color:var(--gold);"></i>
-              <span>4.4 · 1.5 km away</span>
-            </div>
-            <button class="btn-primary" onclick="openModal('Domino\'s Pizza Order')">
-              <i class="fa-solid fa-bag-shopping"></i> Order Now
-            </button>
-          </div>
-
-          <!-- Fresh Juice Bar -->
-          <div class="info-card">
-            <div class="info-card-top">
-              <div class="info-icon" style="background:rgba(16,185,129,.12);color:var(--green);">
-                <i class="fa-solid fa-leaf"></i>
-              </div>
-              <div>
-                <div class="info-name">Fresh Juice Bar</div>
-                <div class="info-sub">Healthy drinks</div>
-              </div>
-            </div>
-            <div class="info-tags">
-              <span class="info-tag"><i class="fa-regular fa-clock" style="margin-right:4px;"></i> 10 min</span>
-              <span class="info-tag">Min ₹99</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
-              <i class="fa-solid fa-star" style="color:var(--gold);"></i>
-              <span>4.7 · 0.3 km away</span>
-            </div>
-            <button class="btn-primary" onclick="openModal('Fresh Juice Bar Order')">
-              <i class="fa-solid fa-bag-shopping"></i> Order Now
-            </button>
-          </div>
-
-        </div>
-      </section>
-
     </main>
   </div>
 
@@ -964,7 +811,7 @@
     }
 
     /* ── Highlight tab on scroll ────────────────────────── */
-    var sections = ['carwash','mechanic','food'];
+    var sections = ['carwash','mechanic'];
     var tabMap = {};
     document.querySelectorAll('.cat-tab').forEach(function(t) {
       tabMap[t.dataset.target] = t;
