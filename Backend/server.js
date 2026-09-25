@@ -9,7 +9,9 @@ const bookingRoutes = require("./routes/bookingRoutes");
 const aiRoutes = require("./routes/aiRoutes");
 const walletRoutes = require("./routes/walletRoutes");
 const serviceRoutes = require("./routes/serviceRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
+const paymentRoutes = require("./routes/paymentRoutes");
 const app = express();
 
 app.use(cors());
@@ -21,6 +23,9 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/wallet", walletRoutes);
 app.use("/api/services", serviceRoutes);
+app.use("/api/notifications", notificationRoutes);
+
+app.use("/api/payment", paymentRoutes);
 
 connectDB();
 
@@ -44,3 +49,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`SmartPark server running on port ${PORT}`);
 });
+
