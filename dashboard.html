@@ -270,7 +270,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
       <!-- SLOT MAP -->
       <div class="card">
-        <div class="card-title"><i class="fas fa-map"></i> Live Slot Map — Forum Mall</div>
+        <div class="card-title" id="slotMapTitle"><i class="fas fa-map"></i> Live Slot Map — Forum Mall</div>
         <div class="slot-map" id="slotMap"></div>
         <div class="legend">
           <div class="leg"><div class="ld" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);"></div>Free</div>
@@ -431,6 +431,25 @@ async function confirmExtendStay() {
       if (wStatBal) wStatBal.textContent = `₹${w.balance}`;
       const wStatPts = document.querySelectorAll('.wstat-num')[1];
       if (wStatPts) wStatPts.textContent = `${w.loyaltyPoints}`;
+    const myBookingsRes = await apiRequest('/bookings/my');
+    if (myBookingsRes.success && myBookingsRes.data && myBookingsRes.data.length > 0) {
+      const latest = myBookingsRes.data[0];
+      if (latest && (latest.status === 'active' || latest.status === 'confirmed')) {
+        const activeBooking = {
+          bookingId: latest.bookingId || `#SP-2024-${latest._id ? latest._id.substring(0,4) : '9182'}`,
+          locationName: latest.locationName || "KFC Junction Parking",
+          slotNumber: latest.slotNumber || "A-01",
+          durationHours: latest.durationHours || 2,
+          totalAmount: latest.totalAmount || 80,
+          ratePerHour: latest.ratePerHour || 40,
+          vehicleType: latest.vehicleType || "4-Wheeler (Car)",
+          vehiclePlate: latest.vehiclePlate || "KA-01-MH-1234",
+          startTime: latest.createdAt || new Date().toISOString(),
+          endTime: new Date(new Date(latest.createdAt || Date.now()).getTime() + (latest.durationHours || 2) * 3600 * 1000).toISOString()
+        };
+        localStorage.setItem('smartpark_active_booking', JSON.stringify(activeBooking));
+        loadActiveBooking();
+      }
     }
   }
   
@@ -453,6 +472,11 @@ async function confirmExtendStay() {
       const vehEl = document.getElementById('actVehicle');
       if (vehEl) vehEl.textContent = activeBooking.vehiclePlate || 'KA-01-MH-1234';
 
+      const slotMapTitle = document.getElementById('slotMapTitle');
+      if (slotMapTitle) {
+        slotMapTitle.innerHTML = `<i class="fas fa-map"></i> Live Slot Map — ${activeBooking.locationName}`;
+      }
+
       if (activeBooking.endTime) {
         const remainingMs = new Date(activeBooking.endTime).getTime() - Date.now();
         if (remainingMs > 0) {
@@ -463,7 +487,34 @@ async function confirmExtendStay() {
       }
     }
   }
+
+  function loadRecentBookingsTable() {
+    let recent = [];
+    try {
+      const stored = localStorage.getItem('smartpark_recent_bookings');
+      if (stored) recent = JSON.parse(stored);
+    } catch(e){}
+
+    if (recent && recent.length > 0) {
+      const tbody = document.getElementById('recentBookingsTable');
+      if (tbody) {
+        tbody.innerHTML = recent.map(b => `
+          <tr>
+            <td>${b.id || b.bookingId}</td>
+            <td>${b.locationName || b.location}</td>
+            <td style="color:var(--gold);font-weight:700;">${b.slotNumber || b.slot}</td>
+            <td>${b.dateTime || b.datetime || 'Today'}</td>
+            <td>${b.duration}</td>
+            <td>${b.amount}</td>
+            <td><span class="status-badge ${(b.status || 'active').toLowerCase()}">${(b.status || 'active').toUpperCase()}</span></td>
+          </tr>
+        `).join('');
+      }
+    }
+  }
+
   loadActiveBooking();
+  loadRecentBookingsTable();
   loadDashboardData();
 
   // Slot map

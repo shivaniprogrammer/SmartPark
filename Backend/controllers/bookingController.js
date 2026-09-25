@@ -8,8 +8,11 @@ const sharedLocationAvailability = new Map([
     ["Forum Mall, Koramangala", { total: 100, available: 68 }],
     ["Orion Mall, Rajajinagar", { total: 120, available: 42 }],
     ["UB City, Cubbon Park", { total: 80, available: 15 }],
-    ["Phoenix Mall, Whitefield", { total: 150, available: 95 }]
+    ["Phoenix Mall, Whitefield", { total: 150, available: 95 }],
+    ["KFC Junction Parking", { total: 80, available: 32 }]
 ]);
+
+const inMemoryBookings = [];
 
 const createBooking = async (req, res) => {
     try {
@@ -21,8 +24,10 @@ const createBooking = async (req, res) => {
             startTime,
             durationHours,
             durationMinutes,
+            ratePerHour,
             totalAmount,
             paymentMethod,
+            vehicleType,
             servicesAdded
         } = req.body;
 
@@ -69,14 +74,18 @@ const createBooking = async (req, res) => {
             bookingId,
             user: req.user ? req.user.id : "usr_demo",
             locationName: targetLocation,
-            slotNumber: slotNumber || (slot ? slot.slotNumber : "B-204"),
+            slotNumber: slotNumber || (slot ? slot.slotNumber : "A-01"),
             durationHours: hours,
+            ratePerHour: ratePerHour || (computedAmount / hours),
             totalAmount: computedAmount,
+            vehicleType: vehicleType || "4W",
             paymentMethod: paymentMethod || "wallet",
             status: "active",
             createdAt: new Date(),
             remainingAvailableSlots: locStats.available
         };
+
+        inMemoryBookings.unshift(newBooking);
 
         // AI Demand alert integration
         let aiDemand = null;
@@ -113,52 +122,27 @@ const createBooking = async (req, res) => {
 
 const getMyBookings = async (req, res) => {
     try {
-        const bookings = await Booking.find({
-            user: req.user.id
-        })
-            .populate({
-                path: "slot",
-                populate: { path: "location" }
+        const mongoose = require("mongoose");
+        const isDbConnected = mongoose.connection.readyState === 1;
+
+        if (isDbConnected) {
+            const bookings = await Booking.find({
+                user: req.user.id
             })
-            .sort({ createdAt: -1 });
+                .populate({
+                    path: "slot",
+                    populate: { path: "location" }
+                })
+                .sort({ createdAt: -1 });
 
-        const now = new Date();
-
-        for (const booking of bookings) {
-            if (
-                booking.status === "confirmed" &&
-                now >= booking.startTime &&
-                now < booking.endTime
-            ) {
-                booking.status = "active";
-                await booking.save();
-            }
-
-            if (
-                (booking.status === "confirmed" ||
-                    booking.status === "active") &&
-                now > booking.endTime
-            ) {
-                booking.status = "overstayed";
-                await booking.save();
-
-                if (booking.slot) {
-                    await ParkingSlot.findByIdAndUpdate(
-                        booking.slot._id,
-                        {
-                            status: "occupied"
-                        }
-                    );
-                }
+            if (bookings.length > 0) {
+                return res.json(bookings);
             }
         }
 
-        res.json(bookings);
+        return res.json(inMemoryBookings);
     } catch (error) {
-        res.status(500).json({
-            message: "Failed to fetch bookings",
-            error: error.message
-        });
+        return res.json(inMemoryBookings);
     }
 };
 

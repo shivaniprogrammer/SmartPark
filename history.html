@@ -256,6 +256,12 @@
   }
 
   async function loadUserBookings() {
+    let recentLocal = [];
+    try {
+      const stored = localStorage.getItem('smartpark_recent_bookings');
+      if (stored) recentLocal = JSON.parse(stored);
+    } catch(e){}
+
     const res = await apiRequest('/bookings/my');
     if (res.success && res.data && res.data.length > 0) {
       bookings = res.data.map(b => ({
@@ -267,9 +273,19 @@
         amount: `₹${b.totalAmount || 120}`,
         status: b.status || 'active'
       }));
-      current = [...bookings];
-      render();
+    } else if (recentLocal && recentLocal.length > 0) {
+      bookings = recentLocal.map(b => ({
+        id: b.id || b.bookingId,
+        location: b.locationName || b.location,
+        slot: b.slotNumber || b.slot,
+        datetime: b.dateTime || 'Today',
+        duration: b.duration,
+        amount: b.amount,
+        status: b.status || 'active'
+      }));
     }
+    current = [...bookings];
+    render();
   }
 
   function render() {

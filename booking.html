@@ -1322,15 +1322,18 @@ function selectPayment(el, method) {
 // ── CONFIRMATION MODAL ──
 async function confirmBooking() {
   const lot = state.lots.find(l => l.id === state.selectedLotId);
-  const cost = lot.rates[state.vehicleType] * state.duration;
+  const rate = lot ? lot.rates[state.vehicleType] : 60;
+  const cost = rate * state.duration;
   const bookingId = '#SP-2024-' + Math.floor(1000 + Math.random() * 9000);
+  const lotName = lot ? lot.name : "KFC Junction Parking";
 
   // Post to backend API
   await apiRequest('/bookings', 'POST', {
     locationId: state.selectedLotId,
-    locationName: lot ? lot.name : "Forum Mall, Koramangala",
+    locationName: lotName,
     slotNumber: state.selectedSlot || 'A-01',
     durationHours: state.duration,
+    ratePerHour: rate,
     totalAmount: cost,
     vehicleType: state.vehicleType,
     paymentMethod: 'wallet'
@@ -1339,11 +1342,11 @@ async function confirmBooking() {
   // Save active booking to localStorage for live Dashboard display
   const activeBookingPayload = {
     bookingId,
-    locationName: lot ? lot.name : "Forum Mall, Koramangala",
+    locationName: lotName,
     slotNumber: state.selectedSlot || 'A-01',
     durationHours: state.duration,
     totalAmount: cost,
-    ratePerHour: lot ? lot.rates[state.vehicleType] : 60,
+    ratePerHour: rate,
     vehicleType: state.vehicleType === '2W' ? '2-Wheeler (Bike)' : '4-Wheeler (Car)',
     vehiclePlate: state.vehicleType === '2W' ? 'KA-05-EV-5678' : 'KA-01-MH-1234',
     startTime: new Date().toISOString(),
@@ -1352,10 +1355,34 @@ async function confirmBooking() {
   };
   localStorage.setItem('smartpark_active_booking', JSON.stringify(activeBookingPayload));
 
+  // Also update recent bookings in localStorage
+  try {
+    let recent = JSON.parse(localStorage.getItem('smartpark_recent_bookings') || '[]');
+    if (recent.length === 0) {
+      recent = [
+        { id: '#SP2024002', locationName: 'Orion Mall, Rajajinagar', slotNumber: 'A-108', dateTime: '22 Sep, 10:00 AM', duration: '5 hrs', amount: '₹350', status: 'completed' },
+        { id: '#SP2024003', locationName: 'UB City, Cubbon Park', slotNumber: 'C-312', dateTime: '20 Sep, 2:00 PM', duration: '2 hrs', amount: '₹120', status: 'completed' },
+        { id: '#SP2024004', locationName: 'Phoenix Mall, Whitefield', slotNumber: 'D-056', dateTime: '18 Sep, 6:00 PM', duration: '1 hr', amount: '₹60', status: 'cancelled' }
+      ];
+    }
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    recent.unshift({
+      id: bookingId,
+      bookingId: bookingId,
+      locationName: lotName,
+      slotNumber: state.selectedSlot || 'A-01',
+      dateTime: `Today, ${timeStr}`,
+      duration: `${state.duration} hrs`,
+      amount: `₹${cost}`,
+      status: 'active'
+    });
+    localStorage.setItem('smartpark_recent_bookings', JSON.stringify(recent));
+  } catch(e){}
+
   document.getElementById('mBookingId').textContent = bookingId;
   document.getElementById('mVehicle').textContent = state.vehicleType === '2W' ? '2-Wheeler (Bike)' : '4-Wheeler (Car)';
   document.getElementById('mSlot').textContent = state.selectedSlot || 'A-01';
-  document.getElementById('mLot').textContent = lot ? lot.name : "Forum Mall";
+  document.getElementById('mLot').textContent = lotName;
   document.getElementById('mDuration').textContent = state.duration + ' Hours';
   document.getElementById('mTotal').textContent = '₹' + cost;
 
@@ -1373,6 +1400,20 @@ function closeModal() {
 })();
 
 // ── INIT ──
+(function checkUrlParams() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const lotParam = urlParams.get('lot') || urlParams.get('location');
+  if (lotParam) {
+    const found = state.lots.find(l => 
+      l.id.toString() === lotParam || 
+      l.name.toLowerCase().includes(lotParam.toLowerCase())
+    );
+    if (found) {
+      state.selectedLotId = found.id;
+    }
+  }
+})();
+
 renderLots();
 buildSlotGrid();
 updateSummary();
