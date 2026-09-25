@@ -1328,7 +1328,7 @@ async function confirmBooking() {
   // Post to backend API
   await apiRequest('/bookings', 'POST', {
     locationId: state.selectedLotId,
-    locationName: lot ? lot.name : "Forum Mall",
+    locationName: lot ? lot.name : "Forum Mall, Koramangala",
     slotNumber: state.selectedSlot || 'A-01',
     durationHours: state.duration,
     totalAmount: cost,
@@ -1336,10 +1336,26 @@ async function confirmBooking() {
     paymentMethod: 'wallet'
   });
 
+  // Save active booking to localStorage for live Dashboard display
+  const activeBookingPayload = {
+    bookingId,
+    locationName: lot ? lot.name : "Forum Mall, Koramangala",
+    slotNumber: state.selectedSlot || 'A-01',
+    durationHours: state.duration,
+    totalAmount: cost,
+    ratePerHour: lot ? lot.rates[state.vehicleType] : 60,
+    vehicleType: state.vehicleType === '2W' ? '2-Wheeler (Bike)' : '4-Wheeler (Car)',
+    vehiclePlate: state.vehicleType === '2W' ? 'KA-05-EV-5678' : 'KA-01-MH-1234',
+    startTime: new Date().toISOString(),
+    endTime: new Date(Date.now() + state.duration * 3600 * 1000).toISOString(),
+    services: ["🚿 Premium Wash"]
+  };
+  localStorage.setItem('smartpark_active_booking', JSON.stringify(activeBookingPayload));
+
   document.getElementById('mBookingId').textContent = bookingId;
   document.getElementById('mVehicle').textContent = state.vehicleType === '2W' ? '2-Wheeler (Bike)' : '4-Wheeler (Car)';
   document.getElementById('mSlot').textContent = state.selectedSlot || 'A-01';
-  document.getElementById('mLot').textContent = lot.name;
+  document.getElementById('mLot').textContent = lot ? lot.name : "Forum Mall";
   document.getElementById('mDuration').textContent = state.duration + ' Hours';
   document.getElementById('mTotal').textContent = '₹' + cost;
 

@@ -239,29 +239,31 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <!-- MID -->
     <div class="mid-grid">
       <!-- ACTIVE BOOKING -->
-      <div class="card">
+      <div class="card" id="activeBookingCardContainer">
         <div class="card-title"><i class="fas fa-circle-dot"></i> Active Booking</div>
-        <div class="booking-card">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.875rem;">
-            <div class="slot-badge">B-204</div>
-            <span class="status-pill active"><i class="fas fa-circle" style="font-size:.5rem;"></i> ACTIVE</span>
-          </div>
-          <div class="booking-meta">
-            <div class="bm"><strong>Forum Mall</strong>Koramangala, Bangalore</div>
-            <div class="bm"><strong>₹60/hr</strong>Rate</div>
-            <div class="bm"><strong>KA-01-MH-1234</strong>Vehicle</div>
-          </div>
-          <div style="text-align:center;padding:.75rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:.75rem 0;">
-            <div class="countdown" id="countdown">01:47:22</div>
-            <div class="countdown-label">Time Remaining</div>
-          </div>
-          <div class="svc-pills" style="margin-bottom:.875rem;">
-            <span class="svc-pill">🚿 Premium Wash</span>
-            <span class="svc-pill">🛞 Tyre Check</span>
-          </div>
-          <div class="booking-actions">
-            <button class="btn-sm outline">⏱ Extend Stay</button>
-            <button class="btn-sm solid" onclick="location.href='booking.html'">Book Again</button>
+        <div id="activeBookingContent">
+          <div class="booking-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.875rem;">
+              <div class="slot-badge" id="actSlot">B-204</div>
+              <span class="status-pill active"><i class="fas fa-circle" style="font-size:.5rem;"></i> ACTIVE</span>
+            </div>
+            <div class="booking-meta">
+              <div class="bm"><strong id="actLocation">Forum Mall, Koramangala</strong>Location</div>
+              <div class="bm"><strong id="actRate">₹60/hr</strong>Rate</div>
+              <div class="bm"><strong id="actVehicle">KA-01-MH-1234</strong>Vehicle</div>
+            </div>
+            <div style="text-align:center;padding:.75rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:.75rem 0;">
+              <div class="countdown" id="countdown">01:47:22</div>
+              <div class="countdown-label">Time Remaining</div>
+            </div>
+            <div class="svc-pills" style="margin-bottom:.875rem;" id="actServices">
+              <span class="svc-pill">🚿 Premium Wash</span>
+              <span class="svc-pill">🛞 Tyre Check</span>
+            </div>
+            <div class="booking-actions">
+              <button class="btn-sm outline" onclick="alert('Stay extended by 1 hour!')">⏱ Extend Stay</button>
+              <button class="btn-sm solid" onclick="location.href='booking.html'">Book Again</button>
+            </div>
           </div>
         </div>
       </div>
@@ -339,7 +341,34 @@ tr:hover td{background:rgba(255,255,255,.02);}
       if (wStatPts) wStatPts.textContent = `${w.loyaltyPoints}`;
     }
   }
-  loadDashboardData();
+  // Dynamic Active Booking Loader
+  let secs = 6442;
+  function loadActiveBooking() {
+    let activeBooking = null;
+    try {
+      const stored = localStorage.getItem('smartpark_active_booking');
+      if (stored) activeBooking = JSON.parse(stored);
+    } catch(e){}
+
+    if (activeBooking && activeBooking.locationName) {
+      const slotEl = document.getElementById('actSlot');
+      if (slotEl) slotEl.textContent = activeBooking.slotNumber || 'B-204';
+      const locEl = document.getElementById('actLocation');
+      if (locEl) locEl.textContent = activeBooking.locationName;
+      const rateEl = document.getElementById('actRate');
+      if (rateEl) rateEl.textContent = `₹${activeBooking.ratePerHour || 60}/hr`;
+      const vehEl = document.getElementById('actVehicle');
+      if (vehEl) vehEl.textContent = activeBooking.vehiclePlate || 'KA-01-MH-1234';
+
+      if (activeBooking.endTime) {
+        const remainingMs = new Date(activeBooking.endTime).getTime() - Date.now();
+        if (remainingMs > 0) {
+          secs = Math.floor(remainingMs / 1000);
+        }
+      }
+    }
+  }
+  loadActiveBooking();
 
   // Slot map
   var types=['free','taken','free','mine','taken','free','ev','free','taken','free','free','taken','free','free','free','taken','free','free','taken','free','free','free','taken','free','free','ev','free','taken','free','free'];
@@ -350,7 +379,6 @@ tr:hover td{background:rgba(255,255,255,.02);}
   }
 
   // Countdown
-  var secs=6442;
   function tick(){
     var h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60),s=secs%60;
     const cdEl = document.getElementById('countdown');
