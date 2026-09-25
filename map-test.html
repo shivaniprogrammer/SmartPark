@@ -23,7 +23,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Inter', sans-serif;
-      background: var(--bg);
+      background: #000 !important;
       color: #fff;
       display: flex;
       min-height: 100vh;
@@ -31,7 +31,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* UNIFIED SIDEBAR */
+    /* UNIFIED STANDARD SIDEBAR */
     .sidebar {
       width: 240px;
       background: #000;
@@ -45,7 +45,7 @@
     }
     .sidebar-logo {
       padding: 0 20px 24px;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 800;
       color: #fff;
       text-decoration: none;
@@ -53,6 +53,14 @@
       align-items: center;
       gap: 10px;
       border-bottom: 1px solid var(--border);
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: var(--blue);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 16px;
     }
     .sidebar-logo span { color: var(--gold); }
     .sidebar-nav {
@@ -113,10 +121,11 @@
       display: flex;
       flex-direction: column;
       height: 100vh;
+      background: #000 !important;
     }
     .topbar {
       position: sticky; top: 0;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0,0,0,0.9);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
       padding: 0 32px;
@@ -130,12 +139,13 @@
       display: flex;
       flex: 1;
       height: calc(100vh - 64px);
+      background: #000 !important;
     }
 
-    /* BLACK DARK CONTROL PANEL */
+    /* PITCH BLACK CONTROL PANEL */
     .map-controls-panel {
       width: 340px;
-      background: #000;
+      background: #000 !important;
       border-right: 1px solid var(--border);
       padding: 20px;
       display: flex;
@@ -151,7 +161,7 @@
     .map-controls-panel h3 i { color: var(--gold); }
 
     .dark-card {
-      background: var(--surface);
+      background: rgba(255,255,255,0.04);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 16px;
@@ -195,8 +205,13 @@
       line-height: 1.5;
     }
 
-    /* LEAFLET DARK TILES & POPUP */
-    #leafletMap { flex: 1; height: 100%; background: #000; }
+    /* PITCH BLACK MAP CANVAS & TILES */
+    #leafletMap { flex: 1; height: 100%; background: #000 !important; }
+    .leaflet-tile-container img {
+      filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(110%) !important;
+    }
+    .leaflet-container { background: #000 !important; }
+
     .leaflet-popup-content-wrapper {
       background: #111 !important;
       border: 1px solid var(--border) !important;
@@ -215,7 +230,7 @@
 <!-- UNIFIED SIDEBAR -->
 <aside class="sidebar">
   <a href="index.html" class="sidebar-logo">
-    <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect x="2" y="10" width="24" height="14" rx="3" stroke="white" stroke-width="1.8"/><rect x="7" y="5" width="14" height="8" rx="2" stroke="white" stroke-width="1.5"/><circle cx="8" cy="25" r="2.5" fill="white"/><circle cx="20" cy="25" r="2.5" fill="white"/></svg>
+    <div class="logo-icon">🅿</div>
     Smart<span>Park</span>
   </a>
   <nav class="sidebar-nav">
@@ -240,7 +255,7 @@
 <!-- MAIN -->
 <div class="main">
   <div class="topbar">
-    <h1>🗺️ Interactive Parking Map (Dark Mode)</h1>
+    <h1>🗺️ Interactive Parking Map (Black Theme)</h1>
     <a href="booking.html" style="background:var(--gold);color:#000;padding:6px 14px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;">+ Book Slot</a>
   </div>
 
@@ -285,10 +300,9 @@
   function initMap() {
     map = L.map('leafletMap').setView([baseLat, baseLng], 12);
 
-    // Dark Tile Layer (CartoDB Dark Matter)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: '© OpenStreetMap contributors © CARTO | SmartPark'
+      attribution: '© OpenStreetMap contributors | SmartPark'
     }).addTo(map);
 
     const initialSpots = [
