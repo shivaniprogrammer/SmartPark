@@ -75,21 +75,36 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 28px 20px 24px;
-    border-bottom: 1px solid rgba(255,255,255,.06);
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+    text-decoration: none;
   }
 
+  .sidebar-logo span { color: var(--gold); }
+
   .logo-icon {
-    width: 36px; height: 36px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, #F59E0B, #D97706);
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    background: var(--blue);
     display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 18px; color: #000;
+    font-weight: 900; font-size: 16px; color: #fff;
     flex-shrink: 0;
   }
 
-  .logo-text { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
-  .logo-text span { color: var(--gold); }
+  /* ─── ENTRANCE ANIMATION ───────────────────────────────────── */
+  .anim-el {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.55s var(--spring), transform 0.55s var(--spring);
+  }
+
+  .anim-el.is-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
 
   .sidebar-nav {
     flex: 1;
@@ -1297,21 +1312,69 @@
 <script src="api-config.js"></script>
 <script>
 (function () {
+  // ── Make all animated cards 100% visible immediately ──
+  document.querySelectorAll('.anim-el').forEach(el => el.classList.add('is-in'));
+
   // ── User initials & session update ──
   const user = getCurrentUser();
   if (user && user.name) {
     const initials = user.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
-    document.querySelectorAll('.avatar-circle').forEach(el => el.textContent = initials);
-    const userChipName = document.querySelector('.user-chip-name');
-    if (userChipName) userChipName.textContent = user.name;
+    document.querySelectorAll('.user-avatar-sm, .top-avatar').forEach(el => el.textContent = initials);
+    const userNameSm = document.querySelector('.user-name-sm');
+    if (userNameSm) userNameSm.textContent = user.name;
+    const userEmailSm = document.querySelector('.user-email-sm');
+    if (userEmailSm && user.email) userEmailSm.textContent = user.email;
   }
+
+  // ── Quick amount buttons & Input ──
+  const amountInput = document.getElementById('amountInput');
+  if (amountInput) {
+    document.querySelectorAll('.quick-amt-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.quick-amt-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        amountInput.value = btn.dataset.amt;
+      });
+    });
+
+    amountInput.addEventListener('input', () => {
+      document.querySelectorAll('.quick-amt-btn').forEach(b => b.classList.remove('selected'));
+    });
+  }
+
+  // ── Payment method selection ──
+  document.querySelectorAll('.pay-method-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.pay-method-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+    });
+  });
+
+  // ── Modal helpers ──
+  const modal = document.getElementById('successModal');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalDesc = document.getElementById('modalDesc');
+
+  function showModal(title, desc) {
+    if (modalTitle) modalTitle.textContent = title;
+    if (modalDesc) modalDesc.textContent = desc;
+    if (modal) modal.classList.add('open');
+  }
+
+  function closeModal() {
+    if (modal) modal.classList.remove('open');
+  }
+
+  const modalOkBtn = document.getElementById('modalOkBtn');
+  if (modalOkBtn) modalOkBtn.addEventListener('click', closeModal);
+  if (modal) modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
   // ── Dynamic Wallet Data Fetch ──
   async function loadWalletData() {
     const res = await apiRequest('/wallet');
     if (res.success && res.data) {
       const w = res.data;
-      const balNum = document.querySelector('.balance-number');
+      const balNum = document.querySelector('.balance-amount');
       if (balNum) balNum.textContent = `₹${(w.balance || 850).toLocaleString('en-IN')}`;
       const ptsVal = document.querySelector('.pts-value');
       if (ptsVal) ptsVal.textContent = (w.loyaltyPoints || 2450).toLocaleString('en-IN');
@@ -1319,35 +1382,37 @@
   }
   loadWalletData();
 
-  // ── Add Money button via API ────────────────────────────────────────
-  document.getElementById('addMoneyBtn').addEventListener('click', async () => {
-    const val = parseFloat(amountInput.value);
-    if (!val || val <= 0) {
-      amountInput.focus();
-      amountInput.style.borderColor = 'rgba(239,68,68,.6)';
-      setTimeout(() => amountInput.style.borderColor = '', 1400);
-      return;
-    }
+  // ── Add Money button via API ──
+  const addBtn = document.getElementById('addMoneyBtn');
+  if (addBtn) {
+    addBtn.addEventListener('click', async () => {
+      const val = parseFloat(amountInput.value);
+      if (!val || val <= 0) {
+        amountInput.focus();
+        amountInput.style.borderColor = 'rgba(239,68,68,.6)';
+        setTimeout(() => amountInput.style.borderColor = '', 1400);
+        return;
+      }
 
-    const apiRes = await apiRequest('/wallet/add-funds', 'POST', { amount: val });
-    if (apiRes.success && apiRes.data) {
-      const balNum = document.querySelector('.balance-number');
-      if (balNum) balNum.textContent = `₹${apiRes.data.balance.toLocaleString('en-IN')}`;
-      const ptsVal = document.querySelector('.pts-value');
-      if (ptsVal && apiRes.data.loyaltyPoints) ptsVal.textContent = apiRes.data.loyaltyPoints.toLocaleString('en-IN');
-    }
+      const apiRes = await apiRequest('/wallet/add-funds', 'POST', { amount: val });
+      if (apiRes.success && apiRes.data) {
+        const balNum = document.querySelector('.balance-amount');
+        if (balNum) balNum.textContent = `₹${(apiRes.data.balance || 850).toLocaleString('en-IN')}`;
+        const ptsVal = document.querySelector('.pts-value');
+        if (ptsVal && apiRes.data.loyaltyPoints) ptsVal.textContent = apiRes.data.loyaltyPoints.toLocaleString('en-IN');
+      }
 
-    showModal(
-      `₹${val.toLocaleString('en-IN')} Added Successfully!`,
-      `Your SmartPark Wallet has been credited with ₹${val.toLocaleString('en-IN')}. Loyalty points have been added to your account.`
-    );
-    amountInput.value = '';
-    document.querySelectorAll('.quick-amt-btn').forEach(b => b.classList.remove('selected'));
-  });
+      showModal(
+        `₹${val.toLocaleString('en-IN')} Added Successfully!`,
+        `Your SmartPark Wallet has been credited with ₹${val.toLocaleString('en-IN')}. Loyalty points have been added to your account.`
+      );
+      amountInput.value = '';
+      document.querySelectorAll('.quick-amt-btn').forEach(b => b.classList.remove('selected'));
+    });
+  }
 
-  // ── Filter chips ────────────────────────────────────────────
+  // ── Filter chips ──
   const txnRows = document.querySelectorAll('#txnList .txn-row');
-
   document.querySelectorAll('.filter-chip').forEach(chip => {
     chip.addEventListener('click', () => {
       document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
@@ -1363,37 +1428,40 @@
     });
   });
 
-  // ── Redeem buttons ──────────────────────────────────────────
+  // ── Redeem buttons ──
   document.querySelectorAll('.btn-redeem.active').forEach(btn => {
     btn.addEventListener('click', () => {
       const reward = btn.dataset.reward;
       showModal(
         'Reward Redeemed! 🎉',
-        `You've successfully redeemed "${reward}". It will be applied to your next eligible transaction. Check your email for details.`
+        `You've successfully redeemed "${reward}". It will be applied to your next eligible transaction.`
       );
     });
   });
 
-  // ── Copy referral code ──────────────────────────────────────
+  // ── Copy referral code ──
   const toast = document.getElementById('toast');
-
   function showToast(msg) {
-    toast.textContent = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2200);
+    if (toast) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
+    }
   }
 
-  document.getElementById('copyBtn').addEventListener('click', () => {
-    navigator.clipboard.writeText('RAHUL200').then(() => {
-      const btnText = document.getElementById('copyBtnText');
-      btnText.textContent = 'Copied!';
-      setTimeout(() => btnText.textContent = 'Copy', 2000);
-      showToast('✅ Referral code copied to clipboard!');
-    }).catch(() => {
-      showToast('✅ Code: RAHUL200');
+  const copyBtn = document.getElementById('copyBtn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText('RAHUL200').then(() => {
+        const btnText = document.getElementById('copyBtnText');
+        if (btnText) btnText.textContent = 'Copied!';
+        setTimeout(() => { if (btnText) btnText.textContent = 'Copy'; }, 2000);
+        showToast('✅ Referral code copied to clipboard!');
+      }).catch(() => {
+        showToast('✅ Code: RAHUL200');
+      });
     });
-  });
-
+  }
 })();
 </script>
 </body>
