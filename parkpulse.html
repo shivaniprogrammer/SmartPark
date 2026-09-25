@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ParkPulse.ai — Autonomous Smart Parking Infrastructure</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='12' width='24' height='14' rx='3' fill='none' stroke='%23fff' stroke-width='2'/%3E%3Ccircle cx='10' cy='26' r='3' fill='%23fff'/%3E%3Ccircle cx='22' cy='26' r='3' fill='%23fff'/%3E%3Cpath d='M4 18h24' stroke='%23fff' stroke-width='1.5'/%3E%3Ccircle cx='16' cy='7' r='3' fill='none' stroke='%23fff' stroke-width='1.5'/%3E%3Cline x1='16' y1='10' x2='16' y2='12' stroke='%23fff' stroke-width='1.5'/%3E%3C/svg%3E"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet"/>
+<style>
+/* ── ANTI-FLASH ── */
+html,body{background:#000000!important;color:#ffffff;}
+
+/* ── TOKENS ── */
+:root{
+  --bg:#000000;
+  --text:#ffffff;
+  --muted:#9a9a9a;
+  --stat:#d8d8d8;
+  --border:rgba(255,255,255,0.16);
+  --pill-grad:linear-gradient(105deg,#050505 0%,#2a2a2a 48%,#4a4a4a 100%);
+  --pill-border:rgba(198,198,198,0.55);
+  --ease-spring:cubic-bezier(0.16,1,0.3,1);
+}
+
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+a{text-decoration:none;color:inherit;}
+button{font-family:inherit;cursor:pointer;border:none;outline:none;}
+em{font-style:italic;}
+
+/* ── BASE ── */
+html{font-size:16px;}
+body{
+  font-family:"Inter",system-ui,-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  min-height:100dvh;
+  overflow-x:hidden;
+}
+
+/* Desktop: lock to single viewport */
+@media(min-width:901px){
+  body{overflow:hidden;height:100vh;height:100dvh;}
+}
+
+/* ── BACKGROUND VIDEO LAYER ── */
+.bg-layer{
+  position:fixed;inset:0;
+  z-index:0;
+  overflow:hidden;
+}
+.bg-layer video,.bg-layer img{
+  width:100%;height:100%;
+  object-fit:cover;
+  opacity:0.38;
+  filter:saturate(0.6) brightness(0.6);
+}
+/* Parking lot grid pattern as pure CSS fallback */
+.bg-canvas{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px),
+    radial-gradient(ellipse 120% 80% at 60% 40%,#0d1a2e 0%,#000 70%);
+  background-size:72px 72px, 72px 72px, 100% 100%;
+  animation:bgDrift 30s ease-in-out infinite alternate;
+}
+@keyframes bgDrift{
+  from{background-position:0 0,0 0,center}
+  to{background-position:36px 36px,36px 36px,center}
+}
+/* Car shapes floating subtly */
+.bg-car{
+  position:absolute;
+  opacity:0.07;
+  animation:carFloat linear infinite;
+}
+.bg-car:nth-child(2){left:12%;top:30%;width:110px;animation-duration:22s;animation-delay:-5s;}
+.bg-car:nth-child(3){left:72%;top:55%;width:80px;animation-duration:28s;animation-delay:-12s;}
+.bg-car:nth-child(4){left:40%;top:18%;width:95px;animation-duration:18s;animation-delay:-8s;}
+@keyframes carFloat{
+  0%{transform:translateX(-60px) translateY(0);}
+  50%{transform:translateX(60px) translateY(-20px);}
+  100%{transform:translateX(-60px) translateY(0);}
+}
+
+/* Vignette scrim */
+.bg-layer::after{
+  content:"";
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 100%,rgba(0,0,0,0.92) 0%,transparent 60%),
+    radial-gradient(ellipse 100% 40% at 50% 0%,rgba(0,0,0,0.7) 0%,transparent 55%),
+    linear-gradient(to bottom,rgba(0,0,0,0.4) 0%,rgba(0,0,0,0) 30%,rgba(0,0,0,0.5) 80%,rgba(0,0,0,0.95) 100%);
+  pointer-events:none;
+}
+
+/* ── NOISE / GRAIN LAYER ── */
+.noise{
+  position:fixed;inset:0;
+  z-index:100;
+  pointer-events:none;
+  opacity:0.032;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px 200px;
+  animation:grainShift 0.15s steps(1) infinite;
+}
+@keyframes grainShift{
+  0%{background-position:0 0;}25%{background-position:-30px 15px;}
+  50%{background-position:20px -10px;}75%{background-position:-10px 25px;}
+}
+
+/* ── PAGE CONTAINER ── */
+.page{
+  position:relative;z-index:1;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  min-height:100vh;
+  min-height:100dvh;
+}
+
+/* ══════════════════════════════
+   HEADER
+══════════════════════════════ */
+.header{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  padding:22px 40px 10px;
+  z-index:50;
+  position:relative;
+}
+
+/* Logo */
+.logo{
+  display:flex;align-items:center;gap:10px;
+  font-size:17px;font-weight:700;letter-spacing:-0.02em;
+  white-space:nowrap;
+}
+.logo-mark{flex-shrink:0;}
+.logo-name{font-size:17px;font-weight:700;letter-spacing:-0.025em;}
+.logo-name span{font-weight:400;opacity:0.75;}
+
+/* Nav pills */
+.nav{display:flex;align-items:center;gap:6px;}
+.nav-pill{
+  position:relative;overflow:hidden;
+  height:40px;padding:0 18px;
+  border-radius:7px;
+  background:var(--pill-grad);
+  border:1px solid var(--pill-border);
+  color:#f3f3f3;
+  font-size:13.5px;font-weight:500;
+  letter-spacing:-0.01em;
+  white-space:nowrap;
+  transition:border-color 0.25s, box-shadow 0.25s;
+  cursor:pointer;
+}
+.nav-pill::before{
+  content:"";
+  position:absolute;inset:0;
+  background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,0.14) 50%,transparent 65%);
+  transform:translateX(-100%);
+  transition:transform 0.5s var(--ease-spring);
+}
+.nav-pill:hover::before{transform:translateX(100%);}
+.nav-pill:hover{
+  border-color:rgba(255,255,255,0.5);
+  box-shadow:0 0 18px rgba(255,255,255,0.1);
+}
+
+/* Right CTA group */
+.header-right{
+  display:flex;align-items:center;justify-content:flex-end;gap:10px;
+}
+.btn-console,.btn-deploy{
+  height:40px;padding:0 20px;
+  border-radius:9px;
+  font-size:13.5px;font-weight:600;
+  letter-spacing:-0.01em;
+  transition:all 0.25s var(--ease-spring);
+  white-space:nowrap;
+}
+.btn-console{
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.22);
+  color:#e8e8e8;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+.btn-console:hover{
+  background:rgba(255,255,255,0.12);
+  border-color:rgba(255,255,255,0.4);
+}
+.btn-deploy{
+  background:linear-gradient(135deg,#e8e8e8 0%,#ffffff 50%,#d0d0d0 100%);
+  color:#000;
+  border:1px solid rgba(255,255,255,0.5);
+  box-shadow:0 0 20px rgba(255,255,255,0.12);
+}
+.btn-deploy:hover{
+  box-shadow:0 0 32px rgba(180,210,255,0.35),0 0 60px rgba(255,255,255,0.12);
+  transform:translateY(-1px) scale(1.02);
+}
+
+/* Burger */
+.burger{
+  display:none;
+  flex-direction:column;gap:5px;
+  background:transparent;
+  border:none;cursor:pointer;padding:6px;
+  z-index:200;
+}
+.burger span{
+  display:block;width:24px;height:2px;
+  background:#fff;border-radius:2px;
+  transition:all 0.3s ease;
+}
+.burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.burger.open span:nth-child(2){opacity:0;}
+.burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+@media(max-width:900px){
+  .header{grid-template-columns:1fr auto;padding:18px 24px 10px;}
+  .nav,.header-right .btn-console,.header-right .btn-deploy{display:none;}
+  .header-right{justify-content:flex-end;}
+  .burger{display:flex;}
+}
+
+/* ── MOBILE MENU OVERLAY ── */
+.mobile-menu{
+  display:none;
+  position:fixed;inset:0;
+  z-index:150;
+  background:rgba(0,0,0,0.85);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:16px;
+  opacity:0;
+  transform:scale(1.04);
+  transition:opacity 0.3s ease,transform 0.3s ease;
+}
+.mobile-menu.visible{
+  display:flex;
+  opacity:1;
+  transform:scale(1);
+}
+.mobile-menu .nav-pill{font-size:16px;height:52px;padding:0 28px;width:220px;text-align:center;justify-content:center;display:flex;align-items:center;}
+.mobile-menu .btn-deploy{height:52px;padding:0 32px;font-size:16px;margin-top:12px;}
+
+/* ══════════════════════════════
+   HERO
+══════════════════════════════ */
+.hero{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  padding:8px 24px 85px;
+  text-align:center;
+}
+
+/* Badge */
+.badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 16px 7px 12px;
+  border-radius:5px;
+  background:linear-gradient(110deg,#0c0c0c 0%,#1e1e1e 50%,#141414 100%);
+  border:1px solid rgba(255,255,255,0.18);
+  font-size:12.5px;font-weight:500;
+  letter-spacing:0.01em;color:#c8c8c8;
+  margin-bottom:24px;
+  box-shadow:0 2px 20px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.badge-icon{filter:drop-shadow(0 0 4px rgba(200,200,255,0.5));}
+
+/* Headline */
+.headline{
+  font-size:clamp(36px,5vw,56px);
+  font-weight:500;
+  line-height:1.12;
+  letter-spacing:-0.045em;
+  margin-bottom:20px;
+  max-width:780px;
+}
+.hl-mask{overflow:hidden;display:block;}
+.hl-inner{display:block;}
+.headline em{
+  font-family:"Instrument Serif","Times New Roman",serif;
+  font-style:italic;
+  font-weight:400;
+  color:var(--muted);
+}
+
+/* Lede */
+.lede{
+  max-width:470px;
+  color:var(--muted);
+  font-size:15.5px;
+  line-height:1.55;
+  margin-bottom:32px;
+}
+
+/* Action group */
+.actions{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;
+}
+.btn-hero-primary{
+  position:relative;overflow:hidden;
+  height:48px;padding:0 28px;
+  border-radius:10px;
+  background:linear-gradient(145deg,#e0e0e0 0%,#ffffff 45%,#c8c8c8 100%);
+  color:#000;
+  font-size:14.5px;font-weight:700;
+  letter-spacing:-0.015em;
+  border:1px solid rgba(255,255,255,0.6);
+  box-shadow:0 0 24px rgba(255,255,255,0.1),0 4px 16px rgba(0,0,0,0.4);
+  transition:all 0.28s var(--ease-spring);
+}
+.btn-hero-primary::before{
+  content:"";
+  position:absolute;inset:0;
+  background:linear-gradient(120deg,transparent 30%,rgba(180,220,255,0.35) 50%,transparent 70%);
+  transform:translateX(-120%);
+  transition:transform 0.55s var(--ease-spring);
+}
+.btn-hero-primary:hover::before{transform:translateX(120%);}
+.btn-hero-primary:hover{
+  box-shadow:0 0 40px rgba(140,190,255,0.35),0 0 60px rgba(255,255,255,0.12),0 6px 24px rgba(0,0,0,0.3);
+  transform:translateY(-2px) scale(1.03);
+}
+.btn-hero-secondary{
+  height:48px;padding:0 26px;
+  border-radius:10px;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.22);
+  color:#e8e8e8;
+  font-size:14.5px;font-weight:600;
+  letter-spacing:-0.015em;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  display:inline-flex;align-items:center;gap:9px;
+  transition:all 0.25s var(--ease-spring);
+}
+.btn-hero-secondary:hover{
+  background:rgba(255,255,255,0.12);
+  border-color:rgba(255,255,255,0.36);
+  box-shadow:0 0 20px rgba(255,255,255,0.08);
+}
+.play-icon{flex-shrink:0;}
+
+/* ══════════════════════════════
+   FOOTER STATS DOCK
+══════════════════════════════ */
+.stats-dock{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 72px 36px;
+  color:var(--stat);
+  font-size:13.5px;
+  font-weight:450;
+  letter-spacing:-0.01em;
+  gap:16px;
+}
+.stat-item{
+  display:flex;align-items:center;gap:11px;
+  white-space:nowrap;
+}
+.stat-icon{flex-shrink:0;opacity:0.75;}
+
+@media(max-width:900px){
+  .stats-dock{
+    flex-direction:column;align-items:flex-start;
+    padding:0 24px 36px;gap:14px;
+  }
+  .hero{padding:8px 20px 28px;}
+  .headline{font-size:clamp(30px,8vw,44px);}
+}
+@media(max-width:600px){
+  .stats-dock{display:none;}
+  .hero{padding-bottom:40px;}
+}
+
+/* ══════════════════════════════
+   ANIMATIONS
+══════════════════════════════ */
+/* Initial hidden states */
+.anim-badge,
+.anim-hl1,.anim-hl2,.anim-serif,
+.anim-lede,
+.anim-cta1,.anim-cta2,
+.anim-stat1,.anim-stat2,.anim-stat3{
+  opacity:0;
+}
+.anim-badge{transform:scale(0.88);}
+.anim-hl1 .hl-inner{transform:translateY(100%);}
+.anim-hl2 .hl-inner{transform:translateY(100%);}
+.anim-serif{filter:blur(8px);}
+.anim-lede{transform:translateY(16px);}
+.anim-cta1{transform:scale(0.92) translateX(-10px);}
+.anim-cta2{transform:scale(0.92) translateX(10px);}
+.anim-stat1,.anim-stat2,.anim-stat3{transform:translateY(18px);}
+
+/* Resolved state */
+.is-in.anim-badge{
+  animation:popBadge 0.7s var(--ease-spring) 0.22s both;
+}
+.is-in.anim-hl1 .hl-inner{
+  animation:slideUp 0.75s var(--ease-spring) 0.42s both;
+}
+.is-in.anim-hl2 .hl-inner{
+  animation:slideUp 0.75s var(--ease-spring) 0.62s both;
+}
+.is-in.anim-serif{
+  animation:blurIn 0.65s var(--ease-spring) 0.72s both;
+}
+.is-in.anim-lede{
+  animation:fadeUp 0.7s var(--ease-spring) 0.82s both;
+}
+.is-in.anim-cta1{
+  animation:ctaLeft 0.65s var(--ease-spring) 0.96s both;
+}
+.is-in.anim-cta2{
+  animation:ctaRight 0.65s var(--ease-spring) 1.10s both;
+}
+.is-in.anim-stat1{animation:statUp 0.6s var(--ease-spring) 1.12s both;}
+.is-in.anim-stat2{animation:statUp 0.6s var(--ease-spring) 1.28s both;}
+.is-in.anim-stat3{animation:statUp 0.6s var(--ease-spring) 1.44s both;}
+
+@keyframes popBadge{
+  from{opacity:0;transform:scale(0.88);}
+  to{opacity:1;transform:scale(1);}
+}
+@keyframes slideUp{
+  from{transform:translateY(100%);opacity:0;}
+  to{transform:translateY(0);opacity:1;}
+}
+@keyframes blurIn{
+  from{opacity:0;filter:blur(8px);}
+  to{opacity:1;filter:blur(0);}
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(16px);}
+  to{opacity:1;transform:translateY(0);}
+}
+@keyframes ctaLeft{
+  from{opacity:0;transform:scale(0.92) translateX(-10px);}
+  to{opacity:1;transform:scale(1) translateX(0);}
+}
+@keyframes ctaRight{
+  from{opacity:0;transform:scale(0.92) translateX(10px);}
+  to{opacity:1;transform:scale(1) translateX(0);}
+}
+@keyframes statUp{
+  from{opacity:0;transform:translateY(18px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* Reduced motion override */
+@media(prefers-reduced-motion:reduce){
+  .anim-badge,.anim-hl1,.anim-hl2,.anim-serif,
+  .anim-lede,.anim-cta1,.anim-cta2,
+  .anim-stat1,.anim-stat2,.anim-stat3{
+    opacity:1!important;
+    transform:none!important;
+    filter:none!important;
+    animation:none!important;
+  }
+  .anim-hl1 .hl-inner,.anim-hl2 .hl-inner{
+    transform:none!important;
+    opacity:1!important;
+    animation:none!important;
+  }
+}
+</style>
+</head>
+<body style="background:#000;color:#fff">
+
+<!-- NOISE GRAIN -->
+<div class="noise" aria-hidden="true"></div>
+
+<!-- BG LAYER -->
+<div class="bg-layer" aria-hidden="true">
+  <div class="bg-canvas"></div>
+  <!-- floating car SVGs -->
+  <svg class="bg-car" viewBox="0 0 120 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="10" y="20" width="100" height="22" rx="5" fill="white"/>
+    <rect x="25" y="10" width="60" height="14" rx="4" fill="white"/>
+    <circle cx="30" cy="44" r="7" fill="black" stroke="white" stroke-width="2"/>
+    <circle cx="90" cy="44" r="7" fill="black" stroke="white" stroke-width="2"/>
+  </svg>
+  <svg class="bg-car" viewBox="0 0 120 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="10" y="20" width="100" height="22" rx="5" fill="white"/>
+    <rect x="28" y="10" width="55" height="14" rx="4" fill="white"/>
+    <circle cx="30" cy="44" r="7" fill="black" stroke="white" stroke-width="2"/>
+    <circle cx="90" cy="44" r="7" fill="black" stroke="white" stroke-width="2"/>
+  </svg>
+  <svg class="bg-car" viewBox="0 0 120 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="10" y="20" width="100" height="22" rx="5" fill="white"/>
+    <rect x="22" y="10" width="65" height="14" rx="4" fill="white"/>
+    <circle cx="30" cy="44" r="7" fill="black" stroke="white" stroke-width="2"/>
+    <circle cx="90" cy="44" r="7" fill="black" stroke="white" stroke-width="2"/>
+  </svg>
+</div>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- ── HEADER ── -->
+  <header class="header" role="banner">
+
+    <!-- Logo -->
+    <a href="/" class="logo" aria-label="ParkPulse.ai home">
+      <!-- Interconnected parking node geometry -->
+      <svg class="logo-mark" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="16" cy="16" r="3.5" fill="white"/>
+        <circle cx="6" cy="8" r="2.5" fill="white" opacity="0.7"/>
+        <circle cx="26" cy="8" r="2.5" fill="white" opacity="0.7"/>
+        <circle cx="6" cy="24" r="2.5" fill="white" opacity="0.7"/>
+        <circle cx="26" cy="24" r="2.5" fill="white" opacity="0.7"/>
+        <line x1="8" y1="9.5" x2="13.5" y2="14.5" stroke="white" stroke-width="1.2" opacity="0.5"/>
+        <line x1="24" y1="9.5" x2="18.5" y2="14.5" stroke="white" stroke-width="1.2" opacity="0.5"/>
+        <line x1="8" y1="22.5" x2="13.5" y2="17.5" stroke="white" stroke-width="1.2" opacity="0.5"/>
+        <line x1="24" y1="22.5" x2="18.5" y2="17.5" stroke="white" stroke-width="1.2" opacity="0.5"/>
+        <rect x="3" y="22" width="6" height="4" rx="1" fill="white" opacity="0.35"/>
+        <rect x="23" y="22" width="6" height="4" rx="1" fill="white" opacity="0.35"/>
+      </svg>
+      <span class="logo-name">ParkPulse<span>.ai</span></span>
+    </a>
+
+    <!-- Nav pills -->
+    <nav class="nav" role="navigation" aria-label="Primary">
+      <button class="nav-pill">Live Occupancy</button>
+      <button class="nav-pill">Smart Routing</button>
+      <button class="nav-pill">Fleet &amp; APIs</button>
+      <button class="nav-pill">Pricing</button>
+    </nav>
+
+    <!-- Right CTAs + burger -->
+    <div class="header-right">
+      <button class="btn-console">Access Console</button>
+      <button class="btn-deploy">Deploy Facility</button>
+      <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ── HERO ── -->
+  <main class="hero" role="main">
+
+    <!-- Badge -->
+    <div class="badge anim-badge" role="doc-subtitle">
+      <!-- Sparkle SVG -->
+      <svg class="badge-icon" width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M7.5 0L8.64 5.36L14 7.5L8.64 9.64L7.5 15L6.36 9.64L1 7.5L6.36 5.36L7.5 0Z" fill="white" opacity="0.9"/>
+        <path d="M13 1L13.5 3.5L16 4L13.5 4.5L13 7L12.5 4.5L10 4L12.5 3.5L13 1Z" fill="white" opacity="0.55" transform="scale(0.6) translate(8,2)"/>
+      </svg>
+      Autonomous Parking Intelligence
+    </div>
+
+    <!-- Headline -->
+    <h1 class="headline">
+      <span class="hl-mask anim-hl1">
+        <span class="hl-inner">Route &amp; automate <em class="anim-serif">AI agents</em> across</span>
+      </span>
+      <span class="hl-mask anim-hl2">
+        <span class="hl-inner">enterprise parking facilities.</span>
+      </span>
+    </h1>
+
+    <!-- Lede -->
+    <p class="lede anim-lede">
+      Eliminate barriers and gate friction with real-time computer vision,
+      license plate intelligence, and dynamic slot allocation.
+    </p>
+
+    <!-- CTAs -->
+    <div class="actions">
+      <button class="btn-hero-primary anim-cta1">Deploy System</button>
+      <button class="btn-hero-secondary anim-cta2">
+        <!-- Play icon -->
+        <svg class="play-icon" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="9" cy="9" r="8.25" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+          <path d="M7.2 6.3L12.3 9L7.2 11.7V6.3Z" fill="white"/>
+        </svg>
+        Watch Live Feed
+      </button>
+    </div>
+  </main>
+
+  <!-- ── FOOTER STATS DOCK ── -->
+  <footer class="stats-dock" role="contentinfo" aria-label="Platform statistics">
+
+    <!-- Stat 1: vehicles routed -->
+    <div class="stat-item anim-stat1">
+      <svg class="stat-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="1" y="7" width="7" height="4" rx="2" stroke="#d8d8d8" stroke-width="1.4"/>
+        <rect x="12" y="7" width="7" height="4" rx="2" stroke="#d8d8d8" stroke-width="1.4"/>
+        <line x1="8" y1="9" x2="12" y2="9" stroke="#d8d8d8" stroke-width="1.4"/>
+        <circle cx="4.5" cy="14" r="1.5" fill="#d8d8d8" opacity="0.6"/>
+        <circle cx="15.5" cy="14" r="1.5" fill="#d8d8d8" opacity="0.6"/>
+      </svg>
+      <span>8.6M+ vehicles routed autonomously</span>
+    </div>
+
+    <!-- Stat 2: congestion reduction -->
+    <div class="stat-item anim-stat2">
+      <svg class="stat-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="2" y="8" width="16" height="7" rx="2" stroke="#d8d8d8" stroke-width="1.4"/>
+        <path d="M5 8V6a5 5 0 0110 0v2" stroke="#d8d8d8" stroke-width="1.4" stroke-linecap="round"/>
+        <path d="M8 12l2-2 2 2" stroke="#d8d8d8" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>94% reduction in entry congestion</span>
+    </div>
+
+    <!-- Stat 3: garages live -->
+    <div class="stat-item anim-stat3">
+      <svg class="stat-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="10" cy="6" r="3" stroke="#d8d8d8" stroke-width="1.4"/>
+        <circle cx="4" cy="9" r="2" stroke="#d8d8d8" stroke-width="1.3" opacity="0.7"/>
+        <circle cx="16" cy="9" r="2" stroke="#d8d8d8" stroke-width="1.3" opacity="0.7"/>
+        <path d="M2 17c0-2.5 1.8-4 4-4" stroke="#d8d8d8" stroke-width="1.3" stroke-linecap="round" opacity="0.7"/>
+        <path d="M18 17c0-2.5-1.8-4-4-4" stroke="#d8d8d8" stroke-width="1.3" stroke-linecap="round" opacity="0.7"/>
+        <path d="M6 17c0-2.8 1.8-4.5 4-4.5s4 1.7 4 4.5" stroke="#d8d8d8" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      <span>320+ commercial garages live</span>
+    </div>
+
+  </footer>
+</div><!-- /.page -->
+
+<!-- MOBILE MENU OVERLAY -->
+<div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+  <button class="nav-pill">Live Occupancy</button>
+  <button class="nav-pill">Smart Routing</button>
+  <button class="nav-pill">Fleet &amp; APIs</button>
+  <button class="nav-pill">Pricing</button>
+  <button class="btn-deploy" style="margin-top:12px;">Deploy Facility</button>
+</div>
+
+<!-- ── IIFE SCRIPT ── -->
+<script>
+(function(){
+  'use strict';
+
+  /* ── Utility: force-resolve all animated elements ── */
+  function forceResolve(){
+    var targets = document.querySelectorAll(
+      '.anim-badge,.anim-hl1,.anim-hl2,.anim-serif,.anim-lede,.anim-cta1,.anim-cta2,.anim-stat1,.anim-stat2,.anim-stat3'
+    );
+    targets.forEach(function(el){
+      el.classList.add('is-in');
+      el.style.opacity = '';
+      el.style.transform = '';
+      el.style.filter = '';
+    });
+    /* also resolve inner hl-inner spans */
+    document.querySelectorAll('.hl-inner').forEach(function(el){
+      el.style.transform = '';
+      el.style.opacity = '';
+    });
+  }
+
+  /* ── rAF double-check resilience ── */
+  var startTime = Date.now();
+  var triggered = false;
+
+  function kickAnimations(){
+    if(triggered) return;
+    triggered = true;
+    /* Respect prefers-reduced-motion */
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduced){
+      forceResolve();
+      return;
+    }
+    forceResolve(); /* adds .is-in which triggers CSS keyframes */
+  }
+
+  /* Primary trigger: double rAF for reliable first paint */
+  if(typeof requestAnimationFrame === 'function'){
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        kickAnimations();
+      });
+    });
+  } else {
+    /* Fallback: setTimeout */
+    setTimeout(kickAnimations, 50);
+  }
+
+  /* Safety net: if still not resolved after 2s, force it */
+  setTimeout(function(){
+    if(!triggered) kickAnimations();
+  }, 2000);
+
+  /* ── Mobile menu toggle ── */
+  var burger    = document.getElementById('burger');
+  var mobileMenu= document.getElementById('mobileMenu');
+  var isOpen    = false;
+
+  function openMenu(){
+    isOpen = true;
+    mobileMenu.classList.add('visible');
+    burger.classList.add('open');
+    burger.setAttribute('aria-expanded','true');
+    document.body.style.overflow = 'hidden';
+    mobileMenu.querySelector('button') && mobileMenu.querySelector('button').focus();
+  }
+
+  function closeMenu(){
+    isOpen = false;
+    mobileMenu.classList.remove('visible');
+    burger.classList.remove('open');
+    burger.setAttribute('aria-expanded','false');
+    document.body.style.overflow = '';
+    burger.focus();
+  }
+
+  if(burger && mobileMenu){
+    burger.addEventListener('click', function(){
+      isOpen ? closeMenu() : openMenu();
+    });
+
+    /* Close on Escape */
+    document.addEventListener('keydown', function(e){
+      if(isOpen && (e.key === 'Escape' || e.keyCode === 27)) closeMenu();
+    });
+
+    /* Auto-close on resize to desktop */
+    var resizeTimer;
+    window.addEventListener('resize', function(){
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function(){
+        if(window.innerWidth > 900 && isOpen) closeMenu();
+      }, 80);
+    });
+
+    /* Close when clicking outside the menu buttons area */
+    mobileMenu.addEventListener('click', function(e){
+      if(e.target === mobileMenu) closeMenu();
+    });
+  }
+
+  /* ── Nav pill ripple / active press feedback ── */
+  document.querySelectorAll('.nav-pill, .btn-hero-primary, .btn-hero-secondary, .btn-deploy, .btn-console').forEach(function(btn){
+    btn.addEventListener('mousedown', function(){
+      btn.style.transform = 'scale(0.97)';
+    });
+    btn.addEventListener('mouseup', function(){
+      btn.style.transform = '';
+    });
+    btn.addEventListener('mouseleave', function(){
+      btn.style.transform = '';
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
