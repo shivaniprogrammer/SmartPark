@@ -7,12 +7,67 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900&display=swap" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
 <style>
+
 html,body{background:#000!important;color:#fff;}
 :root{--bg:#000;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.1);--muted:#9a9a9a;--gold:#F59E0B;--blue:#2563EB;--green:#10B981;--red:#EF4444;--spring:cubic-bezier(0.16,1,0.3,1);}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 a{text-decoration:none;color:inherit;}
 body{font-family:"Inter",system-ui,sans-serif;background:#000;display:flex;-webkit-font-smoothing:antialiased;}
 
+
+.notification-panel {
+    display: none;
+    position: absolute;
+    top: 65px;
+    right: 80px;
+    width: 330px;
+    background: #111;
+    color: white;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 15px;
+    z-index: 9999;
+    box-shadow: 0 10px 30px rgba(0,0,0,.5);
+}
+
+.notification-panel.show {
+    display: block;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #333;
+}
+
+.notification-header button {
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.notification-item {
+    padding: 12px 5px;
+    border-bottom: 1px solid #333;
+}
+
+.notification-item strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.notification-item small {
+    color: #888;
+}
+
+.no-notifications {
+    padding: 20px 5px;
+    text-align: center;
+    color: #888;
+}
 /* NOISE */
 .noise{position:fixed;inset:0;z-index:100;pointer-events:none;opacity:.022;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px 200px;animation:grain .14s steps(1) infinite;}
 @keyframes grain{0%{background-position:0 0;}25%{background-position:-28px 14px;}50%{background-position:18px -12px;}75%{background-position:-12px 22px;}}
@@ -192,7 +247,23 @@ tr:hover td{background:rgba(255,255,255,.02);}
   <div class="topbar">
     <div class="search"><i class="fas fa-magnifying-glass" style="color:rgba(255,255,255,.3);font-size:.85rem;"></i><input placeholder="Search locations, bookings..."/></div>
     <div class="topbar-right">
-      <div class="notif-btn"><i class="fas fa-bell" style="font-size:.85rem;color:rgba(255,255,255,.6);"></i><div class="badge-dot"></div></div>
+<div class="notif-btn" onclick="toggleNotifications()">
+    <i class="fas fa-bell" style="font-size:.85rem;color:rgba(255,255,255,.6);"></i>
+    <div class="badge-dot" id="notificationBadge"></div>
+</div>
+
+<div id="notificationPanel" class="notification-panel">
+    <div class="notification-header">
+        <strong>Notifications</strong>
+        <button onclick="clearNotifications()">Clear</button>
+    </div>
+
+    <div id="notificationList">
+        <div class="no-notifications">
+            No new notifications
+        </div>
+    </div>
+</div>
       <div class="profile-btn"><div class="avatar" style="width:28px;height:28px;font-size:.72rem;">RS</div><span>Rahul S.</span><i class="fas fa-chevron-down" style="font-size:.65rem;color:var(--muted);"></i></div>
     </div>
   </div>
@@ -337,6 +408,67 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
 <script src="api-config.js"></script>
 <script>
+
+
+let smartParkNotifications = [];
+
+function showParkingNotification(title, message) {
+
+    smartParkNotifications.unshift({
+        title: title,
+        message: message,
+        time: new Date().toLocaleTimeString()
+    });
+
+    if (Notification.permission === "granted") {
+        new Notification(title, {
+            body: message
+        });
+    }
+
+    updateNotificationPanel();
+}
+
+function toggleNotifications() {
+    const panel = document.getElementById("notificationPanel");
+
+    panel.classList.toggle("show");
+
+    updateNotificationPanel();
+}
+
+function updateNotificationPanel() {
+
+    const list = document.getElementById("notificationList");
+    const badge = document.getElementById("notificationBadge");
+
+    if (smartParkNotifications.length === 0) {
+        list.innerHTML = `
+            <div class="no-notifications">
+                No new notifications
+            </div>
+        `;
+
+        badge.style.display = "none";
+        return;
+    }
+
+    badge.style.display = "block";
+
+    list.innerHTML = smartParkNotifications.map(notification => `
+        <div class="notification-item">
+            <strong>${notification.title}</strong>
+            <div>${notification.message}</div>
+            <small>${notification.time}</small>
+        </div>
+    `).join("");
+}
+
+function clearNotifications() {
+    smartParkNotifications = [];
+    updateNotificationPanel();
+}
+
 let selectedExtHours = 1;
 let currentLotRate = 60;
 var secs = 7200;
