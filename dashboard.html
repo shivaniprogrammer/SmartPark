@@ -533,6 +533,7 @@ async function confirmExtendStay() {
       : Date.now();
     activeBooking.endTime = new Date(baseEnd + selectedExtHours * 3600 * 1000).toISOString();
     activeBooking.durationHours = (activeBooking.durationHours || 2) + selectedExtHours;
+    activeBooking.totalAmount = (activeBooking.totalAmount || 0) + totalCost;
     localStorage.setItem('smartpark_active_booking', JSON.stringify(activeBooking));
   } else {
     activeBooking = {
@@ -550,6 +551,34 @@ async function confirmExtendStay() {
     localStorage.setItem('smartpark_active_booking', JSON.stringify(activeBooking));
   }
 
+  // Update recent bookings in localStorage and refresh table!
+  try {
+    let recent = JSON.parse(localStorage.getItem('smartpark_recent_bookings') || '[]');
+    if (recent && recent.length > 0 && activeBooking) {
+      const matchIdx = recent.findIndex(b => 
+        (b.id === activeBooking.bookingId || b.bookingId === activeBooking.bookingId) || 
+        (b.status && b.status.toLowerCase() === 'active')
+      );
+      if (matchIdx !== -1) {
+        recent[matchIdx].duration = `${activeBooking.durationHours} hrs`;
+        recent[matchIdx].amount = `₹${activeBooking.totalAmount}`;
+      } else {
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        recent.unshift({
+          id: activeBooking.bookingId || '#SP2024-EXT',
+          bookingId: activeBooking.bookingId || '#SP2024-EXT',
+          locationName: activeBooking.locationName,
+          slotNumber: activeBooking.slotNumber,
+          dateTime: `Today, ${timeStr}`,
+          duration: `${activeBooking.durationHours} hrs`,
+          amount: `₹${activeBooking.totalAmount}`,
+          status: 'active'
+        });
+      }
+      localStorage.setItem('smartpark_recent_bookings', JSON.stringify(recent));
+    }
+  } catch(e){}
+
   // Instantly reload active booking and update countdown timer
   if (typeof window.loadActiveBooking === 'function') {
     window.loadActiveBooking();
@@ -557,6 +586,10 @@ async function confirmExtendStay() {
     secs += selectedExtHours * 3600;
   }
   
+  if (typeof window.loadRecentBookingsTable === 'function') {
+    window.loadRecentBookingsTable();
+  }
+
   if (typeof window.tick === 'function') {
     window.tick();
   }
@@ -566,7 +599,7 @@ async function confirmExtendStay() {
   }
 
   closeExtendModal();
-  alert(`✅ Stay Extended by ${selectedExtHours} Hour(s)!\n₹${totalCost} deducted from SmartPark Wallet.`);
+  alert(`✅ Stay Extended by ${selectedExtHours} Hour(s)!\nTotal Duration: ${activeBooking.durationHours} Hours\n₹${totalCost} deducted from SmartPark Wallet.`);
 }
 
 (function(){
@@ -753,6 +786,7 @@ async function confirmExtendStay() {
 
   // Expose methods globally for extend modal updates
   window.loadActiveBooking = loadActiveBooking;
+  window.loadRecentBookingsTable = loadRecentBookingsTable;
   window.loadDashboardData = loadDashboardData;
 
   // Countdown timer loop
