@@ -1367,6 +1367,11 @@ async function confirmBooking() {
   const bookingId = '#SP-2024-' + Math.floor(1000 + Math.random() * 9000);
   const lotName = lot ? lot.name : "Phoenix Marketcity";
 
+  // Deduct booking amount from Central Wallet
+  if (typeof updateWalletBalance === 'function') {
+    updateWalletBalance(-cost, `Parking Bay ${state.selectedSlot || 'A-01'} at ${lotName}`);
+  }
+
   // Post to backend API (only if the api-config.js helper is present)
   if (typeof apiRequest === 'function') {
     try {

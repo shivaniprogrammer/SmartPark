@@ -539,10 +539,10 @@ function selectExtendHours(hours, btn) {
 async function confirmExtendStay() {
   const totalCost = currentLotRate * selectedExtHours;
   
-  // Deduct extension charges from wallet via API
-  try {
-    await apiRequest('/wallet/add-funds', 'POST', { amount: -totalCost });
-  } catch(e){}
+  // Deduct extension charges from Central Wallet
+  if (typeof updateWalletBalance === 'function') {
+    updateWalletBalance(-totalCost, `Stay extension charges (${selectedExtHours} hr)`);
+  }
 
   // Update active booking payload in localStorage
   let activeBooking = null;

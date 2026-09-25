@@ -1247,20 +1247,59 @@
   if (modalOkBtn) modalOkBtn.addEventListener('click', closeModal);
   if (modal) modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
-  // ── Dynamic Wallet Data Fetch ──
+  // ── Dynamic Wallet Data & Transaction History ──
+  function loadTxnList() {
+    let txns = [];
+    try {
+      const stored = localStorage.getItem('smartpark_wallet_txns');
+      if (stored) txns = JSON.parse(stored);
+    } catch(e){}
+
+    const listEl = document.getElementById('txnList');
+    if (!listEl) return;
+
+    if (txns && txns.length > 0) {
+      listEl.innerHTML = txns.map(t => {
+        const isCredit = t.type === 'credit';
+        const iconClass = isCredit ? 'fa-arrow-down-to-line' : 'fa-receipt';
+        const typeClass = isCredit ? 'credit' : 'debit';
+        const sign = isCredit ? '+' : '−';
+        return `
+          <div class="txn-row" data-category="${t.category || typeClass}">
+            <div class="txn-left">
+              <div class="txn-icon-wrap ${typeClass}"><i class="fa-solid ${iconClass}"></i></div>
+              <div>
+                <div class="txn-desc">${t.description}</div>
+                <div class="txn-date">${t.date || 'Today'}</div>
+              </div>
+            </div>
+            <div class="txn-amount ${typeClass}">${sign}₹${t.amount.toLocaleString('en-IN')}</div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  function renderCurrentBalance() {
+    const bal = typeof getWalletBalance === 'function' ? getWalletBalance() : 850;
+    const balNum = document.querySelector('.balance-amount');
+    if (balNum) balNum.textContent = `₹${bal.toFixed(2)}`;
+  }
+
   async function loadWalletData() {
+    renderCurrentBalance();
+    loadTxnList();
+
     const res = await apiRequest('/wallet');
     if (res.success && res.data) {
       const w = res.data;
-      const balNum = document.querySelector('.balance-amount');
-      if (balNum) balNum.textContent = `₹${(w.balance || 850).toLocaleString('en-IN')}`;
       const ptsVal = document.querySelector('.pts-value');
       if (ptsVal) ptsVal.textContent = (w.loyaltyPoints || 2450).toLocaleString('en-IN');
     }
   }
   loadWalletData();
 
-  // ── Add Money button via API ──
+  // ── Add Money button via Central Wallet System ──
   const addBtn = document.getElementById('addMoneyBtn');
   if (addBtn) {
     addBtn.addEventListener('click', async () => {
@@ -1272,17 +1311,21 @@
         return;
       }
 
-      const apiRes = await apiRequest('/wallet/add-funds', 'POST', { amount: val });
-      if (apiRes.success && apiRes.data) {
-        const balNum = document.querySelector('.balance-amount');
-        if (balNum) balNum.textContent = `₹${(apiRes.data.balance || 850).toLocaleString('en-IN')}`;
-        const ptsVal = document.querySelector('.pts-value');
-        if (ptsVal && apiRes.data.loyaltyPoints) ptsVal.textContent = apiRes.data.loyaltyPoints.toLocaleString('en-IN');
+      const selectedPayCard = document.querySelector('.pay-method-card.selected .pay-name');
+      const payMethodName = selectedPayCard ? selectedPayCard.textContent.trim() : 'UPI';
+
+      if (typeof updateWalletBalance === 'function') {
+        updateWalletBalance(val, `Recharge via ${payMethodName}`);
       }
+
+      renderCurrentBalance();
+      loadTxnList();
+
+      const newBal = typeof getWalletBalance === 'function' ? getWalletBalance() : 850 + val;
 
       showModal(
         `₹${val.toLocaleString('en-IN')} Added Successfully!`,
-        `Your SmartPark Wallet has been credited with ₹${val.toLocaleString('en-IN')}. Loyalty points have been added to your account.`
+        `Your SmartPark Wallet balance is now ₹${newBal.toLocaleString('en-IN')}. Points have been credited to your loyalty account.`
       );
       amountInput.value = '';
       document.querySelectorAll('.quick-amt-btn').forEach(b => b.classList.remove('selected'));

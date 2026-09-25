@@ -31,13 +31,15 @@ const getWallet = async (req, res) => {
     }
 };
 
+let inMemoryBalance = 850;
+
 const addFunds = async (req, res) => {
     try {
         const { amount } = req.body;
 
-        if (!amount || amount <= 0) {
+        if (typeof amount !== 'number') {
             return res.status(400).json({
-                message: "Amount must be greater than 0"
+                message: "Valid amount number is required"
             });
         }
 
@@ -47,27 +49,34 @@ const addFunds = async (req, res) => {
             wallet = new Wallet({ user: req.user.id, balance: 850, loyaltyPoints: 2450 });
         }
 
-        wallet.balance += amount;
-        wallet.loyaltyPoints += Math.round(amount * 0.1);
+        wallet.balance = Math.max(0, wallet.balance + amount);
+        if (amount > 0) {
+            wallet.loyaltyPoints += Math.round(amount * 0.1);
+        }
+
+        const isCredit = amount >= 0;
+        const absAmt = Math.abs(amount);
+
         wallet.transactions.unshift({
-            type: "credit",
-            amount: amount,
-            description: `Wallet recharge of ₹${amount}`
+            type: isCredit ? "credit" : "debit",
+            amount: absAmt,
+            description: isCredit ? `Wallet recharge of ₹${absAmt}` : `Payment of ₹${absAmt}`
         });
 
         await wallet.save();
 
         res.json({
-            message: "Funds added successfully",
+            message: "Wallet updated successfully",
             balance: wallet.balance,
             loyaltyPoints: wallet.loyaltyPoints
         });
     } catch (error) {
-        const amount = req.body.amount || 500;
+        const amount = req.body.amount || 0;
+        inMemoryBalance = Math.max(0, inMemoryBalance + amount);
         res.json({
-            message: "Funds added successfully (Demo mode)",
-            balance: 850 + amount,
-            loyaltyPoints: 2450 + Math.round(amount * 0.1)
+            message: "Wallet updated successfully (Demo mode)",
+            balance: inMemoryBalance,
+            loyaltyPoints: 2450
         });
     }
 };
