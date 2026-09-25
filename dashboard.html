@@ -163,13 +163,15 @@ tr:hover td{background:rgba(255,255,255,.02);}
     </a>
   </div>
   <nav class="sidebar-nav">
-    <a href="dashboard.html" class="nav-item active"><i class="fas fa-gauge-high"></i> Dashboard</a>
-    <a href="booking.html"   class="nav-item"><i class="fas fa-square-parking"></i> Book Parking</a>
-    <a href="services.html"  class="nav-item"><i class="fas fa-wrench"></i> Services</a>
-    <a href="services.html#cab" class="nav-item"><i class="fas fa-car"></i> Book Cab</a>
+    <a href="dashboard.html" class="nav-item active"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="booking.html"   class="nav-item"><i class="fas fa-parking"></i> Book Parking</a>
+    <a href="services.html"  class="nav-item"><i class="fas fa-concierge-bell"></i> Services</a>
+    <a href="services.html#cab" class="nav-item"><i class="fas fa-taxi"></i> Book Cab</a>
     <a href="wallet.html"    class="nav-item"><i class="fas fa-wallet"></i> Wallet</a>
-    <a href="#"              class="nav-item"><i class="fas fa-user"></i> Profile</a>
-    <a href="#"              class="nav-item"><i class="fas fa-gear"></i> Settings</a>
+    <a href="history.html"   class="nav-item"><i class="fas fa-history"></i> History</a>
+    <a href="profile.html"   class="nav-item"><i class="fas fa-user"></i> Profile</a>
+    <a href="settings.html"  class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+    <a href="login.html"     class="nav-item" style="margin-top:auto;color:rgba(239,68,68,0.8);"><i class="fas fa-sign-out-alt"></i> Logout</a>
   </nav>
   <div class="sidebar-bottom">
     <div class="user-chip">
@@ -279,6 +281,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
       </div>
     </div>
 
+<<<<<<< HEAD
     <!-- BOOKINGS TABLE -->
     <div class="card">
       <div class="card-title"><i class="fas fa-clock-rotate-left"></i> Recent Bookings</div>
@@ -293,6 +296,53 @@ tr:hover td{background:rgba(255,255,255,.02);}
           </tbody>
         </table>
       </div>
+=======
+    <!-- SLOT MAP -->
+    <div class="card slot-map">
+      <div class="card-header">
+        <h3>🗺️ Live Slot View — Koramangala Forum Mall</h3>
+        <span style="font-size:0.8rem;color:var(--green);font-weight:600;"><i class="fas fa-circle" style="font-size:0.5rem;"></i> Live</span>
+      </div>
+      <div style="display:flex;gap:1rem;margin-bottom:0.5rem;font-size:0.8rem;color:var(--grey);">
+        <span>Zone A</span><span>Zone B</span><span>Zone C</span>
+      </div>
+      <div class="slot-grid" id="slotGrid"></div>
+      <div class="map-legend">
+        <div class="leg"><div class="leg-dot" style="background:#DCFCE7;border:1px solid #86EFAC;"></div>Available (18)</div>
+        <div class="leg"><div class="leg-dot" style="background:#FEE2E2;border:1px solid #FCA5A5;"></div>Occupied (9)</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--blue);"></div>Your Slot (B-204)</div>
+        <div class="leg"><div class="leg-dot" style="background:#FEF3C7;border:1px solid #FCD34D;"></div>EV Slot (3)</div>
+      </div>
+    </div>
+
+    <!-- RECENT BOOKINGS (preview — 3 rows only, full list on History page) -->
+    <div class="card">
+      <div class="card-header">
+        <h3>📋 Recent Bookings</h3>
+        <a href="history.html">View All →</a>
+      </div>
+      <table class="bookings-table">
+        <thead>
+          <tr>
+            <th>Booking ID</th>
+            <th>Location</th>
+            <th>Slot</th>
+            <th>Date & Time</th>
+            <th>Duration</th>
+            <th>Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><b>#SP2024001</b></td><td>Forum Mall, Koramangala</td><td>B-204</td><td>24 Sep, 6:00 PM</td><td>3 hrs</td><td>₹180</td><td><span class="status active"><i class="fas fa-circle" style="font-size:0.5rem;"></i> Active</span></td></tr>
+          <tr><td><b>#SP2024000</b></td><td>Orion Mall, Rajajinagar</td><td>A-108</td><td>22 Sep, 10:00 AM</td><td>5 hrs</td><td>₹350</td><td><span class="status completed">Completed</span></td></tr>
+          <tr><td><b>#SP2023999</b></td><td>UB City, Vittal Mallya</td><td>C-312</td><td>20 Sep, 2:00 PM</td><td>2 hrs</td><td>₹160</td><td><span class="status completed">Completed</span></td></tr>
+        </tbody>
+      </table>
+      <div style="text-align:center;padding:1rem;border-top:1px solid var(--border);">
+        <a href="history.html" style="font-size:0.85rem;font-weight:600;color:var(--blue);text-decoration:none;">📋 View all 24 bookings →</a>
+      </div>
+>>>>>>> 51ad5e9 (feat(ui): Add Customer Profile and App Settings pages with full navigation)
     </div>
   </div>
 </main>
