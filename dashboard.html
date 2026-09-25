@@ -144,7 +144,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
 .fab:hover{transform:scale(1.1);}
 
 /* ANIM */
-.anim-up{opacity:0;transform:translateY(16px);}
+.anim-up{opacity:1;transform:translateY(0);transition:opacity 0.5s ease, transform 0.5s ease;}
 .is-in .anim-up{animation:fadeUp .6s var(--spring) both;}
 .is-in .anim-up:nth-child(1){animation-delay:.1s;}
 .is-in .anim-up:nth-child(2){animation-delay:.2s;}
@@ -406,6 +406,10 @@ async function confirmExtendStay() {
 }
 
 (function(){
+  // Immediate visibility kick-off
+  const mainContentEl = document.getElementById('mainContent');
+  if (mainContentEl) mainContentEl.classList.add('is-in');
+
   // User profile dynamic update
   const user = getCurrentUser();
   if (user && user.name) {
@@ -423,42 +427,31 @@ async function confirmExtendStay() {
     if (profileBtnSpan) profileBtnSpan.textContent = user.name;
   }
 
-  // Fetch active user data from API if logged in
-  async function loadDashboardData() {
-    const userRes = await apiRequest('/auth/me');
-    if (userRes.success && userRes.data) {
-      localStorage.setItem('smartpark_user', JSON.stringify(userRes.data));
-    }
-    const walletRes = await apiRequest('/wallet');
-    if (walletRes.success && walletRes.data) {
-      const w = walletRes.data;
-      const wStatBal = document.querySelectorAll('.wstat-num')[2];
-      if (wStatBal) wStatBal.textContent = `₹${w.balance}`;
-      const wStatPts = document.querySelectorAll('.wstat-num')[1];
-      if (wStatPts) wStatPts.textContent = `${w.loyaltyPoints}`;
-    const myBookingsRes = await apiRequest('/bookings/my');
-    if (myBookingsRes.success && myBookingsRes.data && myBookingsRes.data.length > 0) {
-      const latest = myBookingsRes.data[0];
-      if (latest && (latest.status === 'active' || latest.status === 'confirmed')) {
-        const activeBooking = {
-          bookingId: latest.bookingId || `#SP-2024-${latest._id ? latest._id.substring(0,4) : '9182'}`,
-          locationName: latest.locationName || "KFC Junction Parking",
-          slotNumber: latest.slotNumber || "A-01",
-          durationHours: latest.durationHours || 2,
-          totalAmount: latest.totalAmount || 80,
-          ratePerHour: latest.ratePerHour || 40,
-          vehicleType: latest.vehicleType || "4-Wheeler (Car)",
-          vehiclePlate: latest.vehiclePlate || "KA-01-MH-1234",
-          startTime: latest.createdAt || new Date().toISOString(),
-          endTime: new Date(new Date(latest.createdAt || Date.now()).getTime() + (latest.durationHours || 2) * 3600 * 1000).toISOString()
-        };
-        localStorage.setItem('smartpark_active_booking', JSON.stringify(activeBooking));
-        loadActiveBooking();
+  // 1. Slot Map Renderer Function
+  function renderSlotMap(locationName, userSlotNumber) {
+    const g = document.getElementById('slotMap');
+    if (!g) return;
+    g.innerHTML = '';
+
+    const types = ['free','taken','free','free','taken','free','ev','free','taken','free','free','taken','free','free','free','taken','free','free','taken','free','free','free','taken','free','free','ev','free','taken','free','free'];
+    const labels = ['A-01','A-02','A-03','A-04','A-05','A-06','B-01','B-02','B-03','B-04','B-05','B-06','C-01','C-02','C-03','C-04','C-05','C-06','D-01','D-02','D-03','D-04','D-05','D-06','E-01','E-02','E-03','E-04','E-05','E-06'];
+
+    labels.forEach((slotId, i) => {
+      const d = document.createElement('div');
+      let type = types[i % types.length];
+      
+      if (userSlotNumber && (slotId === userSlotNumber || userSlotNumber.includes(slotId))) {
+        type = 'mine';
       }
-    }
+
+      d.className = 'slot-box ' + type;
+      d.textContent = slotId;
+      d.title = `Slot ${slotId} (${type.toUpperCase()})`;
+      g.appendChild(d);
+    });
   }
-  
-  // Dynamic Active Booking Loader
+
+  // 2. Dynamic Active Booking Loader
   let secs = 6442;
   function loadActiveBooking() {
     let activeBooking = null;
@@ -469,11 +462,11 @@ async function confirmExtendStay() {
 
     if (activeBooking && activeBooking.locationName) {
       const slotEl = document.getElementById('actSlot');
-      if (slotEl) slotEl.textContent = activeBooking.slotNumber || 'B-204';
+      if (slotEl) slotEl.textContent = activeBooking.slotNumber || 'A-01';
       const locEl = document.getElementById('actLocation');
       if (locEl) locEl.textContent = activeBooking.locationName;
       const rateEl = document.getElementById('actRate');
-      if (rateEl) rateEl.textContent = `₹${activeBooking.ratePerHour || 60}/hr`;
+      if (rateEl) rateEl.textContent = `₹${activeBooking.ratePerHour || 40}/hr`;
       const vehEl = document.getElementById('actVehicle');
       if (vehEl) vehEl.textContent = activeBooking.vehiclePlate || 'KA-01-MH-1234';
 
@@ -481,6 +474,8 @@ async function confirmExtendStay() {
       if (slotMapTitle) {
         slotMapTitle.innerHTML = `<i class="fas fa-map"></i> Live Slot Map — ${activeBooking.locationName}`;
       }
+
+      renderSlotMap(activeBooking.locationName, activeBooking.slotNumber || 'A-01');
 
       if (activeBooking.endTime) {
         const remainingMs = new Date(activeBooking.endTime).getTime() - Date.now();
@@ -490,9 +485,12 @@ async function confirmExtendStay() {
           secs = 0;
         }
       }
+    } else {
+      renderSlotMap("Forum Mall, Koramangala", "B-204");
     }
   }
 
+  // 3. Dynamic Recent Bookings Table Loader
   function loadRecentBookingsTable() {
     let recent = [];
     try {
@@ -500,37 +498,74 @@ async function confirmExtendStay() {
       if (stored) recent = JSON.parse(stored);
     } catch(e){}
 
+    const tbody = document.getElementById('recentBookingsTable');
+    if (!tbody) return;
+
     if (recent && recent.length > 0) {
-      const tbody = document.getElementById('recentBookingsTable');
-      if (tbody) {
-        tbody.innerHTML = recent.map(b => `
-          <tr>
-            <td>${b.id || b.bookingId}</td>
-            <td>${b.locationName || b.location}</td>
-            <td style="color:var(--gold);font-weight:700;">${b.slotNumber || b.slot}</td>
-            <td>${b.dateTime || b.datetime || 'Today'}</td>
-            <td>${b.duration}</td>
-            <td>${b.amount}</td>
-            <td><span class="status-badge ${(b.status || 'active').toLowerCase()}">${(b.status || 'active').toUpperCase()}</span></td>
-          </tr>
-        `).join('');
-      }
+      tbody.innerHTML = recent.map(b => `
+        <tr>
+          <td><b>${b.id || b.bookingId}</b></td>
+          <td>${b.locationName || b.location}</td>
+          <td style="color:var(--gold);font-weight:700;">${b.slotNumber || b.slot}</td>
+          <td>${b.dateTime || b.datetime || 'Today'}</td>
+          <td>${b.duration}</td>
+          <td><b>${b.amount}</b></td>
+          <td><span class="status-badge ${(b.status || 'active').toLowerCase()}">${(b.status || 'active').toUpperCase()}</span></td>
+        </tr>
+      `).join('');
     }
   }
 
+  // Synchronous initializations
   loadActiveBooking();
   loadRecentBookingsTable();
+
+  // Async API Loader (Isolated)
+  async function loadDashboardData() {
+    try {
+      const userRes = await apiRequest('/auth/me');
+      if (userRes && userRes.success && userRes.data) {
+        localStorage.setItem('smartpark_user', JSON.stringify(userRes.data));
+      }
+    } catch(e){}
+
+    try {
+      const walletRes = await apiRequest('/wallet');
+      if (walletRes && walletRes.success && walletRes.data) {
+        const w = walletRes.data;
+        const wStatBal = document.querySelectorAll('.wstat-num')[2];
+        if (wStatBal) wStatBal.textContent = `₹${w.balance}`;
+        const wStatPts = document.querySelectorAll('.wstat-num')[1];
+        if (wStatPts) wStatPts.textContent = `${w.loyaltyPoints}`;
+      }
+    } catch(e){}
+
+    try {
+      const myBookingsRes = await apiRequest('/bookings/my');
+      if (myBookingsRes && myBookingsRes.success && myBookingsRes.data && myBookingsRes.data.length > 0) {
+        const latest = myBookingsRes.data[0];
+        if (latest && (latest.status === 'active' || latest.status === 'confirmed')) {
+          const activeBooking = {
+            bookingId: latest.bookingId || `#SP-2024-${latest._id ? latest._id.substring(0,4) : '9182'}`,
+            locationName: latest.locationName || "KFC Junction Parking",
+            slotNumber: latest.slotNumber || "A-01",
+            durationHours: latest.durationHours || 2,
+            totalAmount: latest.totalAmount || 80,
+            ratePerHour: latest.ratePerHour || 40,
+            vehicleType: latest.vehicleType || "4-Wheeler (Car)",
+            vehiclePlate: latest.vehiclePlate || "KA-01-MH-1234",
+            startTime: latest.createdAt || new Date().toISOString(),
+            endTime: new Date(new Date(latest.createdAt || Date.now()).getTime() + (latest.durationHours || 2) * 3600 * 1000).toISOString()
+          };
+          localStorage.setItem('smartpark_active_booking', JSON.stringify(activeBooking));
+          loadActiveBooking();
+        }
+      }
+    } catch(e){}
+  }
   loadDashboardData();
 
-  // Slot map
-  var types=['free','taken','free','mine','taken','free','ev','free','taken','free','free','taken','free','free','free','taken','free','free','taken','free','free','free','taken','free','free','ev','free','taken','free','free'];
-  var labels=['A1','A2','A3','A4','A5','A6','A7','A8','A9','A10','B1','B2','B3','B4','B5','B6','B7','B8','B9','B10','C1','C2','C3','C4','C5','C6','C7','C8','C9','C10'];
-  var g=document.getElementById('slotMap');
-  if (g) {
-    types.forEach(function(t,i){var d=document.createElement('div');d.className='slot-box '+t;d.textContent=labels[i];g.appendChild(d);});
-  }
-
-  // Countdown
+  // Countdown timer loop
   function tick(){
     var h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60),s=secs%60;
     const cdEl = document.getElementById('countdown');
@@ -538,22 +573,14 @@ async function confirmExtendStay() {
     if(secs>0) {
       secs--;
     } else if (secs === 0) {
-      // Overstay alert prompt
       const cdLabel = document.querySelector('.countdown-label');
       if (cdLabel) {
         cdLabel.innerHTML = '<span style="color:#EF4444;font-weight:700;">⚠️ OVERSTAY DETECTED - Extend Stay Required</span>';
       }
     }
   }
-  tick();setInterval(tick,1000);
-
-  // Animate
-  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-  function resolve(){document.getElementById('mainContent').classList.add('is-in');}
-  if(reduced){document.querySelectorAll('.anim-up').forEach(function(el){el.style.opacity=1;el.style.transform='none';});}
-  else if(typeof requestAnimationFrame==='function'){requestAnimationFrame(function(){requestAnimationFrame(resolve);});}
-  else{resolve();}
-  setTimeout(function(){resolve();},2000);
+  tick();
+  setInterval(tick, 1000);
 }());
 </script>
 </body>
