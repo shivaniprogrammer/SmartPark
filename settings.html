@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Settings — SmartPark</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{--navy:#0A1628;--navy2:#1E3A5F;--blue:#2563EB;--gold:#F59E0B;--white:#fff;--light:#F8FAFC;--grey:#64748B;--border:#E2E8F0;--green:#10B981;--red:#EF4444;}
+    body{font-family:'Inter',sans-serif;background:var(--light);color:var(--navy);display:flex;min-height:100vh;}
+
+    /* SIDEBAR */
+    .sidebar{width:240px;background:var(--navy);display:flex;flex-direction:column;padding:1.5rem 0;position:fixed;top:0;left:0;height:100vh;z-index:100;}
+    .sidebar-logo{padding:0 1.5rem 2rem;font-size:1.35rem;font-weight:800;color:var(--white);text-decoration:none;display:flex;align-items:center;gap:0.5rem;border-bottom:1px solid rgba(255,255,255,0.08);}
+    .sidebar-logo span{color:var(--gold);}
+    .sidebar-nav{flex:1;padding:1.5rem 0.75rem;display:flex;flex-direction:column;gap:0.25rem;}
+    .nav-item{display:flex;align-items:center;gap:0.875rem;padding:0.75rem 0.875rem;border-radius:10px;color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.875rem;font-weight:500;transition:all .3s;}
+    .nav-item:hover,.nav-item.active{background:rgba(37,99,235,0.15);color:var(--white);}
+    .nav-item.active{background:rgba(37,99,235,0.25);color:#60A5FA;}
+    .nav-item i{width:18px;text-align:center;font-size:1rem;}
+    .sidebar-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,0.08);}
+    .user-avatar{width:36px;height:36px;border-radius:50%;background:var(--blue);color:var(--white);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;}
+    .user-info h4{font-size:0.825rem;font-weight:700;color:var(--white);}
+    .user-info span{font-size:0.75rem;color:rgba(255,255,255,0.5);}
+    .sidebar-user{display:flex;align-items:center;gap:0.75rem;}
+
+    /* MAIN */
+    .main{margin-left:240px;flex:1;display:flex;flex-direction:column;}
+    .topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+    .topbar h1{font-size:1.1rem;font-weight:800;color:var(--navy);}
+    .content{padding:2rem;flex:1;}
+
+    /* GRID LAYOUT */
+    .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;}
+    .card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.5rem;}
+    .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;border-bottom:1px solid var(--border);padding-bottom:0.75rem;}
+    .card-header h3{font-size:1rem;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:0.5rem;}
+    .card-header h3 i{color:var(--blue);}
+
+    /* SETTING ITEM TOGGLE */
+    .setting-item{display:flex;align-items:center;justify-content:space-between;padding:1rem 0;border-bottom:1px solid var(--border);}
+    .setting-item:last-child{border-bottom:none;}
+    .setting-label h4{font-size:0.875rem;font-weight:700;color:var(--navy);}
+    .setting-label p{font-size:0.78rem;color:var(--grey);margin-top:0.2rem;}
+
+    /* SWITCH TOGGLE */
+    .switch{position:relative;display:inline-block;width:46px;height:24px;flex-shrink:0;}
+    .switch input{opacity:0;width:0;height:0;}
+    .slider{position:absolute;cursor:pointer;inset:0;background-color:var(--border);transition:.3s;border-radius:24px;}
+    .slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background-color:white;transition:.3s;border-radius:50%;}
+    input:checked + .slider{background-color:var(--blue);}
+    input:checked + .slider:before{transform:translateX(22px);}
+
+    /* SELECT CONTROL */
+    .setting-select{padding:0.5rem 0.875rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.85rem;font-family:'Inter',sans-serif;color:var(--navy);background:var(--white);outline:none;}
+    .setting-select:focus{border-color:var(--blue);}
+
+    .btn-danger{background:var(--red);color:var(--white);border:none;padding:0.65rem 1.25rem;border-radius:8px;font-size:0.85rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .3s;}
+    .btn-danger:hover{background:#dc2626;}
+
+    .alert-toast{display:none;position:fixed;bottom:2rem;right:2rem;background:#10B981;color:var(--white);padding:1rem 1.5rem;border-radius:12px;font-size:0.875rem;font-weight:600;box-shadow:0 8px 24px rgba(16,185,129,0.3);z-index:1000;animation:slideUp .3s ease;}
+    @keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+
+    @media(max-width:900px){.settings-grid{grid-template-columns:1fr;}.sidebar{display:none;}.main{margin-left:0;}}
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="index.html" class="sidebar-logo">🅿 Smart<span>Park</span></a>
+  <nav class="sidebar-nav">
+    <a class="nav-item" href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+    <a class="nav-item" href="booking.html"><i class="fas fa-parking"></i> Book Parking</a>
+    <a class="nav-item" href="services.html"><i class="fas fa-concierge-bell"></i> Services</a>
+    <a class="nav-item" href="services.html"><i class="fas fa-taxi"></i> Book Cab</a>
+    <a class="nav-item" href="wallet.html"><i class="fas fa-wallet"></i> Wallet</a>
+    <a class="nav-item" href="history.html"><i class="fas fa-history"></i> History</a>
+    <a class="nav-item" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+    <a class="nav-item active" href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+    <a class="nav-item" href="login.html" style="margin-top:auto;color:rgba(239,68,68,0.8);"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="user-avatar">R</div>
+      <div class="user-info"><h4>Rahul Sharma</h4><span>Gold Member ⭐</span></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <h1>⚙️ App & Account Settings</h1>
+    <a href="dashboard.html" style="background:var(--light);border:1px solid var(--border);color:var(--navy);padding:0.45rem 1rem;border-radius:8px;font-size:0.85rem;font-weight:600;text-decoration:none;">← Back to Dashboard</a>
+  </div>
+
+  <div class="content">
+
+    <div class="settings-grid">
+      <!-- NOTIFICATION PREFERENCES -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-bell"></i> Notification & Alerts</h3>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>WhatsApp Booking Notifications</h4>
+            <p>Receive live slot confirmations & overstay alerts on WhatsApp</p>
+          </div>
+          <label class="switch"><input type="checkbox" checked onchange="saveSetting()"/><span class="slider"></span></label>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Email Invoices & Receipts</h4>
+            <p>Automatically receive PDF receipts after completed bookings</p>
+          </div>
+          <label class="switch"><input type="checkbox" checked onchange="saveSetting()"/><span class="slider"></span></label>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Low Availability AI Alerts</h4>
+            <p>Notify when your favourite parking lots drop below 10% capacity</p>
+          </div>
+          <label class="switch"><input type="checkbox" checked onchange="saveSetting()"/><span class="slider"></span></label>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Promotional & Loyalty Offers</h4>
+            <p>Receive updates on wallet cashback & discount codes</p>
+          </div>
+          <label class="switch"><input type="checkbox" onchange="saveSetting()"/><span class="slider"></span></label>
+        </div>
+      </div>
+
+      <!-- APP PREFERENCES -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-sliders-h"></i> App Preferences</h3>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Default Search Location</h4>
+            <p>Pre-selected area when searching for parking</p>
+          </div>
+          <select class="setting-select" onchange="saveSetting()">
+            <option selected>Koramangala, Bangalore</option>
+            <option>Indiranagar, Bangalore</option>
+            <option>Whitefield, Bangalore</option>
+            <option>MG Road, Bangalore</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>App Interface Theme</h4>
+            <p>Switch between Light mode and Dark mode</p>
+          </div>
+          <select class="setting-select" onchange="saveSetting()">
+            <option selected>☀️ Light Mode</option>
+            <option>🌙 Dark Mode (Beta)</option>
+            <option>🖥️ System Default</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Currency Display</h4>
+            <p>Default currency for slot pricing and wallet balance</p>
+          </div>
+          <select class="setting-select" onchange="saveSetting()">
+            <option selected>INR (₹)</option>
+            <option>USD ($)</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Language</h4>
+            <p>Preferred language for app navigation</p>
+          </div>
+          <select class="setting-select" onchange="saveSetting()">
+            <option selected>English</option>
+            <option>Hindi (हिंदी)</option>
+            <option>Kannada (ಕನ್ನಡ)</option>
+            <option>Tamil (தமிழ்)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-grid">
+      <!-- SECURITY & PRIVACY -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-shield-alt"></i> Security & Privacy</h3>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Two-Factor Authentication (2FA)</h4>
+            <p>Require OTP via SMS/Email for logins</p>
+          </div>
+          <label class="switch"><input type="checkbox" checked onchange="saveSetting()"/><span class="slider"></span></label>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Active Sessions</h4>
+            <p>Logged in on: <b>Chrome (Windows 11)</b> — Current</p>
+          </div>
+          <button class="btn-danger" style="padding:0.4rem 0.8rem;font-size:0.75rem;" onclick="logoutOthers()">Log Out Other Devices</button>
+        </div>
+      </div>
+
+      <!-- DANGER ZONE -->
+      <div class="card" style="border-color:#FCA5A5;background:#FEF2F2;">
+        <div class="card-header" style="border-color:#FCA5A5;">
+          <h3 style="color:var(--red);"><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4 style="color:#B91C1C;">Delete Account</h4>
+            <p style="color:#991B1B;">Permanently remove your account, booking history, and wallet funds</p>
+          </div>
+          <button class="btn-danger" onclick="deleteAccount()">Delete Account</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="alert-toast" id="alertToast">✓ Setting updated!</div>
+
+<script>
+  function saveSetting() {
+    const t = document.getElementById('alertToast');
+    t.style.display = 'block';
+    setTimeout(() => { t.style.display = 'none'; }, 2000);
+  }
+
+  function logoutOthers() {
+    alert('🔒 Logged out from all other active sessions.');
+  }
+
+  function deleteAccount() {
+    if (confirm('⚠️ Are you sure you want to delete your SmartPark account? This action cannot be undone!')) {
+      alert('Account deletion request initiated.');
+      location.href = 'login.html';
+    }
+  }
+</script>
+</body>
+</html>
