@@ -23,8 +23,8 @@
 }
 
 :root {
-    --orange: #ff9f00;
-    --orange2: #ffb52e;
+    --orange: #8c00ff;
+    --orange2: #af2eff;
     --bg: #050505;
     --card: #0d0d0d;
     --border: #252525;
@@ -53,6 +53,13 @@ body {
     border-right: 1px solid var(--border);
     padding: 24px 16px;
     z-index: 100;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
 }
 
 .logo {
@@ -109,6 +116,45 @@ body {
 .nav-item i {
     width: 18px;
     text-align: center;
+}
+
+/* ================= SIDEBAR FOOTER (ACCOUNT) ================= */
+
+.sidebar-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 10px;
+    border-top: 1px solid var(--border);
+    margin-top: 12px;
+}
+
+.sidebar-footer .avatar {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    font-size: 14px;
+}
+
+.sidebar-footer-info {
+    overflow: hidden;
+}
+
+.sidebar-footer-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #eee;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar-footer-email {
+    font-size: 11px;
+    color: #777;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* ================= MAIN ================= */
@@ -553,6 +599,15 @@ body {
     .content {
         padding: 20px;
     }
+
+    .sidebar-footer-info {
+        display: none;
+    }
+
+    .sidebar-footer {
+        justify-content: center;
+    }
+
 }
 
 </style>
@@ -564,61 +619,76 @@ body {
 
 <aside class="sidebar">
 
-    <div class="logo">
-        <div class="logo-icon">
-            <i class="fas fa-square-parking"></i>
+    <div class="sidebar-nav">
+
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-square-parking"></i>
+            </div>
+            <span>SmartPark</span>
         </div>
-        <span>SmartPark</span>
+
+        <div class="menu-title">Main Menu</div>
+
+        <a href="dashboard.html" class="nav-item">
+            <i class="fas fa-chart-pie"></i>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="booking.html" class="nav-item">
+            <i class="fas fa-square-parking"></i>
+            <span>Book Parking</span>
+        </a>
+
+        <a href="map-test.html" class="nav-item">
+            <i class="fas fa-map-location-dot"></i>
+            <span>Parking Map</span>
+        </a>
+
+        <a href="services.html" class="nav-item active">
+            <i class="fas fa-wrench"></i>
+            <span>Services</span>
+        </a>
+
+        <a href="wallet.html" class="nav-item">
+            <i class="fas fa-wallet"></i>
+            <span>Wallet</span>
+        </a>
+
+        <a href="history.html" class="nav-item">
+            <i class="fas fa-clock-rotate-left"></i>
+            <span>History</span>
+        </a>
+
+        <div class="menu-title">Account</div>
+
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+
+        <a href="settings.html" class="nav-item">
+            <i class="fas fa-gear"></i>
+            <span>Settings</span>
+        </a>
+
+        <a href="#" class="nav-item" onclick="logoutUser()">
+            <i class="fas fa-right-from-bracket"></i>
+            <span>Logout</span>
+        </a>
+
     </div>
 
-    <div class="menu-title">Main Menu</div>
+    <!-- ACCOUNT DETAILS (BOTTOM OF SIDEBAR) -->
 
-    <a href="dashboard.html" class="nav-item">
-        <i class="fas fa-chart-pie"></i>
-        <span>Dashboard</span>
-    </a>
+  <div class="avatar" id="sidebarAvatar">S</div>
 
-    <a href="booking.html" class="nav-item">
-        <i class="fas fa-square-parking"></i>
-        <span>Book Parking</span>
-    </a>
+<div class="sidebar-footer-info">
+    <div class="sidebar-footer-name" id="sidebarName">User</div>
+    <div class="sidebar-footer-email" id="sidebarEmail">user@example.com</div>
+</div>
 
-    <a href="map.html" class="nav-item">
-        <i class="fas fa-map-location-dot"></i>
-        <span>Parking Map</span>
-    </a>
-
-    <a href="services.html" class="nav-item active">
-        <i class="fas fa-wrench"></i>
-        <span>Services</span>
-    </a>
-
-    <a href="wallet.html" class="nav-item">
-        <i class="fas fa-wallet"></i>
-        <span>Wallet</span>
-    </a>
-
-    <a href="history.html" class="nav-item">
-        <i class="fas fa-clock-rotate-left"></i>
-        <span>History</span>
-    </a>
-
-    <div class="menu-title">Account</div>
-
-    <a href="profile.html" class="nav-item">
-        <i class="fas fa-user"></i>
-        <span>Profile</span>
-    </a>
-
-    <a href="settings.html" class="nav-item">
-        <i class="fas fa-gear"></i>
-        <span>Settings</span>
-    </a>
-
-    <a href="#" class="nav-item" onclick="logoutUser()">
-        <i class="fas fa-right-from-bracket"></i>
-        <span>Logout</span>
-    </a>
+    </div>
 
 </aside>
 
@@ -654,10 +724,9 @@ body {
 
             <div class="profile-btn">
 
-                <div class="avatar">RS</div>
+              <div class="avatar" id="topAvatar">S</div>
 
-                <span>Rahul S.</span>
-
+<span id="topName">User</span>
                 <i class="fas fa-chevron-down"
                    style="font-size:10px;color:#666;"></i>
 
@@ -1758,6 +1827,32 @@ function navigateTo(place) {
     const mapUrl = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(place);
     window.open(mapUrl, "_blank");
 }
+
+function loadUserDetails() {
+
+    const user = JSON.parse(
+        localStorage.getItem("smartpark_user")
+    );
+
+    if (!user) return;
+
+    const name = user.name || "User";
+    const email = user.email || "";
+
+    const shortName = name.split(" ")[0];
+
+    document.getElementById("sidebarName").textContent = shortName;
+    document.getElementById("sidebarEmail").textContent = email;
+
+    document.getElementById("topName").textContent = shortName;
+
+    const initial = name.charAt(0).toUpperCase();
+
+    document.getElementById("sidebarAvatar").textContent = initial;
+    document.getElementById("topAvatar").textContent = initial;
+}
+
+loadUserDetails();
 
 /* ================= LOGOUT ================= */
 

@@ -36,6 +36,7 @@ async function apiRequest(endpoint, method = "GET", data = null) {
     }
 }
 
+
 // Centralized Wallet State Management
 function getWalletBalance() {
     const bal = localStorage.getItem("smartpark_wallet_balance");
@@ -94,6 +95,8 @@ function refreshWalletUI() {
     }
 }
 
+
+
 // Auto-run UI sync on DOM load
 if (typeof window !== 'undefined') {
     window.getWalletBalance = getWalletBalance;
@@ -103,20 +106,28 @@ if (typeof window !== 'undefined') {
 }
 
 // User Session Management
+
 function getCurrentUser() {
     const userStr = localStorage.getItem("smartpark_user");
+
     if (!userStr) {
         return {
-            name: "Rahul Sharma",
-            email: "rahul.sharma@example.com",
-            phone: "+91 98765 43210",
+            name: "User",
+            email: "",
+            phone: "",
             role: "user"
         };
     }
+
     try {
         return JSON.parse(userStr);
     } catch (e) {
-        return { name: "Rahul Sharma", email: "rahul.sharma@example.com" };
+        return {
+            name: "User",
+            email: "",
+            phone: "",
+            role: "user"
+        };
     }
 }
 

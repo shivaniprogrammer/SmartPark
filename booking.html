@@ -691,12 +691,19 @@
       <a href="login.html"     class="nav-item" style="margin-top:auto;color:rgba(239,68,68,0.8);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
     </nav>
     <div class="sidebar-user">
-      <div class="user-avatar-sm">RS</div>
-      <div class="user-info-sm">
-        <div class="user-name-sm">Rahul Sharma</div>
-        <div class="user-tier-sm">★ Gold Member</div>
-      </div>
+  <div class="user-avatar" id="sidebarAvatar">
+    U
+</div>
+
+<div>
+    <div class="user-name" id="sidebarUserName">
+        User
     </div>
+
+    <div class="user-tier">
+        ★ Gold Member
+    </div>
+</div>
   </aside>
 
   <!-- ── MAIN ── -->
@@ -1475,5 +1482,18 @@ updateSummary();
 
 
 <script src="theme.js"></script>
+
+<script>
+const loggedUser = JSON.parse(localStorage.getItem("smartpark_user"));
+
+if (loggedUser) {
+    const name = loggedUser.name || "User";
+
+    document.getElementById("sidebarUserName").textContent = name;
+
+    document.getElementById("sidebarAvatar").textContent =
+        name.substring(0, 2).toUpperCase();
+}
+</script>
 </body>
 </html>

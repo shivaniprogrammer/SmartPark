@@ -1086,26 +1086,23 @@ body::before {
 
     </nav>
 
+<div class="sidebar-user">
 
-    <div class="sidebar-user">
-
-        <div class="user-avatar">
-            RS
-        </div>
-
-        <div>
-
-            <div class="user-name">
-                Rahul Sharma
-            </div>
-
-            <div class="user-tier">
-                ★ Gold Member
-            </div>
-
-        </div>
-
+    <div class="user-avatar" id="sidebarAvatar">
+        U
     </div>
+
+    <div>
+        <div class="user-name" id="sidebarUserName">
+            User
+        </div>
+
+        <div class="user-tier">
+            ★ Gold Member
+        </div>
+    </div>
+
+</div>
 
 </aside>
 
@@ -1714,5 +1711,18 @@ loadSmartParkLocations();
 
 </script>
 
+<script>
+
+const loggedUser = JSON.parse(localStorage.getItem("smartpark_user"));
+
+if (loggedUser) {
+    const name = loggedUser.name || "User";
+
+    document.getElementById("sidebarUserName").textContent = name;
+
+    document.getElementById("sidebarAvatar").textContent =
+        name.substring(0, 2).toUpperCase();
+}
+</script>
 </body>
 </html>
