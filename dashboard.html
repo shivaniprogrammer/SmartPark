@@ -116,7 +116,7 @@ body{font-family:"Inter",system-ui,sans-serif;background:#000;display:flex;-webk
 .ld{width:12px;height:12px;border-radius:3px;}
 
 /* QUICK ACTIONS */
-.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1.75rem;}
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1.75rem;}
 .quick-btn{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.1rem;display:flex;flex-direction:column;align-items:center;gap:.625rem;cursor:pointer;transition:all .3s;text-decoration:none;color:#fff;}
 .quick-btn:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2);transform:translateY(-2px);}
 .quick-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;}
@@ -166,7 +166,6 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <a href="dashboard.html" class="nav-item active"><i class="fas fa-home"></i> Dashboard</a>
     <a href="booking.html"   class="nav-item"><i class="fas fa-parking"></i> Book Parking</a>
     <a href="services.html"  class="nav-item"><i class="fas fa-concierge-bell"></i> Services</a>
-    <a href="services.html#cab" class="nav-item"><i class="fas fa-taxi"></i> Book Cab</a>
     <a href="wallet.html"    class="nav-item"><i class="fas fa-wallet"></i> Wallet</a>
     <a href="history.html"   class="nav-item"><i class="fas fa-history"></i> History</a>
     <a href="profile.html"   class="nav-item"><i class="fas fa-user"></i> Profile</a>
@@ -232,10 +231,8 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <div class="quick-grid">
       <a href="booking.html"     class="quick-btn"><div class="quick-icon" style="background:rgba(255,255,255,.07);">🅿️</div><span>Book Parking</span></a>
       <a href="services.html"    class="quick-btn"><div class="quick-icon" style="background:rgba(255,255,255,.07);">🚿</div><span>Car Wash</span></a>
-      <a href="services.html#cab" class="quick-btn"><div class="quick-icon" style="background:rgba(255,255,255,.07);">🚕</div><span>Book Cab</span></a>
-      <a href="services.html"    class="quick-btn"><div class="quick-icon" style="background:rgba(255,255,255,.07);">🔧</div><span>Mechanic</span></a>
+      <a href="services.html#mechanic" class="quick-btn"><div class="quick-icon" style="background:rgba(255,255,255,.07);">🔧</div><span>Mechanic</span></a>
       <a href="wallet.html"      class="quick-btn"><div class="quick-icon" style="background:rgba(245,158,11,.1);">💳</div><span>Wallet</span></a>
-      <a href="services.html"    class="quick-btn"><div class="quick-icon" style="background:rgba(255,255,255,.07);">🧺</div><span>Laundry</span></a>
     </div>
 
     <!-- MID -->

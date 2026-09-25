@@ -673,7 +673,6 @@
       <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-gauge"></i> Dashboard</a>
       <a href="booking.html" class="nav-item active"><i class="fa-solid fa-square-parking"></i> Book Parking</a>
       <a href="services.html" class="nav-item"><i class="fa-solid fa-wrench"></i> Services</a>
-      <a href="services.html#cab" class="nav-item"><i class="fa-solid fa-car"></i> Book Cab</a>
       <div class="nav-section-label">Account</div>
       <a href="wallet.html" class="nav-item"><i class="fa-solid fa-wallet"></i> Wallet</a>
       <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-user"></i> Profile</a>
@@ -767,7 +766,7 @@
                   <div class="vehicle-badge-row">
                     <span class="v-tag v-tag-highlight" id="rateBadge4W">From ₹30/hr</span>
                     <span class="v-tag">EV Ready</span>
-                    <span class="v-tag">CCTV Security</span>
+                    <span class="v-tag">Covered Bays</span>
                   </div>
                 </div>
               </div>
@@ -793,7 +792,7 @@
               <div class="chip">⚡ EV Charging</div>
               <div class="chip">🏠 Covered</div>
               <div class="chip">🕐 24/7 Open</div>
-              <div class="chip">📷 CCTV Security</div>
+              <div class="chip">🚪 Near Entry/Exit</div>
             </div>
 
             <div class="lot-cards" id="lotCardsContainer">
@@ -1161,7 +1160,6 @@ function renderLots() {
         </div>
         <span class="tag">${lot.indoor ? '🏛️ Covered Indoor' : '🌤️ Open Parking'}</span>
         ${lot.hasEV ? '<span class="tag tag-ev">⚡ EV Charging</span>' : ''}
-        <span class="tag">📷 CCTV</span>
       </div>
 
       <div style="display:flex;justify-content:flex-end;">
