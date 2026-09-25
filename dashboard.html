@@ -508,16 +508,26 @@ async function confirmExtendStay() {
 
       renderSlotMap(activeBooking.locationName, activeBooking.slotNumber || 'A-01');
 
+      const durationHrs = activeBooking.durationHours || 2;
+      const maxAllowedSecs = durationHrs * 3600;
+
+      let calcSecs = 0;
       if (activeBooking.endTime) {
-        const remainingMs = new Date(activeBooking.endTime).getTime() - Date.now();
-        if (remainingMs > 0) {
-          secs = Math.floor(remainingMs / 1000);
-        } else {
-          secs = 0;
+        const endMs = new Date(activeBooking.endTime).getTime();
+        const nowMs = Date.now();
+        if (!isNaN(endMs) && endMs > nowMs) {
+          calcSecs = Math.floor((endMs - nowMs) / 1000);
         }
       }
+
+      if (calcSecs <= 0 || calcSecs > maxAllowedSecs) {
+        calcSecs = maxAllowedSecs;
+      }
+
+      secs = calcSecs;
     } else {
       renderSlotMap("Forum Mall, Koramangala", "B-204");
+      secs = 7200;
     }
   }
 
@@ -575,18 +585,31 @@ async function confirmExtendStay() {
       const myBookingsRes = await apiRequest('/bookings/my');
       if (myBookingsRes && myBookingsRes.success && myBookingsRes.data && myBookingsRes.data.length > 0) {
         const latest = myBookingsRes.data[0];
-        if (latest && (latest.status === 'active' || latest.status === 'confirmed')) {
+        
+        let currentLocal = null;
+        try {
+          const stored = localStorage.getItem('smartpark_active_booking');
+          if (stored) currentLocal = JSON.parse(stored);
+        } catch(e){}
+
+        const isLocalValid = currentLocal && currentLocal.endTime && (new Date(currentLocal.endTime).getTime() > Date.now());
+
+        if (!isLocalValid && latest && (latest.status === 'active' || latest.status === 'confirmed')) {
+          const durationHrs = latest.durationHours || 2;
+          const startMs = latest.startTime ? new Date(latest.startTime).getTime() : Date.now();
+          const endMs = latest.endTime ? new Date(latest.endTime).getTime() : (startMs + durationHrs * 3600 * 1000);
+
           const activeBooking = {
             bookingId: latest.bookingId || `#SP-2024-${latest._id ? latest._id.substring(0,4) : '9182'}`,
             locationName: latest.locationName || "KFC Junction Parking",
             slotNumber: latest.slotNumber || "A-01",
-            durationHours: latest.durationHours || 2,
-            totalAmount: latest.totalAmount || 80,
+            durationHours: durationHrs,
+            totalAmount: latest.totalAmount || (durationHrs * 40),
             ratePerHour: latest.ratePerHour || 40,
             vehicleType: latest.vehicleType || "4-Wheeler (Car)",
             vehiclePlate: latest.vehiclePlate || "KA-01-MH-1234",
-            startTime: latest.createdAt || new Date().toISOString(),
-            endTime: new Date(new Date(latest.createdAt || Date.now()).getTime() + (latest.durationHours || 2) * 3600 * 1000).toISOString()
+            startTime: new Date(startMs).toISOString(),
+            endTime: new Date(endMs).toISOString()
           };
           localStorage.setItem('smartpark_active_booking', JSON.stringify(activeBooking));
           loadActiveBooking();

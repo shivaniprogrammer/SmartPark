@@ -69,6 +69,9 @@ const createBooking = async (req, res) => {
         const computedAmount = totalAmount !== undefined ? totalAmount : (hours * 60);
         const bookingId = "#SP2024" + Math.floor(1000 + Math.random() * 9000);
 
+        const startTimeObj = start;
+        const endTimeObj = end;
+
         const newBooking = {
             id: bookingId,
             bookingId,
@@ -81,6 +84,8 @@ const createBooking = async (req, res) => {
             vehicleType: vehicleType || "4W",
             paymentMethod: paymentMethod || "wallet",
             status: "active",
+            startTime: startTimeObj.toISOString(),
+            endTime: endTimeObj.toISOString(),
             createdAt: new Date(),
             remainingAvailableSlots: locStats.available
         };
