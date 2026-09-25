@@ -1,434 +1,562 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SmartPark — Find Your Spot. Get It Done.</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    :root{
-      --navy:#0A1628;--navy2:#1E3A5F;--blue:#2563EB;--gold:#F59E0B;
-      --white:#fff;--light:#F8FAFC;--grey:#64748B;--border:#E2E8F0;
-    }
-    body{font-family:'Inter',sans-serif;background:var(--white);color:var(--navy);overflow-x:hidden;}
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SmartPark — Find Your Spot. Get It Done.</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='12' width='24' height='14' rx='3' fill='none' stroke='%23fff' stroke-width='2'/%3E%3Ccircle cx='10' cy='26' r='3' fill='%23fff'/%3E%3Ccircle cx='22' cy='26' r='3' fill='%23fff'/%3E%3Cpath d='M4 18h24' stroke='%23fff' stroke-width='1.5'/%3E%3C/svg%3E"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet"/>
+<style>
+/* ── ANTI-FLASH ── */
+html,body{background:#000000!important;color:#ffffff;}
 
-    /* NAV */
-    nav{position:fixed;top:0;left:0;right:0;z-index:999;background:rgba(10,22,40,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08);padding:0 5%;}
-    .nav-inner{display:flex;align-items:center;justify-content:space-between;height:70px;}
-    .logo{font-size:1.5rem;font-weight:800;color:var(--white);text-decoration:none;letter-spacing:-0.5px;}
-    .logo span{color:var(--gold);}
-    .nav-links{display:flex;gap:2rem;list-style:none;}
-    .nav-links a{color:rgba(255,255,255,0.75);text-decoration:none;font-size:0.9rem;font-weight:500;transition:color .3s;}
-    .nav-links a:hover{color:var(--white);}
-    .nav-btns{display:flex;gap:0.75rem;align-items:center;}
-    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.3);color:var(--white);padding:0.5rem 1.25rem;border-radius:8px;font-size:0.875rem;font-weight:500;cursor:pointer;transition:all .3s;text-decoration:none;}
-    .btn-ghost:hover{border-color:var(--white);background:rgba(255,255,255,0.1);}
-    .btn-primary{background:var(--blue);border:none;color:var(--white);padding:0.5rem 1.25rem;border-radius:8px;font-size:0.875rem;font-weight:600;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-block;}
-    .btn-primary:hover{background:#1d4ed8;transform:translateY(-1px);box-shadow:0 8px 20px rgba(37,99,235,0.35);}
+/* ── TOKENS ── */
+:root{
+  --bg:#000000;--text:#ffffff;--muted:#9a9a9a;--stat:#d8d8d8;
+  --border:rgba(255,255,255,0.16);
+  --pill-grad:linear-gradient(105deg,#050505 0%,#2a2a2a 48%,#4a4a4a 100%);
+  --pill-border:rgba(198,198,198,0.55);
+  --spring:cubic-bezier(0.16,1,0.3,1);
+  --gold:#F59E0B;--blue:#2563EB;
+}
 
-    /* HERO */
-    .hero{min-height:100vh;background:linear-gradient(135deg,#0A1628 0%,#1E3A5F 50%,#0A1628 100%);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:120px 5% 80px;position:relative;overflow:hidden;}
-    .hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
-    .hero-badge{background:rgba(37,99,235,0.2);border:1px solid rgba(37,99,235,0.4);color:#93C5FD;padding:0.375rem 1rem;border-radius:100px;font-size:0.8rem;font-weight:600;letter-spacing:0.5px;margin-bottom:1.5rem;display:inline-block;}
-    .hero h1{font-size:clamp(2.5rem,6vw,5rem);font-weight:900;color:var(--white);line-height:1.1;letter-spacing:-2px;margin-bottom:1.5rem;}
-    .hero h1 span{background:linear-gradient(135deg,#60A5FA,#F59E0B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-    .hero p{font-size:1.15rem;color:rgba(255,255,255,0.65);max-width:600px;line-height:1.7;margin-bottom:2.5rem;}
-    .hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:4rem;}
-    .btn-hero{padding:0.875rem 2rem;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;}
-    .btn-hero-primary{background:var(--blue);color:var(--white);border:none;box-shadow:0 8px 32px rgba(37,99,235,0.4);}
-    .btn-hero-primary:hover{background:#1d4ed8;transform:translateY(-2px);box-shadow:0 12px 40px rgba(37,99,235,0.5);}
-    .btn-hero-secondary{background:rgba(255,255,255,0.1);color:var(--white);border:1px solid rgba(255,255,255,0.25);backdrop-filter:blur(8px);}
-    .btn-hero-secondary:hover{background:rgba(255,255,255,0.15);transform:translateY(-2px);}
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+a{text-decoration:none;color:inherit;}
+button{font-family:inherit;cursor:pointer;border:none;outline:none;background:none;}
+em{font-style:italic;}
 
-    /* PARKING LOT VISUAL */
-    .parking-visual{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;max-width:400px;margin:0 auto;}
-    .slot{height:32px;border-radius:6px;transition:all .5s;}
-    .slot.taken{background:rgba(239,68,68,0.6);}
-    .slot.free{background:rgba(34,197,94,0.6);}
-    .slot.yours{background:var(--blue);box-shadow:0 0 12px rgba(37,99,235,0.8);animation:pulse 2s infinite;}
-    .slot.ev{background:rgba(245,158,11,0.6);}
-    @keyframes pulse{0%,100%{box-shadow:0 0 12px rgba(37,99,235,0.8);}50%{box-shadow:0 0 24px rgba(37,99,235,1);}}
+/* ── BASE ── */
+body{
+  font-family:"Inter",system-ui,-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+@media(min-width:901px){html,body{height:100vh;height:100dvh;overflow:hidden;}}
 
-    /* STATS BAR */
-    .stats-bar{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:1.5rem 2rem;display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;max-width:700px;margin:2rem auto 0;backdrop-filter:blur(8px);}
-    .stat-item{text-align:center;}
-    .stat-num{font-size:1.75rem;font-weight:800;color:var(--white);}
-    .stat-num span{color:var(--gold);}
-    .stat-label{font-size:0.75rem;color:rgba(255,255,255,0.5);font-weight:500;margin-top:0.25rem;}
+/* ── BACKGROUND ── */
+.bg-layer{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+.bg-canvas{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px),
+    radial-gradient(ellipse 130% 80% at 58% 38%,#0c1a2e 0%,#000 72%);
+  background-size:76px 76px,76px 76px,100% 100%;
+  animation:bgDrift 32s ease-in-out infinite alternate;
+}
+@keyframes bgDrift{
+  from{background-position:0 0,0 0,center;}
+  to{background-position:38px 38px,38px 38px,center;}
+}
+.bg-car{position:absolute;opacity:.055;animation:carFloat ease-in-out infinite;}
+.bg-car:nth-child(2){left:10%;top:28%;width:108px;animation-duration:24s;animation-delay:-4s;}
+.bg-car:nth-child(3){left:70%;top:52%;width:82px;animation-duration:30s;animation-delay:-14s;}
+.bg-car:nth-child(4){left:38%;top:16%;width:96px;animation-duration:20s;animation-delay:-9s;}
+@keyframes carFloat{
+  0%{transform:translateX(-50px) translateY(0);}
+  50%{transform:translateX(50px) translateY(-18px);}
+  100%{transform:translateX(-50px) translateY(0);}
+}
+.bg-layer::after{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 85% 55% at 50% 105%,rgba(0,0,0,.96) 0%,transparent 58%),
+    radial-gradient(ellipse 100% 38% at 50% -5%,rgba(0,0,0,.72) 0%,transparent 52%),
+    linear-gradient(to bottom,rgba(0,0,0,.38) 0%,rgba(0,0,0,0) 28%,rgba(0,0,0,.48) 78%,rgba(0,0,0,.96) 100%);
+}
 
-    /* SECTIONS */
-    section{padding:80px 5%;}
-    .section-label{font-size:0.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:0.75rem;}
-    .section-title{font-size:clamp(1.75rem,4vw,2.75rem);font-weight:800;color:var(--navy);line-height:1.2;letter-spacing:-1px;margin-bottom:1rem;}
-    .section-sub{font-size:1rem;color:var(--grey);max-width:550px;line-height:1.7;}
-    .text-center{text-align:center;}
-    .mx-auto{margin-left:auto;margin-right:auto;}
+/* ── NOISE ── */
+.noise{
+  position:fixed;inset:0;z-index:100;pointer-events:none;opacity:.028;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:210px 210px;
+  animation:grain .14s steps(1) infinite;
+}
+@keyframes grain{
+  0%{background-position:0 0;}25%{background-position:-28px 14px;}
+  50%{background-position:18px -12px;}75%{background-position:-12px 22px;}
+}
 
-    /* FEATURES */
-    .features{background:var(--light);}
-    .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin-top:3rem;}
-    .feature-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:2rem;transition:all .3s;position:relative;overflow:hidden;}
-    .feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--gold));transform:scaleX(0);transition:transform .3s;transform-origin:left;}
-    .feature-card:hover{transform:translateY(-6px);box-shadow:0 20px 60px rgba(10,22,40,0.12);}
-    .feature-card:hover::before{transform:scaleX(1);}
-    .feature-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:1.25rem;}
-    .feature-card h3{font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:0.5rem;}
-    .feature-card p{font-size:0.9rem;color:var(--grey);line-height:1.6;}
+/* ── PAGE GRID ── */
+.page{
+  position:relative;z-index:1;
+  display:grid;grid-template-rows:auto 1fr auto;
+  min-height:100vh;min-height:100dvh;
+}
 
-    /* HOW IT WORKS */
-    .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem;margin-top:3rem;position:relative;}
-    .step{text-align:center;padding:1.5rem;}
-    .step-num{width:60px;height:60px;border-radius:50%;background:var(--blue);color:var(--white);font-size:1.5rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;box-shadow:0 8px 24px rgba(37,99,235,0.3);}
-    .step h3{font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:0.5rem;}
-    .step p{font-size:0.875rem;color:var(--grey);line-height:1.6;}
+/* ══════════════════════
+   HEADER
+══════════════════════ */
+.header{
+  display:grid;grid-template-columns:1fr auto 1fr;
+  align-items:center;padding:22px 40px 10px;
+  z-index:50;position:relative;
+}
 
-    /* SERVICES TABS */
-    .services-section{background:var(--navy);color:var(--white);}
-    .services-section .section-title{color:var(--white);}
-    .services-section .section-sub{color:rgba(255,255,255,0.6);}
-    .tab-btns{display:flex;gap:0.75rem;flex-wrap:wrap;margin:2rem 0 1.5rem;}
-    .tab-btn{padding:0.6rem 1.25rem;border-radius:100px;font-size:0.875rem;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.7);transition:all .3s;}
-    .tab-btn.active,.tab-btn:hover{background:var(--blue);border-color:var(--blue);color:var(--white);}
-    .services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;}
-    .service-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:1.75rem;transition:all .3s;}
-    .service-card:hover{background:rgba(255,255,255,0.1);transform:translateY(-4px);}
-    .service-card .icon{font-size:2rem;margin-bottom:1rem;}
-    .service-card h3{font-size:1rem;font-weight:700;color:var(--white);margin-bottom:0.5rem;}
-    .service-card p{font-size:0.85rem;color:rgba(255,255,255,0.55);line-height:1.6;}
-    .price-tag{display:inline-block;background:var(--gold);color:var(--navy);font-size:0.75rem;font-weight:800;padding:0.25rem 0.6rem;border-radius:100px;margin-top:0.75rem;}
+/* Logo */
+.logo{
+  display:flex;align-items:center;gap:10px;
+  font-size:17px;font-weight:700;letter-spacing:-.025em;
+  white-space:nowrap;user-select:none;text-decoration:none;color:var(--text);
+}
+.logo-name span{color:var(--gold);font-weight:800;}
 
-    /* TESTIMONIALS */
-    .testimonials-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin-top:3rem;}
-    .test-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:2rem;transition:all .3s;}
-    .test-card:hover{transform:translateY(-4px);box-shadow:0 20px 50px rgba(10,22,40,0.1);}
-    .stars{color:var(--gold);font-size:1rem;margin-bottom:1rem;}
-    .test-card p{font-size:0.925rem;color:var(--grey);line-height:1.7;font-style:italic;margin-bottom:1.25rem;}
-    .test-user{display:flex;align-items:center;gap:0.75rem;}
-    .avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--white);font-size:1rem;}
-    .test-user h4{font-size:0.9rem;font-weight:700;color:var(--navy);}
-    .test-user span{font-size:0.8rem;color:var(--grey);}
+/* Nav pills */
+.nav{display:flex;align-items:center;gap:6px;}
+.nav-pill{
+  position:relative;overflow:hidden;
+  height:40px;padding:0 18px;border-radius:7px;
+  background:var(--pill-grad);border:1px solid var(--pill-border);
+  color:#f3f3f3;font-size:13.5px;font-weight:500;letter-spacing:-.01em;
+  white-space:nowrap;transition:border-color .25s,box-shadow .25s;
+  text-decoration:none;display:inline-flex;align-items:center;
+}
+.nav-pill::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(118deg,transparent 32%,rgba(255,255,255,.16) 50%,transparent 68%);
+  transform:translateX(-120%);transition:transform .52s var(--spring);
+}
+.nav-pill:hover::before{transform:translateX(120%);}
+.nav-pill:hover{border-color:rgba(255,255,255,.52);box-shadow:0 0 20px rgba(255,255,255,.09);}
+.nav-pill:active{transform:scale(.97);}
 
-    /* APP BANNER */
-    .app-banner{background:linear-gradient(135deg,#0A1628,#1E3A5F);color:var(--white);text-align:center;}
-    .app-banner h2{font-size:2.25rem;font-weight:800;margin-bottom:1rem;letter-spacing:-1px;}
-    .app-banner p{color:rgba(255,255,255,0.65);margin-bottom:2rem;font-size:1rem;}
-    .store-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
-    .store-btn{display:flex;align-items:center;gap:0.75rem;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:var(--white);padding:0.875rem 1.75rem;border-radius:12px;text-decoration:none;transition:all .3s;font-weight:600;}
-    .store-btn:hover{background:rgba(255,255,255,0.18);transform:translateY(-2px);}
-    .store-btn i{font-size:1.5rem;}
+/* Header right */
+.header-right{display:flex;align-items:center;justify-content:flex-end;gap:10px;}
 
-    /* FOOTER */
-    footer{background:#060E1A;color:rgba(255,255,255,0.5);padding:3rem 5% 2rem;}
-    .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:2rem;}
-    .footer-brand .logo{font-size:1.35rem;}
-    .footer-brand p{font-size:0.875rem;line-height:1.7;margin-top:0.75rem;max-width:280px;}
-    .footer-col h4{font-size:0.875rem;font-weight:700;color:var(--white);margin-bottom:1rem;}
-    .footer-col a{display:block;font-size:0.85rem;color:rgba(255,255,255,0.5);text-decoration:none;margin-bottom:0.6rem;transition:color .3s;}
-    .footer-col a:hover{color:var(--white);}
-    .footer-bottom{border-top:1px solid rgba(255,255,255,0.08);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:gap;font-size:0.8rem;}
-    .social-links{display:flex;gap:1rem;}
-    .social-links a{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.6);text-decoration:none;transition:all .3s;font-size:0.875rem;}
-    .social-links a:hover{background:var(--blue);color:var(--white);}
+.btn-login{
+  height:40px;padding:0 20px;border-radius:9px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.22);
+  color:#e8e8e8;font-size:13.5px;font-weight:600;letter-spacing:-.01em;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  transition:all .25s var(--spring);white-space:nowrap;
+  text-decoration:none;display:inline-flex;align-items:center;
+}
+.btn-login:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.4);}
 
-    /* FLOATING HELP */
-    .fab{position:fixed;bottom:2rem;right:2rem;z-index:998;width:56px;height:56px;border-radius:50%;background:#25D366;color:var(--white);display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 8px 24px rgba(37,211,102,0.4);cursor:pointer;text-decoration:none;transition:all .3s;}
-    .fab:hover{transform:scale(1.1);box-shadow:0 12px 32px rgba(37,211,102,0.5);}
+.btn-book{
+  height:40px;padding:0 20px;border-radius:9px;
+  background:linear-gradient(140deg,#e4e4e4 0%,#ffffff 50%,#cccccc 100%);
+  color:#000;font-size:13.5px;font-weight:700;letter-spacing:-.01em;
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:0 0 22px rgba(255,255,255,.1),0 4px 14px rgba(0,0,0,.35);
+  transition:all .28s var(--spring);white-space:nowrap;
+  text-decoration:none;display:inline-flex;align-items:center;
+}
+.btn-book:hover{
+  box-shadow:0 0 36px rgba(160,200,255,.32),0 6px 22px rgba(0,0,0,.28);
+  transform:translateY(-1px) scale(1.025);
+}
+.btn-book:active{transform:scale(.97);}
 
-    /* ANIMATE ON SCROLL */
-    .fade-up{opacity:0;transform:translateY(30px);transition:all 0.6s ease;}
-    .fade-up.visible{opacity:1;transform:translateY(0);}
+/* Burger */
+.burger{display:none;flex-direction:column;gap:5px;padding:6px;z-index:200;}
+.burger span{display:block;width:24px;height:2px;background:#fff;border-radius:2px;transition:transform .3s ease,opacity .3s ease;}
+.burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.burger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
 
-    @media(max-width:768px){
-      .nav-links{display:none;}
-      .footer-grid{grid-template-columns:1fr 1fr;}
-      .stats-bar{gap:1.25rem;}
-    }
-  </style>
+@media(max-width:900px){
+  .header{grid-template-columns:1fr auto;padding:18px 24px 10px;}
+  .nav,.btn-login{display:none;}
+  .burger{display:flex;}
+}
+
+/* ══════════════════════
+   MOBILE MENU
+══════════════════════ */
+.mobile-menu{
+  position:fixed;inset:0;z-index:150;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  background:rgba(0,0,0,.86);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  opacity:0;pointer-events:none;transform:scale(1.04);
+  transition:opacity .32s ease,transform .32s ease;
+}
+.mobile-menu.is-open{opacity:1;pointer-events:all;transform:scale(1);}
+.mobile-menu .nav-pill{font-size:16px;height:52px;padding:0 30px;width:230px;justify-content:center;}
+.mobile-menu .btn-book-m{
+  height:52px;padding:0 36px;border-radius:10px;margin-top:10px;
+  background:linear-gradient(140deg,#e4e4e4 0%,#ffffff 50%,#cccccc 100%);
+  color:#000;font-size:16px;font-weight:700;
+  border:1px solid rgba(255,255,255,.5);
+  box-shadow:0 0 22px rgba(255,255,255,.1);
+  transition:all .25s var(--spring);
+  text-decoration:none;display:inline-flex;align-items:center;justify-content:center;
+}
+
+/* ══════════════════════
+   HERO
+══════════════════════ */
+.hero{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:flex-end;
+  padding:8px 24px 85px;text-align:center;
+}
+
+/* Badge */
+.badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 16px 7px 12px;border-radius:5px;
+  background:linear-gradient(112deg,#0c0c0c 0%,#1e1e1e 52%,#141414 100%);
+  border:1px solid rgba(255,255,255,.18);
+  font-size:12.5px;font-weight:500;letter-spacing:.01em;color:#c8c8c8;
+  margin-bottom:24px;
+  box-shadow:0 2px 22px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.06);
+}
+.badge-icon{flex-shrink:0;filter:drop-shadow(0 0 5px rgba(200,200,255,.45));}
+
+/* Headline */
+.headline{
+  font-size:clamp(34px,4.8vw,54px);font-weight:500;
+  line-height:1.1;letter-spacing:-.045em;
+  margin-bottom:20px;max-width:800px;
+}
+.hl-mask{display:block;overflow:hidden;}
+.hl-inner{display:block;}
+.headline em{
+  font-family:"Instrument Serif","Times New Roman",serif;
+  font-style:italic;font-weight:400;color:var(--gold);
+}
+
+/* Lede */
+.lede{
+  max-width:500px;color:var(--muted);
+  font-size:15.5px;line-height:1.55;margin-bottom:32px;
+}
+
+/* Action buttons */
+.actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;}
+
+.btn-primary{
+  position:relative;overflow:hidden;
+  height:48px;padding:0 28px;border-radius:10px;
+  background:linear-gradient(148deg,#e2e2e2 0%,#ffffff 46%,#cacaca 100%);
+  color:#000;font-size:14.5px;font-weight:700;letter-spacing:-.015em;
+  border:1px solid rgba(255,255,255,.6);
+  box-shadow:0 0 24px rgba(255,255,255,.1),0 4px 16px rgba(0,0,0,.4);
+  transition:all .28s var(--spring);
+  text-decoration:none;display:inline-flex;align-items:center;gap:8px;
+}
+.btn-primary::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(122deg,transparent 28%,rgba(160,210,255,.38) 50%,transparent 72%);
+  transform:translateX(-130%);transition:transform .56s var(--spring);
+}
+.btn-primary:hover::before{transform:translateX(130%);}
+.btn-primary:hover{
+  box-shadow:0 0 44px rgba(130,185,255,.38),0 8px 26px rgba(0,0,0,.28);
+  transform:translateY(-2px) scale(1.03);
+}
+.btn-primary:active{transform:scale(.97);}
+
+.btn-secondary{
+  height:48px;padding:0 26px;border-radius:10px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.22);
+  color:#e8e8e8;font-size:14.5px;font-weight:600;letter-spacing:-.015em;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  display:inline-flex;align-items:center;gap:9px;
+  transition:all .25s var(--spring);
+  text-decoration:none;
+}
+.btn-secondary:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.38);}
+.btn-secondary:active{transform:scale(.97);}
+
+/* ══════════════════════
+   STATS DOCK
+══════════════════════ */
+.stats-dock{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:0 72px 36px;color:var(--stat);
+  font-size:13.5px;font-weight:450;letter-spacing:-.01em;gap:16px;
+}
+.stat-item{display:flex;align-items:center;gap:11px;white-space:nowrap;}
+.stat-icon{flex-shrink:0;opacity:.72;}
+
+/* Stat number highlight */
+.stat-num{
+  font-size:18px;font-weight:800;color:var(--text);
+  letter-spacing:-.02em;display:block;line-height:1.1;
+}
+.stat-label{font-size:12px;color:var(--muted);display:block;margin-top:1px;}
+
+@media(max-width:900px){
+  .stats-dock{flex-direction:column;align-items:flex-start;padding:0 24px 36px;gap:14px;}
+  .hero{padding:8px 20px 28px;}
+  .headline{font-size:clamp(28px,7.5vw,44px);}
+}
+@media(max-width:600px){.stats-dock{display:none;}.hero{padding-bottom:44px;}}
+
+/* ══════════════════════
+   ANIMATION INITIAL STATES
+══════════════════════ */
+.anim-badge{opacity:0;transform:scale(.86);will-change:opacity,transform;}
+.anim-hl1 .hl-inner{opacity:0;transform:translateY(105%);will-change:opacity,transform;}
+.anim-hl2 .hl-inner{opacity:0;transform:translateY(105%);will-change:opacity,transform;}
+.anim-serif{opacity:0;filter:blur(10px);will-change:opacity,filter;}
+.anim-lede{opacity:0;transform:translateY(18px);will-change:opacity,transform;}
+.anim-cta1{opacity:0;transform:scale(.9) translateX(-12px);will-change:opacity,transform;}
+.anim-cta2{opacity:0;transform:scale(.9) translateX(12px);will-change:opacity,transform;}
+.anim-stat1,.anim-stat2,.anim-stat3,.anim-stat4{opacity:0;transform:translateY(20px);will-change:opacity,transform;}
+
+/* ── KEYFRAMES ── */
+@keyframes kBadge{from{opacity:0;transform:scale(.86);}to{opacity:1;transform:scale(1);}}
+@keyframes kSlideUp{from{opacity:0;transform:translateY(105%);}to{opacity:1;transform:translateY(0);}}
+@keyframes kBlurIn{from{opacity:0;filter:blur(10px);}to{opacity:1;filter:blur(0);}}
+@keyframes kFadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+@keyframes kCtaLeft{from{opacity:0;transform:scale(.9) translateX(-12px);}to{opacity:1;transform:scale(1) translateX(0);}}
+@keyframes kCtaRight{from{opacity:0;transform:scale(.9) translateX(12px);}to{opacity:1;transform:scale(1) translateX(0);}}
+@keyframes kStatUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── .is-in TRIGGERS ── */
+.is-in.anim-badge{animation:kBadge .7s var(--spring) .22s both;}
+.is-in.anim-hl1 .hl-inner{animation:kSlideUp .78s var(--spring) .42s both;}
+.is-in.anim-hl2 .hl-inner{animation:kSlideUp .78s var(--spring) .62s both;}
+.is-in.anim-serif{animation:kBlurIn .68s var(--spring) .72s both;}
+.is-in.anim-lede{animation:kFadeUp .7s var(--spring) .82s both;}
+.is-in.anim-cta1{animation:kCtaLeft .65s var(--spring) .96s both;}
+.is-in.anim-cta2{animation:kCtaRight .65s var(--spring) 1.10s both;}
+.is-in.anim-stat1{animation:kStatUp .62s var(--spring) 1.12s both;}
+.is-in.anim-stat2{animation:kStatUp .62s var(--spring) 1.24s both;}
+.is-in.anim-stat3{animation:kStatUp .62s var(--spring) 1.36s both;}
+.is-in.anim-stat4{animation:kStatUp .62s var(--spring) 1.48s both;}
+
+/* ── REDUCED MOTION ── */
+@media(prefers-reduced-motion:reduce){
+  .anim-badge,.anim-hl1,.anim-hl1 .hl-inner,
+  .anim-hl2,.anim-hl2 .hl-inner,.anim-serif,
+  .anim-lede,.anim-cta1,.anim-cta2,
+  .anim-stat1,.anim-stat2,.anim-stat3,.anim-stat4{
+    opacity:1!important;transform:none!important;
+    filter:none!important;animation:none!important;transition:none!important;
+  }
+}
+</style>
 </head>
-<body>
+<body style="background:#000;color:#fff">
 
-<!-- NAVBAR -->
-<nav>
-  <div class="nav-inner">
-    <a href="index.html" class="logo">🅿 Smart<span>Park</span></a>
-    <ul class="nav-links">
-      <li><a href="#features">Features</a></li>
-      <li><a href="#services">Services</a></li>
-      <li><a href="#how">How It Works</a></li>
-      <li><a href="#testimonials">Reviews</a></li>
-    </ul>
-    <div class="nav-btns">
-      <a href="login.html" class="btn-ghost">Login</a>
-      <a href="booking.html" class="btn-primary">Book Now</a>
-    </div>
-  </div>
-</nav>
+<div class="noise" aria-hidden="true"></div>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-badge">🏆 India's #1 Smart Parking Platform</div>
-  <h1>Find Your Spot.<br/><span>Get It Done.</span></h1>
-  <p>Book parking, schedule car wash, call a mechanic, and book your cab — all in one app. Your car is taken care of while you focus on what matters.</p>
-  <div class="hero-btns">
-    <a href="booking.html" class="btn-hero btn-hero-primary"><i class="fas fa-parking"></i> Book Parking Now</a>
-    <a href="services.html" class="btn-hero btn-hero-secondary"><i class="fas fa-concierge-bell"></i> Explore Services</a>
-  </div>
+<!-- BG -->
+<div class="bg-layer" aria-hidden="true">
+  <div class="bg-canvas"></div>
+  <svg class="bg-car" viewBox="0 0 120 46" fill="none"><rect x="8" y="16" width="104" height="22" rx="5" fill="white"/><rect x="24" y="6" width="58" height="14" rx="4" fill="white"/><circle cx="28" cy="40" r="6" fill="black" stroke="white" stroke-width="2"/><circle cx="92" cy="40" r="6" fill="black" stroke="white" stroke-width="2"/></svg>
+  <svg class="bg-car" viewBox="0 0 120 46" fill="none"><rect x="8" y="16" width="104" height="22" rx="5" fill="white"/><rect x="28" y="6" width="54" height="14" rx="4" fill="white"/><circle cx="28" cy="40" r="6" fill="black" stroke="white" stroke-width="2"/><circle cx="92" cy="40" r="6" fill="black" stroke="white" stroke-width="2"/></svg>
+  <svg class="bg-car" viewBox="0 0 120 46" fill="none"><rect x="8" y="16" width="104" height="22" rx="5" fill="white"/><rect x="20" y="6" width="64" height="14" rx="4" fill="white"/><circle cx="28" cy="40" r="6" fill="black" stroke="white" stroke-width="2"/><circle cx="92" cy="40" r="6" fill="black" stroke="white" stroke-width="2"/></svg>
+</div>
 
-  <!-- Parking lot visual -->
-  <div style="width:100%;max-width:420px;margin:0 auto;">
-    <p style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin-bottom:0.75rem;letter-spacing:1px;text-transform:uppercase;">Live Slot View — Koramangala Lot</p>
-    <div class="parking-visual" id="parkingGrid"></div>
-    <div style="display:flex;gap:1.5rem;justify-content:center;margin-top:0.75rem;flex-wrap:wrap;">
-      <span style="font-size:0.72rem;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:0.4rem;"><span style="width:10px;height:10px;background:rgba(34,197,94,0.6);border-radius:2px;display:inline-block;"></span>Available</span>
-      <span style="font-size:0.72rem;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:0.4rem;"><span style="width:10px;height:10px;background:rgba(239,68,68,0.6);border-radius:2px;display:inline-block;"></span>Occupied</span>
-      <span style="font-size:0.72rem;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:0.4rem;"><span style="width:10px;height:10px;background:var(--blue);border-radius:2px;display:inline-block;"></span>Your Slot</span>
-      <span style="font-size:0.72rem;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:0.4rem;"><span style="width:10px;height:10px;background:rgba(245,158,11,0.6);border-radius:2px;display:inline-block;"></span>EV</span>
-    </div>
-  </div>
+<div class="page">
 
-  <div class="stats-bar">
-    <div class="stat-item"><div class="stat-num">10<span>K+</span></div><div class="stat-label">Parking Slots</div></div>
-    <div class="stat-item"><div class="stat-num">50<span>+</span></div><div class="stat-label">Cities</div></div>
-    <div class="stat-item"><div class="stat-num">1<span>M+</span></div><div class="stat-label">Happy Users</div></div>
-    <div class="stat-item"><div class="stat-num">4.8<span>★</span></div><div class="stat-label">App Rating</div></div>
-  </div>
-</section>
+  <!-- ══ HEADER ══ -->
+  <header class="header" role="banner">
 
-<!-- FEATURES -->
-<section class="features" id="features">
-  <div class="text-center fade-up">
-    <div class="section-label">Why SmartPark</div>
-    <h2 class="section-title">Everything your parking needs,<br/>in one place</h2>
-    <p class="section-sub mx-auto">From real-time booking to on-site vehicle services — SmartPark is the only app you need.</p>
-  </div>
-  <div class="features-grid">
-    <div class="feature-card fade-up">
-      <div class="feature-icon" style="background:#EFF6FF;"><span>🅿️</span></div>
-      <h3>Real-time Slot Booking</h3>
-      <p>View live availability across 50+ cities and reserve your slot in seconds. No more circling the block.</p>
-    </div>
-    <div class="feature-card fade-up">
-      <div class="feature-icon" style="background:#FFF7ED;"><span>🚿</span></div>
-      <h3>Car Wash While Parked</h3>
-      <p>Schedule a basic or premium car wash when you arrive. Your car is sparkling clean when you return.</p>
-    </div>
-    <div class="feature-card fade-up">
-      <div class="feature-icon" style="background:#F0FDF4;"><span>🚕</span></div>
-      <h3>Ola & Uber Integration</h3>
-      <p>Compare and book Ola, Uber, or auto directly inside SmartPark — pickup location auto-filled.</p>
-    </div>
-    <div class="feature-card fade-up">
-      <div class="feature-icon" style="background:#FEF3C7;"><span>🔧</span></div>
-      <h3>On-site Mechanic</h3>
-      <p>Request oil change, tyre service, battery check, or full inspection — done while your car is parked.</p>
-    </div>
-    <div class="feature-card fade-up">
-      <div class="feature-icon" style="background:#EFF6FF;"><span>🔌</span></div>
-      <h3>EV Charging Slots</h3>
-      <p>Dedicated EV slots with AC/DC chargers. Monitor charging status and get notified when complete.</p>
-    </div>
-    <div class="feature-card fade-up">
-      <div class="feature-icon" style="background:#FEF2F2;"><span>🛡️</span></div>
-      <h3>Smart Security</h3>
-      <p>Live CCTV feed of your vehicle, panic button, and digital slot lock for maximum peace of mind.</p>
-    </div>
-  </div>
-</section>
+    <a href="index.html" class="logo" aria-label="SmartPark home">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+        <rect x="2" y="10" width="24" height="14" rx="3" stroke="white" stroke-width="1.8"/>
+        <rect x="7" y="5"  width="14" height="8"  rx="2" stroke="white" stroke-width="1.5"/>
+        <circle cx="8"  cy="25" r="2.5" fill="white"/>
+        <circle cx="20" cy="25" r="2.5" fill="white"/>
+        <line x1="2" y1="17" x2="26" y2="17" stroke="white" stroke-width="1.2" opacity=".5"/>
+      </svg>
+      <span class="logo-name">Smart<span>Park</span></span>
+    </a>
 
-<!-- HOW IT WORKS -->
-<section id="how">
-  <div class="text-center fade-up">
-    <div class="section-label">Simple Process</div>
-    <h2 class="section-title">Park smarter in 4 easy steps</h2>
-    <p class="section-sub mx-auto">From search to service — we've made it effortless.</p>
-  </div>
-  <div class="steps">
-    <div class="step fade-up">
-      <div class="step-num">1</div>
-      <h3>Search & Find</h3>
-      <p>Search by location, filter by slot type, price, or amenities. See real-time availability instantly.</p>
-    </div>
-    <div class="step fade-up">
-      <div class="step-num">2</div>
-      <h3>Reserve Your Slot</h3>
-      <p>Pick your slot on the interactive map, choose your duration, and confirm your booking in one tap.</p>
-    </div>
-    <div class="step fade-up">
-      <div class="step-num">3</div>
-      <h3>Add Services</h3>
-      <p>Optionally add car wash, mechanic check, or book a cab — all from the same screen.</p>
-    </div>
-    <div class="step fade-up">
-      <div class="step-num">4</div>
-      <h3>Pay & Go</h3>
-      <p>Pay via UPI, card, or SmartPark Wallet. Get a digital invoice and enjoy your day stress-free.</p>
-    </div>
-  </div>
-</section>
+    <!-- Nav — links to existing pages -->
+    <nav class="nav" role="navigation" aria-label="Primary navigation">
+      <a href="index.html#features" class="nav-pill">Features</a>
+      <a href="services.html"       class="nav-pill">Services</a>
+      <a href="booking.html"        class="nav-pill">Book Parking</a>
+      <a href="wallet.html"         class="nav-pill">Wallet</a>
+    </nav>
 
-<!-- SERVICES -->
-<section class="services-section" id="services">
-  <div class="fade-up">
-    <div class="section-label" style="color:#93C5FD;">Our Services</div>
-    <h2 class="section-title">While You Park, We Work</h2>
-    <p class="section-sub">Premium services available at every SmartPark location — no waiting, no hassle.</p>
-  </div>
-  <div class="tab-btns" id="tabBtns">
-    <button class="tab-btn active" onclick="showTab('wash',this)">🚿 Car Wash</button>
-    <button class="tab-btn" onclick="showTab('mech',this)">🔧 Mechanic</button>
-    <button class="tab-btn" onclick="showTab('cab',this)">🚕 Cab</button>
-    <button class="tab-btn" onclick="showTab('ev',this)">🔌 EV Charging</button>
-    <button class="tab-btn" onclick="showTab('laundry',this)">🧺 Laundry</button>
-  </div>
-  <div id="tab-wash" class="services-grid">
-    <div class="service-card"><div class="icon">🪣</div><h3>Basic Wash</h3><p>Exterior rinse, wipe-down, and glass clean. Ready in 20 mins.</p><span class="price-tag">₹99</span></div>
-    <div class="service-card"><div class="icon">✨</div><h3>Premium Foam Wash</h3><p>Full foam wash, tyre cleaning, dashboard wipe. Ready in 40 mins.</p><span class="price-tag">₹199</span></div>
-    <div class="service-card"><div class="icon">💎</div><h3>Full Detail</h3><p>Interior + exterior deep clean, polish, and fragrance. Showroom finish.</p><span class="price-tag">₹499</span></div>
-    <div class="service-card"><div class="icon">🪟</div><h3>Waterless Wash</h3><p>Eco-friendly spray clean — no water, no waiting, no mess.</p><span class="price-tag">₹149</span></div>
-  </div>
-  <div id="tab-mech" class="services-grid" style="display:none;">
-    <div class="service-card"><div class="icon">🛢️</div><h3>Oil Change</h3><p>Engine oil replacement with quality oil — done in 30 mins.</p><span class="price-tag">₹349</span></div>
-    <div class="service-card"><div class="icon">🛞</div><h3>Tyre Service</h3><p>Pressure check, balancing, rotation, or puncture fix on-site.</p><span class="price-tag">₹99</span></div>
-    <div class="service-card"><div class="icon">🔋</div><h3>Battery Check</h3><p>Battery health report + replacement if needed.</p><span class="price-tag">₹149</span></div>
-    <div class="service-card"><div class="icon">📋</div><h3>Full Inspection</h3><p>35-point digital vehicle health report delivered to your phone.</p><span class="price-tag">₹249</span></div>
-  </div>
-  <div id="tab-cab" class="services-grid" style="display:none;">
-    <div class="service-card"><div class="icon">🟡</div><h3>Ola Mini</h3><p>Hatchback cab, up to 4 passengers. Lowest fare option.</p><span class="price-tag">From ₹89</span></div>
-    <div class="service-card"><div class="icon">⚫</div><h3>Uber Go</h3><p>Comfortable sedan. Live tracking & in-app payment.</p><span class="price-tag">From ₹99</span></div>
-    <div class="service-card"><div class="icon">🛺</div><h3>Auto Rickshaw</h3><p>Best for short distances. Metered + app-tracked.</p><span class="price-tag">From ₹45</span></div>
-    <div class="service-card"><div class="icon">🚐</div><h3>Ola Prime SUV</h3><p>6-seater SUV for groups or airport transfers.</p><span class="price-tag">From ₹199</span></div>
-  </div>
-  <div id="tab-ev" class="services-grid" style="display:none;">
-    <div class="service-card"><div class="icon">⚡</div><h3>AC Slow Charger</h3><p>3.3kW charger. Full charge in 6–8 hrs. Ideal for overnight.</p><span class="price-tag">₹4/min</span></div>
-    <div class="service-card"><div class="icon">🔌</div><h3>DC Fast Charger</h3><p>50kW fast charger. 80% in under 45 mins.</p><span class="price-tag">₹8/min</span></div>
-    <div class="service-card"><div class="icon">📲</div><h3>Charge & Notify</h3><p>Get push notification when your EV hits 80% or 100%.</p><span class="price-tag">Free</span></div>
-    <div class="service-card"><div class="icon">🌿</div><h3>Green Rewards</h3><p>Earn 2x loyalty points every time you charge an EV.</p><span class="price-tag">Bonus Points</span></div>
-  </div>
-  <div id="tab-laundry" class="services-grid" style="display:none;">
-    <div class="service-card"><div class="icon">👕</div><h3>Wash & Fold</h3><p>Drop clothes at the counter. Collected and returned within 24 hrs.</p><span class="price-tag">₹79/kg</span></div>
-    <div class="service-card"><div class="icon">👔</div><h3>Dry Cleaning</h3><p>Premium dry cleaning for suits, sarees, and formals.</p><span class="price-tag">₹199/item</span></div>
-    <div class="service-card"><div class="icon">🧺</div><h3>Express Laundry</h3><p>Same-day return in 4 hours. Ready when you come back.</p><span class="price-tag">₹149/kg</span></div>
-    <div class="service-card"><div class="icon">🎽</div><h3>Sports Gear Wash</h3><p>Special wash for sports kits, shoes, and gym wear.</p><span class="price-tag">₹99</span></div>
-  </div>
-</section>
+    <div class="header-right">
+      <a href="login.html"   class="btn-login">Login</a>
+      <a href="booking.html" class="btn-book">Book Now</a>
+      <button class="burger" id="burgerBtn"
+              aria-label="Toggle navigation" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
 
-<!-- TESTIMONIALS -->
-<section id="testimonials" style="background:var(--light);">
-  <div class="text-center fade-up">
-    <div class="section-label">Customer Love</div>
-    <h2 class="section-title">Trusted by 1M+ users across India</h2>
-  </div>
-  <div class="testimonials-grid">
-    <div class="test-card fade-up">
-      <div class="stars">★★★★★</div>
-      <p>"I park at Forum Mall every day. SmartPark lets me pre-book my slot and get a car wash done while I'm in meetings. Saved me 30 mins daily!"</p>
-      <div class="test-user">
-        <div class="avatar" style="background:#2563EB;">R</div>
-        <div><h4>Rahul Sharma</h4><span>Bangalore, IT Professional</span></div>
+  <!-- ══ HERO ══ -->
+  <main class="hero" role="main">
+
+    <div class="badge anim-badge">
+      <svg class="badge-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <path d="M7 0L8.2 5.2L13.4 7L8.2 8.8L7 14L5.8 8.8L0.6 7L5.8 5.2L7 0Z" fill="white" opacity=".9"/>
+      </svg>
+      India's #1 Smart Parking Platform
+    </div>
+
+    <h1 class="headline">
+      <span class="hl-mask anim-hl1">
+        <span class="hl-inner">Find your spot. Book a wash.</span>
+      </span>
+      <span class="hl-mask anim-hl2">
+        <span class="hl-inner">Call a mechanic. Ride <em class="anim-serif">home.</em></span>
+      </span>
+    </h1>
+
+    <p class="lede anim-lede">
+      Real-time parking slot booking, on-site car wash, verified mechanics,
+      Ola &amp; Uber cab integration — all in one platform.
+    </p>
+
+    <div class="actions">
+      <a href="booking.html" class="btn-primary anim-cta1">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <rect x="1" y="5" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="4" y="2" width="8" height="5" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+          <line x1="1" y1="10" x2="15" y2="10" stroke="currentColor" stroke-width="1.2" opacity=".5"/>
+        </svg>
+        Book Parking Now
+      </a>
+      <a href="services.html" class="btn-secondary anim-cta2">
+        <svg width="17" height="17" viewBox="0 0 17 17" fill="none" aria-hidden="true">
+          <circle cx="8.5" cy="8.5" r="7.5" stroke="rgba(255,255,255,0.38)" stroke-width="1.4"/>
+          <path d="M6.8 5.8L11.5 8.5L6.8 11.2V5.8Z" fill="white"/>
+        </svg>
+        Explore Services
+      </a>
+    </div>
+  </main>
+
+  <!-- ══ STATS DOCK ══ -->
+  <footer class="stats-dock" role="contentinfo" aria-label="Platform stats">
+
+    <div class="stat-item anim-stat1">
+      <svg class="stat-icon" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+        <rect x="1" y="7" width="8" height="5" rx="2.5" stroke="#d8d8d8" stroke-width="1.4"/>
+        <rect x="13" y="7" width="8" height="5" rx="2.5" stroke="#d8d8d8" stroke-width="1.4"/>
+        <line x1="9" y1="9.5" x2="13" y2="9.5" stroke="#d8d8d8" stroke-width="1.4"/>
+        <circle cx="5"  cy="15.5" r="1.8" fill="#d8d8d8" opacity=".55"/>
+        <circle cx="17" cy="15.5" r="1.8" fill="#d8d8d8" opacity=".55"/>
+      </svg>
+      <div>
+        <span class="stat-num">10,000+</span>
+        <span class="stat-label">Parking Slots</span>
       </div>
     </div>
-    <div class="test-card fade-up">
-      <div class="stars">★★★★★</div>
-      <p>"The mechanic service is a game-changer. Got my oil changed while shopping — came back to a serviced car. Can't believe I used to visit a garage separately!"</p>
-      <div class="test-user">
-        <div class="avatar" style="background:#F59E0B;">P</div>
-        <div><h4>Priya Menon</h4><span>Chennai, Business Owner</span></div>
+
+    <div class="stat-item anim-stat2">
+      <svg class="stat-icon" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+        <circle cx="11" cy="11" r="9" stroke="#d8d8d8" stroke-width="1.4"/>
+        <path d="M7 11l3 3 5-5" stroke="#d8d8d8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <span class="stat-num">50+</span>
+        <span class="stat-label">Cities Covered</span>
       </div>
     </div>
-    <div class="test-card fade-up">
-      <div class="stars">★★★★★</div>
-      <p>"The Ola integration is so convenient. I park my car, book my cab without switching apps, and the pickup point auto-fills. Superb experience!"</p>
-      <div class="test-user">
-        <div class="avatar" style="background:#10B981;">A</div>
-        <div><h4>Arjun Verma</h4><span>Mumbai, Marketing Manager</span></div>
+
+    <div class="stat-item anim-stat3">
+      <svg class="stat-icon" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+        <circle cx="11" cy="7"  r="3.5" stroke="#d8d8d8" stroke-width="1.4"/>
+        <path d="M4 19c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#d8d8d8" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <span class="stat-num">1M+</span>
+        <span class="stat-label">Happy Users</span>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- APP DOWNLOAD -->
-<section class="app-banner">
-  <div class="fade-up">
-    <h2>🅿 SmartPark on Your Phone</h2>
-    <p>Available on iOS and Android. Download free and get ₹100 off your first booking.</p>
-    <div class="store-btns">
-      <a href="#" class="store-btn"><i class="fab fa-apple"></i><div><small>Download on the</small><br/><strong>App Store</strong></div></a>
-      <a href="#" class="store-btn"><i class="fab fa-google-play"></i><div><small>Get it on</small><br/><strong>Google Play</strong></div></a>
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-grid">
-    <div class="footer-brand">
-      <a href="index.html" class="logo">🅿 Smart<span>Park</span></a>
-      <p>India's smartest parking platform. Book slots, get your car serviced, and travel — all in one app.</p>
-      <div class="social-links" style="margin-top:1rem;">
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-        <a href="#"><i class="fab fa-linkedin"></i></a>
-        <a href="#"><i class="fab fa-youtube"></i></a>
+    <div class="stat-item anim-stat4">
+      <svg class="stat-icon" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+        <path d="M11 2l2.4 6.9H20l-5.7 4.1 2.2 6.9L11 15.9l-5.5 4 2.2-6.9L2 9h6.6L11 2z" stroke="#d8d8d8" stroke-width="1.4" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <span class="stat-num">4.8 ★</span>
+        <span class="stat-label">App Rating</span>
       </div>
     </div>
-    <div class="footer-col">
-      <h4>Product</h4>
-      <a href="booking.html">Book Parking</a>
-      <a href="services.html">Services</a>
-      <a href="wallet.html">Wallet</a>
-      <a href="dashboard.html">Dashboard</a>
-    </div>
-    <div class="footer-col">
-      <h4>Company</h4>
-      <a href="#">About Us</a>
-      <a href="#">Careers</a>
-      <a href="#">Press</a>
-      <a href="#">Blog</a>
-    </div>
-    <div class="footer-col">
-      <h4>Support</h4>
-      <a href="#">Help Center</a>
-      <a href="#">Contact Us</a>
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Service</a>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <span>© 2026 SmartPark by Codeclashers. All rights reserved.</span>
-    <span>Made with ❤️ in India</span>
-  </div>
-</footer>
 
-<!-- FLOATING HELP -->
-<a href="#" class="fab" title="WhatsApp Support"><i class="fab fa-whatsapp"></i></a>
+  </footer>
+</div>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu"
+     role="dialog" aria-modal="true" aria-label="Site navigation">
+  <a href="index.html#features" class="nav-pill">Features</a>
+  <a href="services.html"       class="nav-pill">Services</a>
+  <a href="booking.html"        class="nav-pill">Book Parking</a>
+  <a href="wallet.html"         class="nav-pill">Wallet</a>
+  <a href="dashboard.html"      class="nav-pill">Dashboard</a>
+  <a href="booking.html" class="btn-book-m">🅿 Book Now</a>
+</div>
 
 <script>
-  // Parking grid
-  const grid = document.getElementById('parkingGrid');
-  const types = ['taken','taken','free','free','yours','free','taken','free','free','taken','taken','free','ev','taken','free','taken','free','free','taken','free','free','taken','free','free','taken','taken','free','taken','free','free','taken','free'];
-  types.forEach(t=>{const d=document.createElement('div');d.className='slot '+t;grid.appendChild(d);});
+(function(){
+  'use strict';
+  var SEL=['.anim-badge','.anim-hl1','.anim-hl2','.anim-serif',
+           '.anim-lede','.anim-cta1','.anim-cta2',
+           '.anim-stat1','.anim-stat2','.anim-stat3','.anim-stat4'];
 
-  // Scroll animations
-  const observer = new IntersectionObserver(entries=>{
-    entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
-  },{threshold:0.1});
-  document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
-
-  // Tabs
-  function showTab(name,btn){
-    ['wash','mech','cab','ev','laundry'].forEach(t=>{
-      document.getElementById('tab-'+t).style.display=t===name?'grid':'none';
+  function resolveAll(){
+    SEL.forEach(function(s){
+      document.querySelectorAll(s).forEach(function(el){
+        el.classList.add('is-in');
+        el.style.opacity=el.style.transform=el.style.filter='';
+      });
     });
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
+  }
+  function forceVisible(){
+    SEL.forEach(function(s){
+      document.querySelectorAll(s).forEach(function(el){
+        el.style.cssText='opacity:1!important;transform:none!important;filter:none!important;animation:none!important;';
+      });
+      document.querySelectorAll(s+' .hl-inner').forEach(function(i){
+        i.style.cssText='opacity:1!important;transform:none!important;animation:none!important;';
+      });
+    });
   }
 
-  // Nav scroll effect
-  window.addEventListener('scroll',()=>{
-    document.querySelector('nav').style.background=window.scrollY>50?'rgba(10,22,40,0.98)':'rgba(10,22,40,0.95)';
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(reduced){forceVisible();return;}
+
+  var done=false;
+  if(typeof requestAnimationFrame==='function'){
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        if(!done){done=true;resolveAll();}
+      });
+    });
+  } else {done=true;resolveAll();}
+  setTimeout(function(){if(!done){done=true;forceVisible();}},2000);
+
+  /* Mobile menu */
+  var burger=document.getElementById('burgerBtn');
+  var menu=document.getElementById('mobileMenu');
+  var open=false;
+
+  function openMenu(){
+    open=true;menu.classList.add('is-open');
+    burger.classList.add('open');burger.setAttribute('aria-expanded','true');
+    document.body.style.overflow='hidden';
+    var f=menu.querySelector('a,button');if(f)f.focus();
+  }
+  function closeMenu(){
+    open=false;menu.classList.remove('is-open');
+    burger.classList.remove('open');burger.setAttribute('aria-expanded','false');
+    document.body.style.overflow='';burger.focus();
+  }
+  if(burger&&menu){
+    burger.addEventListener('click',function(){open?closeMenu():openMenu();});
+    document.addEventListener('keydown',function(e){if(open&&(e.key==='Escape'||e.keyCode===27))closeMenu();});
+    var rt;window.addEventListener('resize',function(){
+      clearTimeout(rt);rt=setTimeout(function(){if(window.innerWidth>900&&open)closeMenu();},80);
+    });
+    menu.addEventListener('click',function(e){if(e.target===menu)closeMenu();});
+  }
+
+  /* Press feedback */
+  document.querySelectorAll('.nav-pill,.btn-primary,.btn-secondary,.btn-book,.btn-login').forEach(function(el){
+    el.addEventListener('mousedown',function(){el.style.transform='scale(0.97)';});
+    ['mouseup','mouseleave'].forEach(function(ev){el.addEventListener(ev,function(){el.style.transform='';});});
   });
+}());
 </script>
 </body>
 </html>
